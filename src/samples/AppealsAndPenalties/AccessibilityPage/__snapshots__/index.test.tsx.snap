@@ -1,0 +1,238 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AccessibilityAppealsAndPenalties matches the snapshot 1`] = `
+<DocumentFragment>
+  <h1
+    class="govuk-heading-xl"
+  >
+    ACCESSIBLITY_STATEMENT_FOR_APPEAL_SERVICE
+  </h1>
+  <p
+    class="govuk-body"
+  >
+    THIS_SERVICE_IS_A_PART_GOVUK_WEBSITE 
+    <a
+      class="govuk-link"
+      href="https://www.gov.uk/help/accessibility-statement"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      SEPARATE_AS_FOR_MAIN_GOVUK_WEBSITE OPENS_IN_NEW_TAB
+    </a>
+    .
+  </p>
+  <p
+    class="govuk-body"
+  >
+    THIS_PAGE_CONTAINS_INFO_ABOUT_APPEAL_SERVICE 
+    <a
+      class="govuk-link"
+      href="https://account.hmrc.gov.uk/self-assessment/appeal-a-self-assessment-penalty"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      https://account.hmrc.gov.uk/self-assessment/appeal-a-self-assessment-penalty OPENS_IN_NEW_TAB
+    </a>
+  </p>
+  <p
+    class="govuk-body"
+  >
+    THIS_IS_RUN_BY_HMRC
+  </p>
+  <ul
+    class="govuk-list govuk-list--bullet"
+  >
+    <li>
+      ACCESSIBILITY_LIST_1_0
+    </li>
+    <li>
+      ACCESSIBILITY_LIST_1_1
+    </li>
+    <li>
+      ACCESSIBILITY_LIST_1_2
+    </li>
+    <li>
+      ACCESSIBILITY_LIST_1_3
+    </li>
+    <li>
+      ACCESSIBILITY_LIST_1_4
+    </li>
+  </ul>
+  <p
+    class="govuk-body"
+  >
+    WE_HAVE_MADE_TEXTS_SIMPLER
+  </p>
+  <p
+    class="govuk-body"
+  >
+    <a
+      class="govuk-link"
+      href="https://mcmw.abilitynet.org.uk/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      ABILITYNET_HAS_ADVICE OPENS_IN_NEW_TAB
+    </a>
+     MAKING_YOUR_DEVICE_EASIER
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    HOW_ACCESSIBLE_THIS_SERVICE_IS
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    SERVICE_IS_NONCOMPLIANT 
+    <a
+      class="govuk-link"
+      href="https://www.w3.org/TR/WCAG22/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      WEB_CONTENT_ACCESSIBILITY_VERSION OPENS_IN_NEW_TAB
+    </a>
+    . THIS_SERVICE_HAS_NOT_YET_BEEN_CHECKED
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    WHAT_TO_DO_IF_YOU_HAVE_DIFFICULTY_USING_THIS
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    YOU_CAN 
+    <a
+      class="govuk-link"
+      href="https://www.gov.uk/get-help-hmrc-extra-support"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      CONTACT_HMRC_FOR_EXTRA_SUPPORT OPENS_IN_NEW_TAB
+    </a>
+     IF_YOU_NEED_HELP_WITH_AUDIORECORDING_BRAILLE_ETC
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    REPORTING_ACCESSIBILITY_PROBLEMS_WITH_THIS_SERVICE
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    WE_ARE_ALWAYS_LOOKING_TO_IMPROVE 
+    <a
+      class="govuk-link"
+      href="https://mock.hmrc.gov.uk/contact/accessibility?service=463&referrerUrl=mockReferrer"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      REPORT_THE_ACCESSIBILITY_PROBLEM OPENS_IN_NEW_TAB
+    </a>
+    .
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    IF_YOU_ARE_NOT_HAPPY
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    EHRC_ENFORCES_ACCESSIBILITY_REGULATIONS 
+    <a
+      class="govuk-link"
+      href="https://www.equalityadvisoryservice.com/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      CONTACT_THE_EASS OPENS_IN_NEW_TAB
+    </a>
+    OR_THE 
+    <a
+      class="govuk-link"
+      href="https://www.equalityni.org/Home"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      ECNI OPENS_IN_NEW_TAB
+    </a>
+    IF_YOU_LIVE_IN_NORTHERN_IRELAND
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    CONTACTING_US_BY
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    FOR_HEARING_IMPAIRED
+  </p>
+  <p
+    class="govuk-body"
+  >
+    BRITISH_SIGN_LANGUGAE
+  </p>
+  <p
+    class="govuk-body"
+  >
+    FIND_OUT 
+    <a
+      class="govuk-link"
+      href="https://www.gov.uk/get-help-hmrc-extra-support"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      HOW_TO_GET_EXTRA_SUPPORT OPENS_IN_NEW_TAB
+    </a>
+    .
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    TECHNICAL_INFO_ABOUT_THIS_SERVICE
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    HMRC_IS_COMMITTED_TO_MAKING_THIS_ACCESSIBLE
+  </p>
+  <p
+    class="govuk-body"
+  >
+    SERVICE_IS_NONCOMPLIANT 
+    <a
+      class="govuk-link"
+      href="https://www.w3.org/TR/WCAG22/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      WEB_CONTENT_ACCESSIBILITY_VERSION OPENS_IN_NEW_TAB
+    </a>
+     DUE_TO_THESE_NONCOMPLIANCES
+  </p>
+  <p
+    class="govuk-body"
+  >
+    IT_HAS_NOT_BEEN_TESTED
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    HOW_WE_TESTED_THIS
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    THIS_SERVICE_HAS_NOT_BEEN_TESTED
+  </p>
+  <p
+    class="govuk-body"
+  >
+    PREPARED_AND_LAST_UPDATED
+  </p>
+</DocumentFragment>
+`;

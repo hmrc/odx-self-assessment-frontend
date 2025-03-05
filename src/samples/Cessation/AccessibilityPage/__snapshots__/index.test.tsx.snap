@@ -1,0 +1,473 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render component AccessibilityCessation. should render AccessibilityCessation content in English. 1`] = `
+<DocumentFragment>
+  <h1
+    class="govuk-heading-xl"
+  >
+    Accessibility statement for Leave Self Assessment service
+  </h1>
+  <p
+    class="govuk-body"
+  >
+    This service is part of the wider GOV.UK website. There is a 
+    <a
+      class="govuk-link"
+      href="https://www.gov.uk/help/accessibility-statement"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      separate accessibility statement for the main GOV.UK website (opens in new tab)
+    </a>
+    .
+  </p>
+  <p
+    class="govuk-body"
+  >
+    This accessibility statement only contains information about the Leave Self Assessment service, available at  
+    <a
+      class="govuk-link"
+      href="https://account.hmrc.gov.uk/self-assessment/cessation"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      https://account.hmrc.gov.uk/self-assessment/cessation (opens in new tab).
+    </a>
+  </p>
+  <p
+    class="govuk-body"
+  >
+    This service is run by HM Revenue and Customs (HMRC). We want as many people as possible to be able to use this service. This means you should be able to:
+  </p>
+  <ul
+    class="govuk-list govuk-list--bullet"
+  >
+    <li>
+      change colours, contrast levels and fonts
+    </li>
+    <li>
+      zoom in up to 400% without the text spilling off the screen
+    </li>
+    <li>
+      get from the start of the service to the end using just a keyboard
+    </li>
+    <li>
+      get from the start of the service to the end using speech recognition software
+    </li>
+    <li>
+      listen to the service using a screen reader (including the most recent versions of JAWS, NVDA and VoiceOver)
+    </li>
+  </ul>
+  <p
+    class="govuk-body"
+  >
+    We have also made the text in the service as simple as possible to understand.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    <a
+      class="govuk-link"
+      href="https://mcmw.abilitynet.org.uk/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      AbilityNet has advice  (opens in new tab)
+    </a>
+     on making your device easier to use if you have a disability.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    How accessible this service is
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    This service is non compliant with the 
+    <a
+      class="govuk-link"
+      href="https://www.w3.org/TR/WCAG22/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      Web Content Accessibility Guidelines version 2.2 AA standard (opens in new tab)
+    </a>
+    . This service has not yet been checked for compliance so some users may find parts of the service difficult to use.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    What to do if you have difficulty using this service
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    You can 
+    <a
+      class="govuk-link"
+      href="https://www.gov.uk/get-help-hmrc-extra-support"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      contact HMRC for extra support (opens in new tab)
+    </a>
+     if you need help with filling in forms or getting a different format, like large print, audio recording or Braille.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Reporting accessibility problems with this service
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    We are always looking to improve the accessibility of this service. If you find any problems that are not listed on this page or think we are not meeting accessibility requirements,  
+    <a
+      class="govuk-link"
+      href="https://www.staging.tax.service.gov.uk/contact/accessibility?service=463&referrerUrl=https://localhost:3502/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+       report the accessibility problem (opens in new tab)
+    </a>
+    .
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    If you are not happy with our response
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    The Equality and Human Rights Commission (EHRC) is responsible for enforcing the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018 (the 'accessibility regulations'). If you are not happy with how we respond to your complaint, 
+    <a
+      class="govuk-link"
+      href="https://www.equalityadvisoryservice.com/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+       contact the Equality Advisory and Support Service (EASS) (opens in new tab)
+    </a>
+     or the 
+    <a
+      class="govuk-link"
+      href="https://www.equalityni.org/Home"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      Equality Commission for Northern Ireland (ECNI) (opens in new tab)
+    </a>
+     if you live in Northern Ireland.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Contacting us by phone or getting a visit from us in person
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    We provide a text relay service if you are deaf, hearing impaired or have a speech impediment.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    We can provide a British Sign Language (BSL) interpreter, or you can arrange a visit from an HMRC advisor to help you complete the service.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    Find out 
+    <a
+      class="govuk-link"
+      href="https://www.gov.uk/get-help-hmrc-extra-support"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      how to get extra support from HMRC (opens in new tab).
+    </a>
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Technical information about this service’s accessibility
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    HMRC is committed to making this service accessible, in accordance with the Public Sector Bodies (Websites and Mobile Applications) (No. 2) Accessibility Regulations 2018.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    This service is non compliant with the 
+    <a
+      class="govuk-link"
+      href="https://www.w3.org/TR/WCAG22/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      Web Content Accessibility Guidelines version 2.2 AA standard (opens in new tab)
+    </a>
+     due to the non-compliances listed below.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    It has not been tested for compliance with WCAG 2.2 AA. The service will book a full accessibility audit by 1 January 2025.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    How we tested this service
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    The service has not been tested for compliance with WCAG 2.2 AA.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    This page was prepared on 4 October 2024.
+  </p>
+</DocumentFragment>
+`;
+
+exports[`should render component AccessibilityCessation. should render AccessibilityCessation content in Welsh. 1`] = `
+<DocumentFragment>
+  <h1
+    class="govuk-heading-xl"
+  >
+    Datganiad hygyrchedd ar gyfer y gwasanaeth Gadael Hunanasesiad
+  </h1>
+  <p
+    class="govuk-body"
+  >
+    Mae’r gwasanaeth hwn yn rhan o wefan ehangach GOV.UK. 
+    <a
+      class="govuk-link"
+      href="https://www.gov.uk/help/accessibility-statement"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      Mae datganiad hygyrchedd ar wahân ar gyfer prif wefan GOV.UK (yn agor tab newydd)
+    </a>
+    .
+  </p>
+  <p
+    class="govuk-body"
+  >
+    Mae’r datganiad hygyrchedd hwn dim ond yn cynnwys gwybodaeth am y gwasanaeth Gadael Hunanasesiad, sydd ar gael yn  
+    <a
+      class="govuk-link"
+      href="https://account.hmrc.gov.uk/self-assessment/cessation"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      https://account.hmrc.gov.uk/self-assessment/cessation (yn agor tab newydd).
+    </a>
+  </p>
+  <p
+    class="govuk-body"
+  >
+    Darperir y gwasanaeth hwn gan Gyllid a Thollau EF (CThEF). Rydym am i gymaint o bobl â phosibl allu defnyddio’r gwasanaeth hwn. Mae hyn yn golygu y dylech allu:
+  </p>
+  <ul
+    class="govuk-list govuk-list--bullet"
+  >
+    <li>
+      newid lliwiau, lefelau cyferbynnedd a ffontiau
+    </li>
+    <li>
+      chwyddo’r sgrin hyd at 400% heb i’r testun ddisgyn oddi ar y sgrin
+    </li>
+    <li>
+      mynd o ddechrau’r gwasanaeth i’r diwedd gan ddefnyddio bysellfwrdd yn unig
+    </li>
+    <li>
+      mynd o ddechrau’r gwasanaeth i’r diwedd gan ddefnyddio meddalwedd adnabod lleferydd
+    </li>
+    <li>
+      gwrando ar y gwasanaeth gan ddefnyddio darllenydd sgrin (gan gynnwys y fersiynau diweddaraf o JAWS, NVDA a VoiceOver)
+    </li>
+  </ul>
+  <p
+    class="govuk-body"
+  >
+    Rydym hefyd wedi sicrhau bod y testun a ddefnyddir yn y gwasanaeth mor syml â phosibl i’w ddeall.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    <a
+      class="govuk-link"
+      href="https://mcmw.abilitynet.org.uk/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      Mae gan AbilityNet gyngor  (yn agor tab newydd)
+    </a>
+     ar sut i wneud eich dyfais yn haws i’w defnyddio os oes gennych anabledd.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Pa mor hygyrch yw’r gwasanaeth hwn
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    Nid yw’r gwasanaeth hwn yn cydymffurfio â 
+    <a
+      class="govuk-link"
+      href="https://www.w3.org/TR/WCAG22/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      safon ‘AA’ Canllawiau Hygyrchedd Cynnwys y We, fersiwn 2.2 (yn agor tab newydd)
+    </a>
+    . Nid yw’r gwasanaeth hwn wedi cael ei wirio eto i weld a yw’n cydymffurfio neu beidio, felly gall rhai defnyddwyr ei chael yn anodd defnyddio rhannau o’r gwasanaeth.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Yr hyn i’w wneud os cewch anhawster wrth ddefnyddio’r gwasanaeth hwn
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    Gallwch 
+    <a
+      class="govuk-link"
+      href="https://www.gov.uk/get-help-hmrc-extra-support"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      gysylltu â CThEF os oes angen cymorth ychwanegol (yn agor tab newydd)
+    </a>
+     arnoch i lenwi ffurflenni neu i gael fformat gwahanol, megis print bras, recordiad sain neu Braille.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Rhoi gwybod am broblemau hygyrchedd gyda’r gwasanaeth hwn
+  </h2>
+  <p
+    class="govuk-body"
+  >
+     Rydym bob amser yn ceisio gwella hygyrchedd y gwasanaeth hwn. Os byddwch yn dod ar draws unrhyw broblemau nad ydynt wedi’u rhestru ar y dudalen hon, neu os ydych o’r farn nad ydym yn bodloni gofynion hygyrchedd,  
+    <a
+      class="govuk-link"
+      href="https://www.staging.tax.service.gov.uk/contact/accessibility?service=463&referrerUrl=https://localhost:3502/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+       rhowch wybod am y broblem hygyrchedd (yn agor tab newydd)
+    </a>
+    .
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Os ydych yn anfodlon ar ein hymateb
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    Mae’r Comisiwn Cydraddoldeb a Hawliau Dynol (EHRC) yn gyfrifol am orfodi Rheoliadau Hygyrchedd Cyrff Sector Cyhoeddus (Gwefannau a Chymwysiadau Symudol) (Rhif 2) 2018 (y ‘rheoliadau hygyrchedd’). Os ydych yn anfodlon â sut rydym yn ateb eich cwyn, 
+    <a
+      class="govuk-link"
+      href="https://www.equalityadvisoryservice.com/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+       cysylltwch â’r Gwasanaeth Cynghori a Chymorth Cydraddoldeb (EASS) (yn agor tab newydd)
+    </a>
+    , neu’r 
+    <a
+      class="govuk-link"
+      href="https://www.equalityni.org/Home"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      Comisiwn Cydraddoldeb ar gyfer Gogledd Iwerddon (ECNI) (yn agor tab newydd)
+    </a>
+     os ydych yn byw yng Ngogledd Iwerddon.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Cysylltu â ni dros y ffôn neu gael ymweliad personol gennym
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    Rydym yn cynnig gwasanaeth ‘Text Relay’ os ydych yn fyddar, â nam ar eich clyw, neu os oes gennych nam ar eich lleferydd. Mae’r gwasanaeth hwn ar gael yn Saesneg yn unig.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    Gallwn ddarparu dehonglydd Iaith Arwyddion Prydain (BSL), neu gallwch drefnu ymweliad gan un o ymgynghorwyr CThEF i’ch helpu i gwblhau’r gwasanaeth.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    Cael gwybod 
+    <a
+      class="govuk-link"
+      href="https://www.gov.uk/get-help-hmrc-extra-support"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      sut i gael cymorth ychwanegol gan CThEF (yn agor tab newydd).
+    </a>
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Gwybodaeth dechnegol am hygyrchedd y gwasanaeth hwn
+  </h2>
+  <p
+    class="govuk-body"
+  >
+     Mae CThEF wedi ymrwymo i wneud y gwasanaeth hwn yn hygyrch, yn unol â Rheoliadau Hygyrchedd Cyrff Sector Cyhoeddus (Gwefannau a Chymwysiadau Symudol) (Rhif 2) 2018.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    Nid yw’r gwasanaeth hwn yn cydymffurfio â 
+    <a
+      class="govuk-link"
+      href="https://www.w3.org/TR/WCAG22/"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      safon ‘AA’ Canllawiau Hygyrchedd Cynnwys y We, fersiwn 2.2 (yn agor tab newydd)
+    </a>
+     oherwydd y diffyg cydymffurfio a restrir isod.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    Ni wiriwyd ei fod yn cydymffurfio â safon ‘AA’ Canllawiau Hygyrchedd Cynnwys y We, fersiwn 2.2. Bydd y gwasanaeth yn trefnu archwiliad hygyrchedd llawn erbyn 1 Ionawr 2025.
+  </p>
+  <h2
+    class="govuk-heading-l"
+  >
+    Sut y gwnaethom wirio’r gwasanaeth hwn
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    Nid yw’r gwasanaeth hwn wedi cael ei wirio i weld a yw’n cydymffurfio â safon ‘AA’ Canllawiau Hygyrchedd Cynnwys y We, fersiwn 2.2.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    Paratowyd y dudalen hon ar 4 Hydref 2024.
+  </p>
+</DocumentFragment>
+`;

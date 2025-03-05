@@ -96,6 +96,7 @@ package-lock.json
 
 # Removal of unused pega files from default SDK
 docs/
+assets/img/
 USAGE.md
 
 # test output directories (jest, playwright)

@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TextArea Component Snapshot matches the snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="govuk-form-group govuk-form-group--error  govuk-character-count"
+  >
+    <label
+      class="govuk-label"
+      for="test-textarea-id"
+    />
+    <div
+      class="govuk-hint"
+      id="test-textarea-hint"
+    >
+      This is a hint
+    </div>
+    <p
+      class="govuk-error-message"
+      id="test-textarea-error"
+    >
+      <span
+        class="govuk-visually-hidden"
+      >
+        ERROR:
+      </span>
+      This is an error
+    </p>
+    <div>
+      <textarea
+        aria-describedby="with-hint-info"
+        class="govuk-textarea govuk-textarea--error"
+        id="test-textarea-id"
+        name="test-textarea"
+        rows="5"
+      >
+        Initial value
+      </textarea>
+      <div
+        class="govuk-character-count__message govuk-character-count__status govuk-hint"
+        id="with-hint-info"
+      >
+        YOU_HAVE  87 CHARACTERS REMAINING
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`TextArea Component Snapshot matches the snapshot when disabled 1`] = `
+<DocumentFragment>
+  <div
+    class="govuk-hint"
+    id="test-textarea-hint"
+  >
+    This is a hint
+  </div>
+  <span
+    class="govuk-body govuk-!-font-weight-bold read-only"
+  >
+    Initial value
+  </span>
+  <br />
+</DocumentFragment>
+`;

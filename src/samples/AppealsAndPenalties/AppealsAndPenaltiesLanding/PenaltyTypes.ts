@@ -15,13 +15,16 @@ export interface PenaltyDuration {
   penalties: Array<PenaltySection>;
 }
 
-export interface PenaltyData {
+export interface PenaltyDataProps {
+  resultCount: number;
+  Language: string;
   penaltyData: Array<PenaltyDuration>;
 }
 
-export interface PenaltyDataProps {
-  resultCount: number;
-  data: Array<{
-    penaltyData: Array<PenaltyDuration>;
-  }>;
+export interface Content {
+  data: [
+    {
+      LocalisedContent: Array<PenaltyDataProps>;
+    }
+  ];
 }

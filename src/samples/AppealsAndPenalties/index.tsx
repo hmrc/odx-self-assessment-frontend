@@ -31,6 +31,7 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
   // Adding dynamic value as key.
   const serviceNameAndHeader = 'APPEAL_A_SELF_ASSESSMENT_PENALTY';
   const penaltyDataEndpoint = 'D_GetChargesForPastFourTaxYears';
+  const penaltyDataEndpointParams = { LocalisedContent: true };
   const createCaseApi = 'HMRC-SA-Work-Appeal';
   const caseListApiParams = { CaseType: 'HMRC-SA-Work-Appeal' };
 
@@ -89,7 +90,6 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
 
   // Function to force re-render the pega Root component
   const forceRefreshRootComponent = () => {
-     
     renderRootComponent();
   };
 
@@ -285,7 +285,7 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
             }
           });
         }
-        loadBundles(sessionStorage.getItem('rsdk_locale') as BundleLanguage || 'en_GB');
+        loadBundles((sessionStorage.getItem('rsdk_locale') as BundleLanguage) || 'en_GB');
       });
       settingTimer();
     });
@@ -445,6 +445,7 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
                     penaltyDataEndpoint={penaltyDataEndpoint}
                     createCaseEndpoint={createCaseApi}
                     handleCaseStart={handleCaseStart}
+                    penaltyDataEndpointParams={penaltyDataEndpointParams}
                   ></AppealsAndPenaltiesLanding>
                 </>
               )}

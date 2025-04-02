@@ -21,6 +21,7 @@ interface LandingPropsType {
   penaltyDataEndpoint: string;
   createCaseEndpoint: string;
   handleCaseStart: () => void;
+  penaltyDataEndpointParams: {};
 }
 
 const defaultProps: LandingPropsType = {
@@ -30,7 +31,8 @@ const defaultProps: LandingPropsType = {
   },
   penaltyDataEndpoint: '/mock/penalty-data-endpoint',
   createCaseEndpoint: '/mock/create-case-endpoint',
-  handleCaseStart: mockHandleCaseStart
+  handleCaseStart: mockHandleCaseStart,
+  penaltyDataEndpointParams: { LocalisedContent: true }
 };
 
 describe('AppealsAndPenaltiesLanding Component.', () => {

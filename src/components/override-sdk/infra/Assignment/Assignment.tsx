@@ -20,6 +20,7 @@ import { ErrorMsgContext } from '../../../helpers/HMRCAppContext';
 import useServiceShuttered from '../../../helpers/hooks/useServiceShuttered';
 import dayjs from 'dayjs';
 import AskHMRC from '../../../../components/AppComponents/AskHMRC';
+import useIsOnlyField from '../../../helpers/hooks/QuestionDisplayHooks';
 
 export interface ErrorMessageDetails {
   message: string;
@@ -61,6 +62,10 @@ export default function Assignment(props) {
   const [errorMessages, setErrorMessages] = useState<Array<OrderedErrorMessage>>([]);
   const [serviceShutteredStatus, setServiceShutteredStatus] = useState(serviceShuttered);
   const [hasAutoCompleteError, setHasAutoCompleteError] = useState('');
+  const [header, setHeader] = useState('');
+  const isOnlyFieldDetails = useIsOnlyField(null, children); // .isOnlyField;
+  const lang = sessionStorage.getItem('rsdk_locale')?.substring(0, 2) || 'en';
+  const [selectedLang, setSelectedLang] = useState(lang);
 
   const context = getPConnect().getContextName();
 
@@ -135,6 +140,20 @@ export default function Assignment(props) {
   if (caseInfo?.assignments?.length > 0) {
     containerName = caseInfo.assignments[0].name;
   }
+
+  const headerLocaleLocation = PCore.getStoreValue('localeReference', '', 'app');
+
+  PCore.getPubSubUtils().subscribe('languageToggleTriggered', langreference => {
+    setSelectedLang(langreference?.language);
+  });
+
+  // To update the title when we toggle the language
+  useEffect(() => {
+    setTimeout(() => {
+      setHeader(localizedVal(containerName, 'Assignment', '@BASECLASS!GENERIC!PYGENERICFIELDS'));
+      setPageTitle(false);
+    }, 60);
+  }, [headerLocaleLocation, containerName, selectedLang]);
 
   useEffect(() => {
     if (children && children.length > 0) {
@@ -460,6 +479,11 @@ export default function Assignment(props) {
                   localizedVal(item.message, localeCategory, localeReference)
                 )}
               />
+            )}
+            {(!isOnlyFieldDetails.isOnlyField ||
+              containerName?.toLowerCase().includes('check your answer') ||
+              containerName?.toLowerCase().includes('declaration')) && (
+              <h1 className='govuk-heading-l'>{header}</h1>
             )}
             {shouldRemoveFormTag ? renderAssignmentCard() : <form>{renderAssignmentCard()}</form>}
             <AskHMRC />

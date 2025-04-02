@@ -1,6 +1,5 @@
 import React from 'react';
 import { PenaltySection } from './PenaltyTypes';
-import { formatDecimal } from '../../../components/helpers/utils';
 import PenaltyRow from './PenaltyRow';
 
 const PenaltyCard: React.FC<PenaltySection> = ({ penaltyType, results, totalAmount }) => {
@@ -12,7 +11,7 @@ const PenaltyCard: React.FC<PenaltySection> = ({ penaltyType, results, totalAmou
         <h2 className='govuk-summary-card__title govuk-!-width-one-half'>{penaltyType}</h2>
         {hasMultiplePenalties && (
           <span className='govuk-body govuk-!-text-align-right govuk-!-width-one-quarter'>
-            <strong>£{formatDecimal(totalAmount.toFixed(2))}</strong>
+            <strong>£{totalAmount.toFixed(2)}</strong>
           </span>
         )}
       </div>

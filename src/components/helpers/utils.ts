@@ -187,18 +187,18 @@ export const getOrdinalSuffix = (num: number): string => {
 
   const lastTwoDigits = num % 100; // Handle special cases like 11, 12, 13
   if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
-    return 'TH';
+    return 'th';
   }
 
   const lastDigit = num % 10;
   switch (lastDigit) {
     case 1:
-      return 'ST';
+      return 'st';
     case 2:
-      return 'ND';
+      return 'nd';
     case 3:
-      return 'RD';
+      return 'rd';
     default:
-      return 'TH';
+      return 'th';
   }
 };

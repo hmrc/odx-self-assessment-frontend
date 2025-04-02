@@ -258,7 +258,7 @@ exports[`should render CookiePage component. should render CookiePage content in
         <td
           class="govuk-table__cell"
         >
-          Used to help manage web traffic between a visitors web browser and the application servers that host HMRC services.
+          Defnyddir i helpu gyda rheoli traffig dros y we rhwng porwr gwe ymwelydd a’r gweinyddion rhaglennol sy’n cynnal gwasanaethau CThEF.
         </td>
         <td
           class="govuk-table__cell"
@@ -277,7 +277,7 @@ exports[`should render CookiePage component. should render CookiePage content in
         <td
           class="govuk-table__cell"
         >
-          Used to help manage web traffic between a visitors web browser and the application servers that host HMRC services.
+          Defnyddir i helpu gyda rheoli traffig dros y we rhwng porwr gwe ymwelydd a’r gweinyddion rhaglennol sy’n cynnal gwasanaethau CThEF.
         </td>
         <td
           class="govuk-table__cell"
@@ -296,7 +296,7 @@ exports[`should render CookiePage component. should render CookiePage content in
         <td
           class="govuk-table__cell"
         >
-          Used to identify the visitor’s session information related to the HMRC service being accessed.
+          Defnyddir i adnabod yr wybodaeth am sesiwn yr ymwelydd sy’n ymwneud â’r gwasanaeth gan CThEF a gyrchir.
         </td>
         <td
           class="govuk-table__cell"
@@ -370,7 +370,7 @@ exports[`should render CookiePage component. should render CookiePage content in
       class="govuk-link govuk-link--no-visited-state"
       href="https://www.tax.service.gov.uk/help/cookie-details"
     >
-      Find out more about cookies on HMRC services
+      Dysgwch ragor am gwcis ar wasanaethau CThEF
     </a>
   </p>
 </DocumentFragment>

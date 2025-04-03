@@ -5,8 +5,9 @@ import { useTranslation } from 'react-i18next';
 import useHMRCExternalLinks from '../../../components/helpers/hooks/HMRCExternalLinks';
 import PenaltyDatails from './PenaltyDatails';
 import setPageTitle from '../../../components/helpers/setPageTitleHelpers';
-import { PenaltyDuration, PenaltyDataProps } from './PenaltyTypes';
+import { PenaltyDuration, Content } from './PenaltyTypes';
 import C11nEnv from '@pega/pcore-pconnect-typedefs/interpreter/c11n-env';
+import { getCurrentLanguage } from '../../../components/helpers/utils';
 
 interface LandingProps {
   isLogout: boolean;
@@ -14,10 +15,18 @@ interface LandingProps {
   penaltyDataEndpoint: string;
   createCaseEndpoint: string;
   handleCaseStart: () => void;
+  penaltyDataEndpointParams: {};
 }
 
 const AppealsAndPenaltiesLanding: React.FC<LandingProps> = props => {
-  const { isLogout, pConn, penaltyDataEndpoint, createCaseEndpoint, handleCaseStart } = props;
+  const {
+    isLogout,
+    pConn,
+    penaltyDataEndpoint,
+    createCaseEndpoint,
+    handleCaseStart,
+    penaltyDataEndpointParams
+  } = props;
 
   const [dashboardData, setDashboardData] = useState<Array<PenaltyDuration>>(null);
   const [dashboardDataLoaded, setDashboardDataLoaded] = useState<boolean>(false);
@@ -33,14 +42,39 @@ const AppealsAndPenaltiesLanding: React.FC<LandingProps> = props => {
     const context = pConn.getContextName();
     try {
       // @ts-ignore
-      const response: PenaltyDataProps = await PCore.getDataPageUtils().getDataAsync(
+      const response: Content = await PCore.getDataPageUtils().getDataAsync(
         penaltyDataEndpoint,
-        context
+        context,
+        { ...penaltyDataEndpointParams }
       );
+
+      PCore.getPubSubUtils().unsubscribe(
+        'languageToggleTriggered',
+        'PenaltiesLandingPageLanguageChange'
+      );
+
+      const currentLang = getCurrentLanguage();
+
       const data: Array<PenaltyDuration> =
-        response.data.length > 0 ? response.data[0].penaltyData : [];
+        response?.data?.length > 0 && response.data[0].LocalisedContent?.length > 0
+          ? response.data[0].LocalisedContent.find(
+              item => item.Language.toLowerCase() === currentLang
+            )?.penaltyData
+          : [];
 
       setDashboardData(data);
+
+      PCore.getPubSubUtils().subscribe(
+        'languageToggleTriggered',
+        ({ language }) => {
+          setDashboardData(
+            response?.data[0].LocalisedContent?.find(
+              item => item.Language.toLowerCase() === language.toLowerCase()
+            ).penaltyData
+          );
+        },
+        'PenaltiesLandingPageLanguageChange'
+      );
     } catch (error) {
       // eslint-disable-next-line no-console
       console.log('Error fetching dashboard detail:', error);

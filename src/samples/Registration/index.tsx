@@ -91,6 +91,12 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
   }
 
   function getResolutionContent() {
+    setSummaryPageContent({
+      content: null,
+      title: null,
+      banner: null
+    });
+
     const caseId = getCaseId();
 
     getSdkConfig().then(config => {
@@ -106,9 +112,7 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
           ''
         )
         .then(response => {
-          PCore.getPubSubUtils().unsubscribe(
-            'summarypageLanguageChange'
-          );
+          PCore.getPubSubUtils().unsubscribe('summarypageLanguageChange');
           const summaryData: Array<any> =
             response.data.data.caseInfo.content.ScreenContent.LocalisedContent;
           const currentLang =
@@ -116,9 +120,7 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
 
           setSummaryPageContent(summaryData.find(data => data.Language === currentLang));
 
-          PCore.getPubSubUtils().subscribe(
-            'summarypageLanguageChange'
-          );
+          PCore.getPubSubUtils().subscribe('summarypageLanguageChange');
 
           resetAppDisplay();
           setShowResolutionScreen(true);
@@ -130,12 +132,6 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
   }
 
   function assignmentFinished() {
-    setSummaryPageContent({
-      content: null,
-      title: null,
-      banner: null
-    });
-
     setShowPega(false);
 
     getResolutionContent();
@@ -217,6 +213,14 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
     );
   }
 
+  async function customAssignmentFinished() {
+    const sdkConfig = await getSdkConfig();
+    if (sdkConfig.showResolutionStatuses?.includes(checkStatus())) {
+      setShowPega(false);
+      getResolutionContent();
+    }
+  }
+
   function establishPCoreSubscriptions() {
     PCore.getPubSubUtils().subscribe(
       PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.END_OF_ASSIGNMENT_PROCESSING,
@@ -235,21 +239,22 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
           const containername = PCore.getContainerUtils().getActiveContainerItemName(
             `${PCore.getConstants().APP.APP}/primary`
           );
-          const context = PCore.getContainerUtils().getActiveContainerItemName(
-            `${containername}/workarea`
-          );
-          const status = PCore.getStoreValue('.pyStatusWork', 'caseInfo.content', context);
+
+          const status = PCore.getStoreValue('.pyStatusWork', 'caseInfo.content', containername);
 
           if (status === 'Resolved-Discarded') {
             displayServiceNotAvailable();
 
-            PCore.getContainerUtils().closeContainerItem(context);
+            PCore.getContainerUtils().closeContainerItem(containername);
 
             sessionStorage.setItem('assignmentFinishedFlag', 'true');
             PCore?.getPubSubUtils().unsubscribe(
               PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.END_OF_ASSIGNMENT_PROCESSING,
               'assignmentFinished'
             );
+          } else {
+            setShowPega(false);
+            getResolutionContent();
           }
         }
       },
@@ -305,6 +310,8 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
       },
       'continueCase'
     );
+
+    PCore.getPubSubUtils().subscribe('CustomAssignmentFinished', customAssignmentFinished);
   }
 
   useEffect(() => {
@@ -520,6 +527,8 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
         PCore.getConstants().PUB_SUB_EVENTS.CASE_OPENED,
         'continueCase'
       );
+
+      PCore?.getPubSubUtils().unsubscribe('CustomAssignmentFinished');
 
       PCore?.getPubSubUtils().unsubscribe('closeContainer');
       PCore?.getPubSubUtils().unsubscribe(

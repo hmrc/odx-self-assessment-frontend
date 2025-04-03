@@ -74,7 +74,8 @@
   width: 210px;
 }
 
-.u-hideCaptionLabel .MuiGrid-container .MuiGrid-item b {
+.u-hideCaptionLabel .MuiGrid-container .MuiGrid-item b,
+.u-hideCaptionLabel .MuiGrid-container .MuiGrid-item br {
   display: none;
 }
 

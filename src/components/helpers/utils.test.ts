@@ -21,31 +21,31 @@ describe('utils tests', () => {
     });
 
     test('getOrdinalSuffix returns ST when we pass 1', () => {
-      expect(getOrdinalSuffix(1)).toBe('ST');
+      expect(getOrdinalSuffix(1)).toBe('st');
     });
 
     test('getOrdinalSuffix returns ND when we pass 2', () => {
-      expect(getOrdinalSuffix(2)).toBe('ND');
+      expect(getOrdinalSuffix(2)).toBe('nd');
     });
 
     test('getOrdinalSuffix returns RD when we pass 3', () => {
-      expect(getOrdinalSuffix(3)).toBe('RD');
+      expect(getOrdinalSuffix(3)).toBe('rd');
     });
 
     test('getOrdinalSuffix returns TH when we pass 4', () => {
-      expect(getOrdinalSuffix(4)).toBe('TH');
+      expect(getOrdinalSuffix(4)).toBe('th');
     });
 
     test('getOrdinalSuffix returns TH when we pass 11', () => {
-      expect(getOrdinalSuffix(11)).toBe('TH');
+      expect(getOrdinalSuffix(11)).toBe('th');
     });
 
     test('getOrdinalSuffix returns TH when we pass 12', () => {
-      expect(getOrdinalSuffix(12)).toBe('TH');
+      expect(getOrdinalSuffix(12)).toBe('th');
     });
 
     test('getOrdinalSuffix returns TH when we pass 13', () => {
-      expect(getOrdinalSuffix(13)).toBe('TH');
+      expect(getOrdinalSuffix(13)).toBe('th');
     });
   });
 });

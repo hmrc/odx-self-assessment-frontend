@@ -65,15 +65,12 @@ export function establishPCoreSubscriptions({
     const containername = PCore.getContainerUtils().getActiveContainerItemName(
       `${PCore.getConstants().APP.APP}/primary`
     );
-    const context = PCore.getContainerUtils().getActiveContainerItemName(
-      `${containername}/workarea`
-    );
-    const status = PCore.getStoreValue('.pyStatusWork', 'caseInfo.content', context);
+    const status = PCore.getStoreValue('.pyStatusWork', 'caseInfo.content', containername);
     setContainerClosed(false);
     if (assignmentFinishedFlag !== 'true') {
       if (status === 'Resolved-Discarded') {
         setServiceNotAvailable(true);
-        PCore.getContainerUtils().closeContainerItem(context);
+        PCore.getContainerUtils().closeContainerItem(containername);
         //  Temporary workaround to restrict infinite update calls
         sessionStorage.setItem('assignmentFinishedFlag', 'true');
         PCore?.getPubSubUtils().unsubscribe(
@@ -389,8 +386,8 @@ export const useStartMashup = (
   }, []);
 
   const renderRootComponent = () => {
-    initialRender(rootProps, setAssignmentPConnect, _AppContextValues)
-  }
+    initialRender(rootProps, setAssignmentPConnect, _AppContextValues);
+  };
 
   return {
     showPega,

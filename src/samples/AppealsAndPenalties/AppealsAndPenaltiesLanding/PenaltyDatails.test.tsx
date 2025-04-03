@@ -14,7 +14,10 @@ jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
   getSdkConfig: jest.fn()
 }));
 
-beforeEach(() => mockGetSdkConfigWithBasepath());
+beforeEach(() => {
+  mockGetSdkConfigWithBasepath();
+  sessionStorage.setItem('rsdk_locale', 'en');
+});
 
 const mockPenaltyData = [
   {
@@ -56,6 +59,13 @@ describe('PenaltyDatails Component', () => {
     expect(screen.getByText('PENALTIES_FOR_THE 2022-2023 TAX_YEAR')).toBeInTheDocument();
   });
 
+  test('renders duration heading without "tax year" content at the end in case of Welsh', () => {
+    sessionStorage.setItem('rsdk_locale', 'cy');
+    render(<PenaltyDatails penaltyData={mockPenaltyData} />);
+    expect(screen.getByText('PENALTIES_FOR_THE 2022-2023')).toBeInTheDocument();
+    sessionStorage.setItem('rsdk_locale', 'en');
+  });
+
   test('renders penalty cards with correct details', () => {
     render(<PenaltyDatails penaltyData={mockPenaltyData} />);
 
@@ -63,11 +73,11 @@ describe('PenaltyDatails Component', () => {
     expect(screen.getByText('Late filing penalties')).toBeInTheDocument();
 
     // Verify penalty rows
-    expect(screen.getByText('1ST PENALTY')).toBeInTheDocument();
+    expect(screen.getByText('1st PENALTY')).toBeInTheDocument();
     expect(screen.getByText('Additional information 1')).toBeInTheDocument();
-    expect(screen.getByText('£100.5')).toBeInTheDocument();
+    expect(screen.getByText('£100.50')).toBeInTheDocument();
 
-    expect(screen.getByText('2ND PENALTY')).toBeInTheDocument();
+    expect(screen.getByText('2nd PENALTY')).toBeInTheDocument();
     expect(screen.getByText('Additional information 2')).toBeInTheDocument();
     expect(screen.getByText('£200.75')).toBeInTheDocument();
 
@@ -139,11 +149,11 @@ describe('PenaltyDatails Component - Negative  Cases', () => {
     ];
     render(<PenaltyDatails penaltyData={zeroAmountPenaltyData} />);
     expect(screen.getByText('Late payment')).toBeInTheDocument();
-    expect(screen.getByText('1ST PENALTY')).toBeInTheDocument();
+    expect(screen.getByText('1st PENALTY')).toBeInTheDocument();
     expect(
       screen.getByText('Issued 30 days after the payment deadline: 5% of tax owed')
     ).toBeInTheDocument();
-    expect(screen.getByText('£0')).toBeInTheDocument();
+    expect(screen.getByText('£0.00')).toBeInTheDocument();
   });
 
   test('renders multiple durations correctly', () => {
@@ -214,10 +224,10 @@ describe('PenaltyDatails Component - Negative  Cases', () => {
     ];
     render(<PenaltyDatails penaltyData={singlePenaltyData} />);
     expect(screen.getByText('Late filing penalties')).toBeInTheDocument();
-    expect(screen.getByText('1ST PENALTY')).toBeInTheDocument();
+    expect(screen.getByText('1st PENALTY')).toBeInTheDocument();
     expect(
       screen.getByText('Issued when you missed the deadline for submitting your tax return.')
     ).toBeInTheDocument();
-    expect(screen.getByText('£50.5')).toBeInTheDocument();
+    expect(screen.getByText('£50.50')).toBeInTheDocument();
   });
 });

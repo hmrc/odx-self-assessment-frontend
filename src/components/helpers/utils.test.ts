@@ -1,7 +1,12 @@
-import { formatDecimal, getOrdinalSuffix } from './utils';
+import { formatDecimal, getOrdinalSuffix, triggerLogout } from './utils';
+import { setJourneyName } from './journeyRegistry';
+import { mockGetSdkConfigWithBasepath } from '../../../tests/mocks/getSdkConfigMock';
+import { getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
+import { act } from 'react-dom/test-utils';
 
 jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
-  getSdkConfig: jest.fn()
+  getSdkConfig: jest.fn(),
+  logout: jest.fn().mockResolvedValue({})
 }));
 
 describe('utils tests', () => {
@@ -46,6 +51,33 @@ describe('utils tests', () => {
 
     test('getOrdinalSuffix returns TH when we pass 13', () => {
       expect(getOrdinalSuffix(13)).toBe('th');
+    });
+  });
+
+  describe('triggerLogout method test', () => {
+    setJourneyName('Cessation');
+    mockGetSdkConfigWithBasepath();
+
+    (window as any).PCore = {
+      getContainerUtils: jest.fn(() => ({
+        getActiveContainerItemContext: jest.fn(),
+        closeContainerItem: jest.fn(),
+        getDataPageUtils: jest.fn()
+      })),
+      getDataPageUtils: jest.fn(() => ({
+        getPageDataAsync: jest.fn().mockResolvedValue({ URLResourcePath2: '#' })
+      }))
+    };
+    const setIsLogout = jest.fn();
+
+    test('triggerLogout method internally call pcore methods', async () => {
+      await act(async () => {
+        triggerLogout(setIsLogout);
+      });
+      expect(setIsLogout).toHaveBeenCalled();
+      expect(PCore.getContainerUtils).toHaveBeenCalled();
+      expect(PCore.getDataPageUtils).toHaveBeenCalled();
+      expect(getSdkConfig).toHaveBeenCalled();
     });
   });
 });

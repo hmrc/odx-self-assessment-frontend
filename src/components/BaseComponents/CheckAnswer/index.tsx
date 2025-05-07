@@ -16,7 +16,7 @@ interface HmrcOdxTestProps extends PConnFieldProps {
 export default function GDSCheckAnswers(props: HmrcOdxTestProps) {
   const COMMA_DELIMITED_FIELD = 'CSV';
   const { label, value, name, stepId, getPConnect, hiddenText, placeholder, helperText } = props;
-  const [formattedValue, setFormattedValue] = useState<string | Array<string>>(value);
+  const [formattedValue, setFormattedValue] = useState<string | string[]>(value);
   const pConn = getPConnect();
   const actions = pConn.getActionsApi();
   const containerItemID = pConn.getContextName();

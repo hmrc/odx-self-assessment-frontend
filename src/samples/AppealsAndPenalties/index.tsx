@@ -3,11 +3,10 @@ import { useTranslation } from 'react-i18next';
 import setPageTitle, { registerServiceName } from '../../components/helpers/setPageTitleHelpers';
 import { getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
 import AppFooter from '../../components/AppComponents/AppFooter';
-import { triggerLogout } from '../../components/helpers/utils';
+import { resumeOnRefresh, triggerLogout } from '../../components/helpers/utils';
 import useHMRCExternalLinks from '../../components/helpers/hooks/HMRCExternalLinks';
 import TimeoutPopup from '../../components/AppComponents/TimeoutPopup';
 import ShutterServicePage from '../../components/AppComponents/ShutterServicePage';
-import LogoutPopup from '../../components/AppComponents/LogoutPopup';
 import SummaryPage from '../../components/AppComponents/SummaryPage';
 import {
   initTimeout,
@@ -53,7 +52,6 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
     banner: null
   });
   const [showTimeoutModal, setShowTimeoutModal] = useState(false);
-  const [showSignoutModal, setShowSignoutModal] = useState(false);
   const [pConnect, setPconnect] = useState(null);
   const [isLogout, setIsLogout] = useState(false);
   const [millisecondsTillSignout, setmillisecondsTillSignout] = useState(TIMEOUT_115_SECONDS);
@@ -114,27 +112,8 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
 
   function handleSignout(e?) {
     e?.preventDefault();
-    if (currentDisplay === 'pegapage') {
-      setShowSignoutModal(true);
-    } else {
-      triggerLogout(setIsLogout);
-    }
+    triggerLogout(setIsLogout);
   }
-
-  const handleStaySignIn = (e?) => {
-    e?.preventDefault();
-    setShowSignoutModal(false);
-    // Extends manual signout popup 'stay signed in' to reset the automatic timeout timer also
-    staySignedIn(
-      setShowTimeoutModal,
-      penaltyDataEndpoint,
-      null,
-      false,
-      true,
-      currentDisplay === 'resolutionpage',
-      caseListApiParams
-    );
-  };
 
   const handleCaseStart = () => {
     setShowLandingPage(false);
@@ -227,7 +206,7 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
               'languageToggleTriggered',
               'summarypageLanguageChange'
             );
-            const summaryData: Array<any> =
+            const summaryData: any[] =
               response.data.data.caseInfo.content.ScreenContent.LocalisedContent;
             const currentLang =
               sessionStorage.getItem('rsdk_locale')?.slice(0, 2).toUpperCase() || 'EN';
@@ -266,6 +245,10 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
     containerClosed,
     isPegaLoading
   ]);
+
+  useEffect(() => {
+    resumeOnRefresh(pConnect, pCoreReady, setShowLandingPage);
+  }, [pCoreReady, showPega]);
 
   useEffect(() => {
     document.addEventListener('SdkConstellationReady', () => {
@@ -372,6 +355,10 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
             e?.preventDefault();
             triggerLogout(setIsLogout);
           }}
+          autoSignoutHandler={(e?) => {
+            e?.preventDefault();
+            triggerLogout(setIsLogout, true);
+          }}
           isAuthorised
           staySignedInButtonText='Stay signed in'
           signoutButtonText='Sign out'
@@ -416,6 +403,10 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
             e?.preventDefault();
             triggerLogout(setIsLogout);
           }}
+          autoSignoutHandler={(e?) => {
+            e?.preventDefault();
+            triggerLogout(setIsLogout, true);
+          }}
           isAuthorised
           staySignedInButtonText='Stay signed in'
           signoutButtonText='Sign out'
@@ -438,16 +429,14 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
                 <div id='pega-root' className={`${isLogout ? 'visibility-hidden' : ''}`}></div>
               </div>
               {currentDisplay === 'landingpage' && pConnect && (
-                <>
-                  <AppealsAndPenaltiesLanding
-                    isLogout={isLogout}
-                    pConn={pConnect}
-                    penaltyDataEndpoint={penaltyDataEndpoint}
-                    createCaseEndpoint={createCaseApi}
-                    handleCaseStart={handleCaseStart}
-                    penaltyDataEndpointParams={penaltyDataEndpointParams}
-                  ></AppealsAndPenaltiesLanding>
-                </>
+                <AppealsAndPenaltiesLanding
+                  isLogout={isLogout}
+                  pConn={pConnect}
+                  penaltyDataEndpoint={penaltyDataEndpoint}
+                  createCaseEndpoint={createCaseApi}
+                  handleCaseStart={handleCaseStart}
+                  penaltyDataEndpointParams={penaltyDataEndpointParams}
+                ></AppealsAndPenaltiesLanding>
               )}
               {currentDisplay === 'resolutionpage' && (
                 <SummaryPage
@@ -461,14 +450,6 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
           )}
         </div>
 
-        <LogoutPopup
-          show={showSignoutModal && !showTimeoutModal}
-          hideModal={() => setShowSignoutModal(false)}
-          handleSignoutModal={() => {
-            triggerLogout(setIsLogout);
-          }}
-          handleStaySignIn={handleStaySignIn}
-        />
         {pConnect && <AppFooter />}
       </AppContext.Provider>
     );

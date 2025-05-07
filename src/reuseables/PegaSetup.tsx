@@ -93,9 +93,12 @@ export function establishPCoreSubscriptions({
   async function customAssignmentFinished() {
     const sdkConfig = await getSdkConfig();
     setContainerClosed(false);
-    if (sdkConfig.showResolutionStatuses?.includes(checkStatus())) {
-      showResolutionScreen();
-    }
+    const unsubscribe = PCore.getStore().subscribe(() => {
+      if (sdkConfig.showResolutionStatuses?.includes(checkStatus())) {
+        unsubscribe();
+        showResolutionScreen();
+      }
+    });
   }
 
   PCore.getPubSubUtils().subscribe('CustomAssignmentFinished', customAssignmentFinished);
@@ -130,6 +133,9 @@ export function establishPCoreSubscriptions({
     PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.ASSIGNMENT_OPENED,
     () => {
       setShowPega(true);
+      setTimeout(() => {
+        PCore.getPubSubUtils().publish('callLocalActionSilently', {});
+      }, 1000);
     },
     'showPegaWhenAssignmentOpened'
   );

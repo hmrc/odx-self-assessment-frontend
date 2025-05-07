@@ -6,25 +6,26 @@ export interface PenaltyRowProps {
 
 export interface PenaltySection {
   penaltyType: string;
-  results: Array<PenaltyRowProps>;
+  results: PenaltyRowProps[];
   totalAmount: number;
 }
 
 export interface PenaltyDuration {
   duration: string;
-  penalties: Array<PenaltySection>;
+  penalties: PenaltySection[];
 }
 
 export interface PenaltyDataProps {
   resultCount: number;
   Language: string;
-  penaltyData: Array<PenaltyDuration>;
+  penaltyData: PenaltyDuration[];
+  InstructionText: string;
 }
 
 export interface Content {
   data: [
     {
-      LocalisedContent: Array<PenaltyDataProps>;
+      LocalisedContent: PenaltyDataProps[];
     }
   ];
 }

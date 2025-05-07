@@ -1,3 +1,5 @@
+/* eslint-disable testing-library/no-node-access */
+/* eslint-disable testing-library/no-container */
 import React from 'react';
 import { render, screen, fireEvent, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom';
@@ -93,6 +95,7 @@ describe('TextArea Component', () => {
 
   test('does not add govuk-character-count class when useCharacterCount is false', () => {
     const { container } = render(<TextArea name='test' useCharacterCount={false} />);
+
     expect(container.querySelector('.govuk-character-count')).not.toBeInTheDocument();
   });
 

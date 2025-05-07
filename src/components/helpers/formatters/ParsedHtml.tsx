@@ -12,7 +12,7 @@ export default function InstructionComp({
   DOMSanitiseHooks
 }: {
   htmlString: string;
-  DOMSanitiseHooks?: Array<any>;
+  DOMSanitiseHooks?: any[];
 }) {
   const [invalidHTML, setInvalidHTML] = useState(false);
 
@@ -59,7 +59,6 @@ export default function InstructionComp({
 
   DOMPurify.addHook('afterSanitizeAttributes', node => {
     if (node.tagName === 'A' && node.hasAttribute(TEMPORARY_ATTRIBUTE)) {
-
       // @ts-ignore
       node.setAttribute('target', node.getAttribute(TEMPORARY_ATTRIBUTE));
       const temporaryAttribute = node.getAttribute('target');

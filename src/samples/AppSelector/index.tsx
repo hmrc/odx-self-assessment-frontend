@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import i18n from 'i18next';
 import Registration from '../Registration/index';
-import CookiePage from '../Registration/cookiePage/index';
+import CookiePage from '../cookiePage/index';
 import Accessibility from '../Registration/AccessibilityPage';
 import AccessibilityCessation from '../Cessation/AccessibilityPage';
 import setPageTitle from '../../components/helpers/setPageTitleHelpers';
@@ -13,6 +13,7 @@ import Cessation from '../Cessation';
 import AppealsAndPenalties from '../AppealsAndPenalties';
 import AppWrapper from '../../components/AppComponents/AppWrapper';
 import AccessibilityAppealsAndPenalties from '../AppealsAndPenalties/AccessibilityPage';
+import LogoutConfirmationPage from '../../components/AppComponents/LogoutConfirmationPage';
 
 const AppSelector = () => {
   const [i18nloaded, seti18nloaded] = useState(false);
@@ -40,84 +41,102 @@ const AppSelector = () => {
   }, []);
 
   return !i18nloaded ? null : (
-    <Switch>
-      <Route exact path='/' render={() => <Redirect to='/registration' />} />
+    <Routes>
+      <Route path='/' element={<Navigate to='/registration' replace />} />
+
       {/* Private Routes */}
-      <ProtectedRoute
-        exact
+      <Route
         path='/registration'
-        journeyName='registration'
-        component={Registration}
+        element={<ProtectedRoute component={Registration} journeyName='registration' />}
       />
-      <ProtectedRoute exact path='/cessation' journeyName='cessation' component={Cessation} />
-      <ProtectedRoute
-        exact
+      <Route
+        path='/cessation'
+        element={<ProtectedRoute component={Cessation} journeyName='cessation' />}
+      />
+      <Route
         path='/appeal-a-self-assessment-penalty'
-        journeyName='appeal-a-self-assessment-penalty'
-        component={AppealsAndPenalties}
+        element={
+          <ProtectedRoute
+            component={AppealsAndPenalties}
+            journeyName='appeal-a-self-assessment-penalty'
+          />
+        }
       />
+
       {/* Public Routes */}
       <Route
-        exact
         path='/registration-cookies'
-        render={() => {
-          return (
-            <AppWrapper baseurl='registration'>
-              <CookiePage />
-            </AppWrapper>
-          );
-        }}
+        element={
+          <AppWrapper baseurl='registration'>
+            <CookiePage />
+          </AppWrapper>
+        }
       />
       <Route
-        exact
         path='/registration-accessibility'
-        render={() => (
+        element={
           <AppWrapper baseurl='registration'>
             <Accessibility />
           </AppWrapper>
-        )}
+        }
       />
       <Route
-        exact
         path='/cessation-cookies'
-        render={() => {
-          return (
-            <AppWrapper baseurl='cessation'>
-              <CookiePage />
-            </AppWrapper>
-          );
-        }}
+        element={
+          <AppWrapper baseurl='cessation'>
+            <CookiePage />
+          </AppWrapper>
+        }
       />
       <Route
-        exact
         path='/cessation-accessibility'
-        render={() => (
+        element={
           <AppWrapper baseurl='cessation'>
             <AccessibilityCessation />
           </AppWrapper>
-        )}
+        }
       />
       <Route
-        exact
         path='/appeal-a-self-assessment-penalty-cookies'
-        render={() => {
-          return (
-            <AppWrapper baseurl='appeal-a-self-assessment-penalty'>
-              <CookiePage />
-            </AppWrapper>
-          );
-        }}
+        element={
+          <AppWrapper baseurl='appeal-a-self-assessment-penalty'>
+            <CookiePage />
+          </AppWrapper>
+        }
       />
       <Route
-        exact
         path='/appeal-a-self-assessment-penalty-accessibility'
-        render={() => (
+        element={
           <AppWrapper baseurl='appeal-a-self-assessment-penalty'>
             <AccessibilityAppealsAndPenalties />
           </AppWrapper>
-        )}
+        }
       />
-    </Switch>
+      <Route
+        path='/cessation-loggedout'
+        element={
+          <AppWrapper baseurl='cessation'>
+            <LogoutConfirmationPage baseurl='cessation' />
+          </AppWrapper>
+        }
+      />
+      <Route
+        path='/registration-loggedout'
+        element={
+          <AppWrapper baseurl='registration'>
+            <LogoutConfirmationPage baseurl='registration' />
+          </AppWrapper>
+        }
+      />
+      <Route
+        path='/appeal-a-self-assessment-penalty-loggedout'
+        element={
+          <AppWrapper baseurl='appeal-a-self-assessment-penalty'>
+            <LogoutConfirmationPage baseurl='appeal-a-self-assessment-penalty' />
+          </AppWrapper>
+        }
+      />
+    </Routes>
   );
 };
 

@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   getServiceShutteredStatus,
   scrollToTop,
   shouldRemoveFormTagForReadOnly,
-  removeRedundantString
+  removeRedundantString,
+  getCurrentLanguage
 } from '../../../helpers/utils';
 import ErrorSummary from '../../../BaseComponents/ErrorSummary/ErrorSummary';
-import {
-  DateErrorFormatter,
-  DateErrorTargetFields
-} from '../../../helpers/formatters/DateErrorFormatter';
+import { DateErrorFormatter, DateErrorTargetFields } from '../../../helpers/formatters/DateErrorFormatter';
 import Button from '../../../BaseComponents/Button/Button';
 import setPageTitle from '../../../helpers/setPageTitleHelpers';
 import { SdkComponentMap } from '@pega/react-sdk-components/lib/bridge/helpers/sdk_component_map';
@@ -42,16 +40,14 @@ export default function Assignment(props) {
   const [actionButtons, setActionButtons] = useState<any>({});
   const serviceShuttered = useServiceShuttered();
 
-  const AssignmentCard = SdkComponentMap.getLocalComponentMap()['AssignmentCard']
-    ? SdkComponentMap.getLocalComponentMap()['AssignmentCard']
-    : SdkComponentMap.getPegaProvidedComponentMap()['AssignmentCard'];
+  const AssignmentCard = SdkComponentMap.getLocalComponentMap().AssignmentCard
+    ? SdkComponentMap.getLocalComponentMap().AssignmentCard
+    : SdkComponentMap.getPegaProvidedComponentMap().AssignmentCard;
 
   const actionsAPI = thePConn.getActionsApi();
   const localizedVal = PCore.getLocaleUtils().getLocaleValue;
   const localeCategory = 'Assignment';
-  const localeReference = `${getPConnect().getCaseInfo().getClassName()}!CASE!${getPConnect()
-    .getCaseInfo()
-    .getName()}`.toUpperCase();
+  const localeReference = `${getPConnect().getCaseInfo().getClassName()}!CASE!${getPConnect().getCaseInfo().getName()}`.toUpperCase();
 
   // store off bound functions to above pointers
   const finishAssignment = actionsAPI.finishAssignment.bind(actionsAPI);
@@ -59,12 +55,12 @@ export default function Assignment(props) {
   const cancelAssignment = actionsAPI.cancelAssignment.bind(actionsAPI);
   const saveAssignment = actionsAPI.saveAssignment?.bind(actionsAPI);
   const cancelCreateStageAssignment = actionsAPI.cancelCreateStageAssignment.bind(actionsAPI);
-  const [errorMessages, setErrorMessages] = useState<Array<OrderedErrorMessage>>([]);
+  const [errorMessages, setErrorMessages] = useState<OrderedErrorMessage[]>([]);
   const [serviceShutteredStatus, setServiceShutteredStatus] = useState(serviceShuttered);
   const [hasAutoCompleteError, setHasAutoCompleteError] = useState('');
   const [header, setHeader] = useState('');
   const isOnlyFieldDetails = useIsOnlyField(null, children); // .isOnlyField;
-  const lang = sessionStorage.getItem('rsdk_locale')?.substring(0, 2) || 'en';
+  let lang = getCurrentLanguage();
   const [selectedLang, setSelectedLang] = useState(lang);
 
   const context = getPConnect().getContextName();
@@ -73,14 +69,57 @@ export default function Assignment(props) {
     setServiceShutteredStatus(serviceShuttered);
   }, [serviceShuttered]);
 
+  const callLocalActionSilently = async () => {
+    const { invokeRestApi, invokeCustomRestApi, getCancelTokenSource, isRequestCanceled } = PCore.getRestClient();
+    const cancelTokenSource = getCancelTokenSource();
+    lang = getCurrentLanguage();
+    const LOCAL_ACTION_NAME = lang === 'en' ? 'SwitchLanguageToEnglish' : 'SwitchLanguageToWelsh';
+
+    const caseID = thePConn.getCaseInfo()?.getKey();
+    const actionContext = thePConn.getContextName();
+
+    try {
+      const response = await invokeRestApi('caseWideActions', {
+        queryPayload: {
+          caseID,
+          actionID: LOCAL_ACTION_NAME
+        },
+        // passing cancel token so that we can cancel the request using cancelTokenSource
+        cancelTokenSource: cancelTokenSource.token
+      });
+      // get etag
+      let updatedEtag = response.headers.etag;
+
+      const response2 = await invokeCustomRestApi(
+        `/api/application/v2/cases/${caseID}/actions/${LOCAL_ACTION_NAME}?excludeAdditionalActions=true&viewType=form`,
+        {
+          method: 'PATCH',
+          headers: {
+            'if-match': updatedEtag
+          }
+        },
+        actionContext
+      );
+      // get etag
+      updatedEtag = response2.headers.etag;
+
+      // update the etag in the case context
+      PCore.getContainerUtils().updateCaseContextEtag(actionContext, updatedEtag);
+    } catch (error) {
+      // handle error
+      if (isRequestCanceled(error)) {
+        cancelTokenSource.cancel();
+      }
+    }
+  };
+
   async function refreshView() {
     // this will refresh the case view and load all required translations
     try {
-      await thePConn
-        .getActionsApi()
-        .refreshCaseView(thePConn.getCaseInfo()?.getKey(), '', thePConn.getPageReference(), {
-          autoDetectRefresh: true
-        });
+      await callLocalActionSilently();
+      await thePConn.getActionsApi().refreshCaseView(thePConn.getCaseInfo()?.getKey(), '', thePConn.getPageReference(), {
+        autoDetectRefresh: true
+      });
 
       // emit this event to reload the react component forcefully
       PCore.getPubSubUtils().publish('forceRefreshRootComponent');
@@ -100,14 +139,14 @@ export default function Assignment(props) {
   }, [errorMessages]);
 
   useEffect(() => {
-    PCore.getPubSubUtils().subscribe(
-      'languageToggleTriggered',
-      refreshView,
-      'languageToggleTriggered'
-    );
+    PCore.getPubSubUtils().subscribe('callLocalActionSilently', callLocalActionSilently, 'callLocalActionSilently');
 
-    return () =>
+    PCore.getPubSubUtils().subscribe('languageToggleTriggered', refreshView, 'languageToggleTriggered');
+
+    return () => {
+      PCore.getPubSubUtils().unsubscribe('callLocalActionSilently', 'callLocalActionSilently');
       PCore.getPubSubUtils().unsubscribe('languageToggleTriggered', 'languageToggleTriggered');
+    };
   }, [getPConnect]);
 
   useEffect(() => {
@@ -118,10 +157,7 @@ export default function Assignment(props) {
       const assignmentID = thePConn.getCaseInfo().getAssignmentID();
       sessionStorage.setItem('assignmentID', assignmentID);
 
-      PCore.getContainerUtils().closeContainerItem(
-        PCore.getContainerUtils().getActiveContainerItemContext('app/primary'),
-        { skipDirtyCheck: true }
-      );
+      PCore.getContainerUtils().closeContainerItem(PCore.getContainerUtils().getActiveContainerItemContext('app/primary'), { skipDirtyCheck: true });
 
       PCore.getPubSubUtils().unsubscribe('autoCompleteFieldPresent', errorMessage => {
         setHasAutoCompleteError(errorMessage);
@@ -171,6 +207,7 @@ export default function Assignment(props) {
     }
   }, [children]);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   function checkErrorMessages(isFromCatchBlock: boolean = true) {
     let errorStateProps = [];
     if (containerName?.toLowerCase().includes('check your answer') && isFromCatchBlock) {
@@ -185,64 +222,56 @@ export default function Assignment(props) {
         }
       ];
     } else {
-      errorStateProps = PCore.getFormUtils()
-        .getEditableFields(context)
-        .reduce((acc, o) => {
-          const fieldC11nEnv = o.fieldC11nEnv;
-          const fieldStateProps = fieldC11nEnv.getStateProps();
-          const fieldComponent = fieldC11nEnv.getComponent();
-          const errorVal = PCore.getMessageManager().getMessages({
-            property: fieldStateProps.value,
-            pageReference: fieldC11nEnv.getPageReference(),
+      const formFields = PCore.getContextTreeManager().getFieldsList(context);
+      if (formFields) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+        for (const [key, value] of formFields) {
+          const { propertyName, pageReference, componentName: type, index: displayOrder } = value.props;
+
+          const errorMessagesList = PCore.getMessageManager().getMessages({
+            property: propertyName,
+            pageReference,
             context,
             type: 'error'
           });
 
           let validateMessage = '';
-          if (errorVal.length > 0) {
-            errorVal.forEach(element => {
-              validateMessage =
-                validateMessage +
-                (validateMessage.length > 0 ? '. ' : '') +
-                localizedVal(removeRedundantString(element.message), 'Messages');
-            });
+          if (errorMessagesList.length > 0) {
+            validateMessage = errorMessagesList.map(error => localizedVal(removeRedundantString(error.message), 'Messages')).join('. ');
           }
 
-          if (validateMessage) {
-            const clearMessageProperty = fieldC11nEnv?.getStateProps()?.value;
-            const pageRef = fieldC11nEnv?.getPageReference();
-            const formattedPropertyName = fieldC11nEnv?.getStateProps()?.value?.split('.')?.pop();
-            let fieldId =
-              fieldC11nEnv.getStateProps().fieldId ||
-              fieldComponent.props.name ||
-              formattedPropertyName;
-            if (fieldC11nEnv.meta.type === 'Date') {
-              const propertyName = fieldComponent.props.name;
-              const DateErrorTargetFieldId = DateErrorTargetFields(validateMessage);
-              fieldId = `${propertyName}-day`;
-              if (DateErrorTargetFieldId.includes(`month`)) {
-                fieldId = `${propertyName}-month`;
-              } else if (DateErrorTargetFieldId.includes(`year`)) {
-                fieldId = `${propertyName}-year`;
-              }
-              validateMessage = DateErrorFormatter(
-                validateMessage,
-                fieldC11nEnv.resolveConfigProps(fieldC11nEnv.getMetadata().config).label
-              );
+          // eslint-disable-next-line no-continue
+          if (!validateMessage) continue;
+
+          const formattedPropertyName = propertyName.includes('.') ? propertyName.split('.').pop() : null;
+          let fieldId = formattedPropertyName;
+
+          if (type === 'Date') {
+            const fieldsHavingError = DateErrorTargetFields(validateMessage);
+
+            if (fieldsHavingError?.length > 0) {
+              fieldId = `${formattedPropertyName}-${fieldsHavingError[0]}`; // This will always pick the first the first invalid field for focusing
+            } else {
+              fieldId = `${formattedPropertyName}-day`; // Default focus will be at day field, when all fields are empty
             }
 
-            acc.push({
-              message: {
-                message: localizedVal(removeRedundantString(validateMessage)),
-                pageRef,
-                fieldId,
-                clearMessageProperty
-              },
-              displayOrder: fieldComponent.props.displayOrder
-            });
+            validateMessage = DateErrorFormatter(validateMessage, formattedPropertyName);
+          } else if (type === 'Checkbox') {
+            const formattedPageReference = pageReference.split('.').pop();
+            fieldId = `${formattedPageReference}-${fieldId}`;
           }
-          return acc;
-        }, []);
+
+          errorStateProps.push({
+            message: {
+              message: localizedVal(validateMessage),
+              pageReference,
+              fieldId,
+              propertyName
+            },
+            displayOrder
+          });
+        }
+      }
     }
     setErrorMessages([...errorStateProps]);
   }
@@ -287,10 +316,7 @@ export default function Assignment(props) {
 
   function onSaveActionSuccess(data) {
     actionsAPI.cancelAssignment(itemKey).then(() => {
-      PCore.getPubSubUtils().publish(
-        PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.CREATE_STAGE_SAVED,
-        data
-      );
+      PCore.getPubSubUtils().publish(PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.CREATE_STAGE_SAVED, data);
     });
   }
 
@@ -302,8 +328,7 @@ export default function Assignment(props) {
     if (dateField) {
       dateField?.forEach(field => {
         const childPagRef = childPconnect.getPageReference();
-        const pageRef =
-          thePConn.getPageReference() === childPagRef ? thePConn.getPageReference() : childPagRef;
+        const pageRef = thePConn.getPageReference() === childPagRef ? thePConn.getPageReference() : childPagRef;
         const storedRefName = field.name?.replace(pageRef, '');
         const storedDateValue = childPconnect.getValue(`.${storedRefName}`);
         if (!dayjs(storedDateValue, 'YYYY-MM-DD', true).isValid()) {
@@ -311,6 +336,10 @@ export default function Assignment(props) {
         }
       });
     }
+  }
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
   }
 
   async function buttonPress(sAction: string, sButtonType: string) {
@@ -341,9 +370,8 @@ export default function Assignment(props) {
 
           savePromise
             .then(() => {
-              const caseType = thePConn
-                .getCaseInfo()
-                .c11nEnv.getValue(PCore.getConstants().CASE_INFO.CASE_TYPE_ID);
+              sessionStorage.removeItem('assignmentID');
+              const caseType = thePConn.getCaseInfo().c11nEnv.getValue(PCore.getConstants().CASE_INFO.CASE_TYPE_ID);
               onSaveActionSuccess({ caseType, caseID, assignmentID });
               scrollToTop();
             })
@@ -394,7 +422,9 @@ export default function Assignment(props) {
       // eslint-disable-next-line sonarjs/no-small-switch
       switch (sAction) {
         case 'finishAssignment': {
-          PCore.getPubSubUtils().publish('CustomAssignmentFinishedInitiated', {});
+          PCore.getPubSubUtils().publish('CustomAssignmentFinishedInitiated', {
+            errorState: errorMessages.length > 0
+          });
 
           // resetting Back button control on click of 'Continue'
           sessionStorage.setItem('overrideControl', 'false');
@@ -406,6 +436,7 @@ export default function Assignment(props) {
 
             finishPromise
               .then(() => {
+                sessionStorage.removeItem('assignmentID');
                 scrollToTop();
                 PCore.getPubSubUtils().publish('CustomAssignmentFinished');
               })
@@ -420,9 +451,11 @@ export default function Assignment(props) {
         default:
           break;
       }
+      sessionStorage.setItem('isAnsSaved', 'true');
     }
   }
   function _onButtonPress(sAction: string, sButtonType: string) {
+    sessionStorage.removeItem('assignmentID');
     buttonPress(sAction, sButtonType);
   }
 
@@ -460,32 +493,26 @@ export default function Assignment(props) {
       ) : (
         <div id='Assignment'>
           {arSecondaryButtons?.map(sButton =>
-            sButton['name'] === 'Previous' ? (
+            sButton.name === 'Previous' ? (
               <Button
                 variant='backlink'
                 onClick={e => {
                   e.target.blur();
-                  _onButtonPress(sButton['jsAction'], 'secondary');
+                  _onButtonPress(sButton.jsAction, 'secondary');
                 }}
-                key={sButton['actionID']}
+                key={sButton.actionID}
                 attributes={{ type: 'link' }}
               ></Button>
             ) : null
           )}
           <MainWrapper>
             {errorMessages.length > 0 && (
-              <ErrorSummary
-                errors={errorMessages.map(item =>
-                  localizedVal(item.message, localeCategory, localeReference)
-                )}
-              />
+              <ErrorSummary errors={errorMessages.map(item => localizedVal(item.message, localeCategory, localeReference))} />
             )}
             {(!isOnlyFieldDetails.isOnlyField ||
               containerName?.toLowerCase().includes('check your answer') ||
-              containerName?.toLowerCase().includes('declaration')) && (
-              <h1 className='govuk-heading-l'>{header}</h1>
-            )}
-            {shouldRemoveFormTag ? renderAssignmentCard() : <form>{renderAssignmentCard()}</form>}
+              containerName?.toLowerCase().includes('declaration')) && <h1 className='govuk-heading-l'>{header}</h1>}
+            {shouldRemoveFormTag ? renderAssignmentCard() : <form onSubmit={onSubmit}>{renderAssignmentCard()}</form>}
             <AskHMRC />
           </MainWrapper>
         </div>

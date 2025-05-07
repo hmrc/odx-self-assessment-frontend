@@ -25,7 +25,12 @@ export default function AppWrapper({ children, baseurl }) {
 
   return (
     <>
-      <AppHeader appname={t(serviceName)} hasLanguageToggle isPegaApp={false} />
+      <AppHeader
+        appname={t(serviceName)}
+        baseurl={`${baseurl}`}
+        hasLanguageToggle
+        isPegaApp={false}
+      />
       <div className='govuk-width-container'>
         <MainWrapper>{children}</MainWrapper>
       </div>

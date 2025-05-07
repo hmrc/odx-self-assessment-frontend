@@ -7,7 +7,7 @@ import './TaskListTemplate.css';
 
 interface HmrcOdxGdsTaskListTemplateProps extends PConnProps {
   // If any, enter additional props that only exist on this componentName
-  children: Array<any>;
+  children: any[];
   cssClassHook: string;
   NumCols: string;
 }
@@ -107,9 +107,7 @@ export default function HmrcOdxGdsTaskListTemplate(props: HmrcOdxGdsTaskListTemp
             : `${t('CLAIM')} ${t('COMPLETE')}`}
         </p>
         <p className='govuk-body govuk-!-padding-bottom-4'>
-          {`${t('YOU_HAVE_COMPLETED')} ${completedSections} ${t('OF')} ${totalSections} ${t(
-            'SECTIONS'
-          )}`}
+          {`${t('YOU_HAVE_COMPLETED')} ${completedSections} ${t('OF')} ${totalSections} ${t('SECTIONS')}`}
           .
         </p>
         <ul className='govuk-task-list'>
@@ -150,7 +148,9 @@ export default function HmrcOdxGdsTaskListTemplate(props: HmrcOdxGdsTaskListTemp
                           className='govuk-task-list__status'
                           id={`${task.TaskLabel.replaceAll(' ', '')}-${key}-status`}
                         >
-                          <strong className='govuk-tag govuk-tag--blue'>{labelStatusMapping(task.TaskStatus)}</strong>
+                          <strong className='govuk-tag govuk-tag--blue'>
+                            {labelStatusMapping(task.TaskStatus)}
+                          </strong>
                         </div>
                       )}
 

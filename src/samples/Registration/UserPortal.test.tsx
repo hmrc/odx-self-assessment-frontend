@@ -43,13 +43,15 @@ describe('should render RegistrationAgeRestrictionInfo component.', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(screen.getByText('childern')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.queryByText('Important')).not.toBeInTheDocument();
+
     expect(
       screen.queryByText(
         'We saved your progress and will store your information for 28 days from the registration creation date.'
-      )
+      ) // @ts-ignore
     ).not.toBeInTheDocument();
   });
 
@@ -65,13 +67,14 @@ describe('should render RegistrationAgeRestrictionInfo component.', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(screen.getByText('childern')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Important');
     expect(
       screen.getByText(
         'We saved your progress and will store your information for 28 days from the registration creation date.'
-      )
+      ) // @ts-ignore
     ).toBeInTheDocument();
   });
 
@@ -90,11 +93,12 @@ describe('should render RegistrationAgeRestrictionInfo component.', () => {
     });
 
     // expect(screen.getByText('childern')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Pwysig');
     expect(
       screen.getByText(
         'Gwnaethom gadw’ch cynnydd, a byddwn yn cadw’ch gwybodaeth am 28 diwrnod (o’r dyddiad y crëwyd y cofrestriad).'
-      )
+      ) // @ts-ignore
     ).toBeInTheDocument();
   });
 });

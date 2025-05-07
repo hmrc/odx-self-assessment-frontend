@@ -1,4 +1,4 @@
-import React, { createElement, Fragment } from 'react';
+import { createElement } from 'react';
 import MainWrapper from '../../../BaseComponents/MainWrapper';
 import createPConnectComponent from '@pega/react-sdk-components/lib/bridge/react_pconnect';
 import ConditionalWrapper from '../../../helpers/formatters/ConditionalWrapper';

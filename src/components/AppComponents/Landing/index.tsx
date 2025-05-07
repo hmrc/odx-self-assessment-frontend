@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import setPageTitle from '../../helpers/setPageTitleHelpers';
 import NotificationBanner from '../../BaseComponents/NotificationBanner/NotificationBanner';
 import CaseDetails from './CaseDetails';
-import { getServiceShutteredStatus } from '../../helpers/utils';
+import { getCurrentLanguage, getServiceShutteredStatus } from '../../helpers/utils';
 import AskHMRC from '../AskHMRC';
 import { useTranslation } from 'react-i18next';
 import useHMRCExternalLinks from '../../helpers/hooks/HMRCExternalLinks';
@@ -13,7 +13,7 @@ export default function Landing(props) {
     isLogout,
     pConn,
     inProgressCaseCountEndPoint,
-    creatCaseEndpoint,
+    createCaseEndpoint,
     buttonContent,
     title,
     bannerContent,
@@ -27,7 +27,17 @@ export default function Landing(props) {
   const { hmrcURL } = useHMRCExternalLinks();
 
   function createCase() {
-    PCore.getMashupApi().createCase(creatCaseEndpoint, PCore.getConstants().APP.APP);
+    const startingFields = {
+      NotificationLanguage: getCurrentLanguage()
+    };
+
+    PCore.getMashupApi().createCase(createCaseEndpoint, PCore.getConstants().APP.APP, {
+      // @ts-ignore
+      startingFields,
+      pageName: '',
+      channelName: ''
+    });
+
     handleCaseStart();
   }
 
@@ -37,12 +47,12 @@ export default function Landing(props) {
   function fetchInProgressCaseDetailData() {
     setLoadingInProgressCaseDetail(true);
     let inProgressRegData: any = [];
+    const options = { invalidateCache: true };
     const context = pConn.getContextName();
 
     PCore.getDataPageUtils()
       // @ts-ignore
-      .getDataAsync(inProgressCaseCountEndPoint, context, { ...caseListApiParams })
-      // @ts-ignore
+      .getDataAsync(inProgressCaseCountEndPoint, context, { ...caseListApiParams }, {}, {}, options)
       .then(resp => {
         if (!resp.resultCount) {
           createCase();
@@ -76,47 +86,39 @@ export default function Landing(props) {
   return (
     !loadingInProgressCaseDetail &&
     inprogressCaseDetail.length > 0 && (
-      <>
-        <main
-          className={`govuk-main-wrapper ${isLogout ? 'visibility-hidden' : ''}`}
-          id='main-content'
-          role='main'
-        >
-          {showPortalBanner && <NotificationBanner content={bannerContent} />}
-          <div className='govuk-grid-row'>
-            <div className='govuk-grid-column-full govuk-prototype-kit-common-templates-mainstream-guide-body govuk-!-padding-right-0 govuk-!-padding-left-0'>
-              {/* CaseDetail */}
-              <div className='govuk-grid-column-two-thirds'>
+      <main className={`govuk-main-wrapper ${isLogout ? 'visibility-hidden' : ''}`} id='main-content' role='main'>
+        {showPortalBanner && <NotificationBanner content={bannerContent} />}
+        <div className='govuk-grid-row'>
+          <div className='govuk-grid-column-full govuk-prototype-kit-common-templates-mainstream-guide-body govuk-!-padding-right-0 govuk-!-padding-left-0'>
+            {/* CaseDetail */}
+            <div className='govuk-grid-column-two-thirds'>
+              {inprogressCaseDetail.length > 0 && (
                 <>
-                  {inprogressCaseDetail.length > 0 && (
-                    <>
-                      <CaseDetails
-                        thePConn={pConn}
-                        data={inprogressCaseDetail}
-                        rowClickAction='OpenAssignment'
-                        buttonContent={buttonContent}
-                        title={title}
-                        handleCaseStart={handleCaseStart}
-                      />
-                      <AskHMRC />
-                      <p className='govuk-body'>
-                        <a
-                          className='govuk-link'
-                          rel='noreferrer noopener'
-                          target='_blank'
-                          href={`${hmrcURL}contact/report-technical-problem?service=427&referrerUrl=${window.location}`}
-                        >
-                          {t('PAGE_NOT_WORKING_PROPERLY')} {t('OPENS_IN_NEW_TAB')}
-                        </a>
-                      </p>
-                    </>
-                  )}
+                  <CaseDetails
+                    thePConn={pConn}
+                    data={inprogressCaseDetail}
+                    rowClickAction='OpenAssignment'
+                    buttonContent={buttonContent}
+                    title={title}
+                    handleCaseStart={handleCaseStart}
+                  />
+                  <AskHMRC />
+                  <p className='govuk-body'>
+                    <a
+                      className='govuk-link'
+                      rel='noreferrer noopener'
+                      target='_blank'
+                      href={`${hmrcURL}contact/report-technical-problem?service=427&referrerUrl=${window.location}`}
+                    >
+                      {t('PAGE_NOT_WORKING_PROPERLY')} {t('OPENS_IN_NEW_TAB')}
+                    </a>
+                  </p>
                 </>
-              </div>
+              )}
             </div>
           </div>
-        </main>
-      </>
+        </div>
+      </main>
     )
   );
 }

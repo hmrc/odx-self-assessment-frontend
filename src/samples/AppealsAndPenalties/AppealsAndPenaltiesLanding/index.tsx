@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import useHMRCExternalLinks from '../../../components/helpers/hooks/HMRCExternalLinks';
 import PenaltyDatails from './PenaltyDatails';
 import setPageTitle from '../../../components/helpers/setPageTitleHelpers';
-import { PenaltyDuration, Content } from './PenaltyTypes';
+import { Content, PenaltyDataProps } from './PenaltyTypes';
 import C11nEnv from '@pega/pcore-pconnect-typedefs/interpreter/c11n-env';
 import { getCurrentLanguage } from '../../../components/helpers/utils';
 
@@ -19,59 +19,56 @@ interface LandingProps {
 }
 
 const AppealsAndPenaltiesLanding: React.FC<LandingProps> = props => {
-  const {
-    isLogout,
-    pConn,
-    penaltyDataEndpoint,
-    createCaseEndpoint,
-    handleCaseStart,
-    penaltyDataEndpointParams
-  } = props;
+  const { isLogout, pConn, penaltyDataEndpoint, createCaseEndpoint, handleCaseStart, penaltyDataEndpointParams } = props;
 
-  const [dashboardData, setDashboardData] = useState<Array<PenaltyDuration>>(null);
+  const [dashboardData, setDashboardData] = useState<PenaltyDataProps>(null);
   const [dashboardDataLoaded, setDashboardDataLoaded] = useState<boolean>(false);
   const { t } = useTranslation();
   const { hmrcURL } = useHMRCExternalLinks();
 
-  const createCase = (): void => {
-    PCore.getMashupApi().createCase(createCaseEndpoint, PCore.getConstants().APP.APP);
+  function createCase() {
+    const startingFields = {
+      NotificationLanguage: getCurrentLanguage()
+    };
+
+    PCore.getMashupApi().createCase(createCaseEndpoint, PCore.getConstants().APP.APP, {
+      // @ts-ignore
+      startingFields,
+      pageName: '',
+      channelName: ''
+    });
+
     handleCaseStart();
-  };
+  }
 
   const fetchInProgressCaseDetailData = async () => {
     const context = pConn.getContextName();
+    const options = { invalidateCache: true };
     try {
       // @ts-ignore
       const response: Content = await PCore.getDataPageUtils().getDataAsync(
         penaltyDataEndpoint,
         context,
-        { ...penaltyDataEndpointParams }
+        { ...penaltyDataEndpointParams },
+        {},
+        {},
+        options
       );
 
-      PCore.getPubSubUtils().unsubscribe(
-        'languageToggleTriggered',
-        'PenaltiesLandingPageLanguageChange'
-      );
+      PCore.getPubSubUtils().unsubscribe('languageToggleTriggered', 'PenaltiesLandingPageLanguageChange');
 
       const currentLang = getCurrentLanguage();
 
-      const data: Array<PenaltyDuration> =
+      const data: PenaltyDataProps =
         response?.data?.length > 0 && response.data[0].LocalisedContent?.length > 0
-          ? response.data[0].LocalisedContent.find(
-              item => item.Language.toLowerCase() === currentLang
-            )?.penaltyData
-          : [];
+          ? response.data[0].LocalisedContent.find(item => item.Language.toLowerCase() === currentLang)
+          : null;
 
       setDashboardData(data);
-
       PCore.getPubSubUtils().subscribe(
         'languageToggleTriggered',
         ({ language }) => {
-          setDashboardData(
-            response?.data[0].LocalisedContent?.find(
-              item => item.Language.toLowerCase() === language.toLowerCase()
-            ).penaltyData
-          );
+          setDashboardData(response?.data[0].LocalisedContent?.find(item => item.Language.toLowerCase() === language.toLowerCase()));
         },
         'PenaltiesLandingPageLanguageChange'
       );
@@ -93,20 +90,21 @@ const AppealsAndPenaltiesLanding: React.FC<LandingProps> = props => {
     <>
       <div className='govuk-body'>
         <p>{t('MAKE_AN_APPEAL_YOU_HAVE')}</p>
-        <p>{t('THIS_PAGE_ONLY_SHOW_PENALTY')}</p>
         <p>
+          {t('YOU_CAN_USE_THIS_SERVICE')} {dashboardData.InstructionText}
+          {t('IF_YOUR_PENALTY_WAS_ISSUED_EARLIER')}
           <a
             className='govuk-link'
             rel='noreferrer noopener'
-            href='https://www.gov.uk/guidance/check-when-you-can-expect-a-reply-from-hmrc'
+            href='https://assets.publishing.service.gov.uk/media/657af4f6095987001295e0d7/SA370__Appeal.pdf'
             target='_blank'
           >
-            {t('CHECK_REPLY_FROM_HMRC')} {t('OPENS_IN_NEW_TAB')}
+            {t('USE_THE_SA370_FORM')} {t('OPENS_IN_NEW_TAB')}
           </a>
           .
         </p>
       </div>
-      <PenaltyDatails penaltyData={dashboardData} />
+      <PenaltyDatails penaltyData={dashboardData.penaltyData} />
       <div className='govuk-body govuk-!-static-margin-bottom-6'>
         <h2 className='govuk-heading-m'>{t('MAKE_AN_APPEAL')}</h2>
         <p>{t('IF_YOU_DONT_THINK')}</p>
@@ -145,16 +143,12 @@ const AppealsAndPenaltiesLanding: React.FC<LandingProps> = props => {
 
   return (
     dashboardDataLoaded && (
-      <main
-        className={`govuk-main-wrapper ${isLogout ? 'visibility-hidden' : ''}`}
-        id='main-content'
-        role='main'
-      >
+      <main className={`govuk-main-wrapper ${isLogout ? 'visibility-hidden' : ''}`} id='main-content' role='main'>
         <div className='govuk-grid-row'>
           <div className='govuk-grid-column-full govuk-prototype-kit-common-templates-mainstream-guide-body govuk-!-padding-right-0 govuk-!-padding-left-0'>
             <div className='govuk-grid-column-two-thirds'>
               <h1 className='govuk-heading-l'>{t('YOUR_SELF_ASSESSMENT_PENALTIES')}</h1>
-              {dashboardData === null || dashboardData.length === 0 ? (
+              {dashboardData === null || dashboardData.penaltyData.length === 0 ? (
                 <p>{t('YOU_DO_NOT_HAVE_SA_PENALTIES')}</p>
               ) : (
                 dashboardData && renderPenaltiesSection()

@@ -26,6 +26,7 @@ export default function TimeoutPopup(props: TimeoutPopupPropTypes) {
     millisecondsTillSignout,
     staySignedinHandler,
     signoutHandler,
+    autoSignoutHandler,
     isAuthorised,
     isConfirmationPage,
     staySignedInButtonText,
@@ -124,7 +125,7 @@ export default function TimeoutPopup(props: TimeoutPopupPropTypes) {
   useEffect(() => {
     if (timeoutState.timeRemaining === 0) {
       const signoutHandlerTimeout = setTimeout(() => {
-        signoutHandler();
+        autoSignoutHandler();
       }, SIGNOUT_DELAY);
 
       return () => {
@@ -215,6 +216,7 @@ interface TimeoutPopupPropTypes {
   millisecondsTillSignout?: number;
   staySignedinHandler: () => void;
   signoutHandler: () => void;
+  autoSignoutHandler: () => void;
   isAuthorised: boolean;
   staySignedInButtonText: string;
   signoutButtonText: string;

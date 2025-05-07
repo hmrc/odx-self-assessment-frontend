@@ -1,0 +1,16 @@
+[
+  { "name": "_ga", "description": "COOKIE_GA_DESCRIPTION", "expires": "TWO_YEARS" },
+  { "name": "_gid", "description": "COOKIE_GID_DESCRIPTION", "expires": "24_HOURS" },
+  { "name": "gac", "description": "COOKIE_GAC_DESCRIPTION", "expires": "90_DAYS" },
+  { "name": "_gat", "description": "COOKIE_GAT_DESCRIPTION", "expires": "1_MINUTE" },
+  {
+    "name": "AMP_TOKEN",
+    "description": "COOKIE_AMP_TOKEN_DESCRIPTION",
+    "expires": "AMP_TOKEN_EXPIRY"
+  },
+  {
+    "name": "_dc_gtm_UA-XXXXXXXX-X",
+    "description": "COOKIE_DC_GTM_UA_DESCRIPTION",
+    "expires": "1_MINUTE"
+  }
+]

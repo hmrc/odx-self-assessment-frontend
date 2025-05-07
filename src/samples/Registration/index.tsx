@@ -11,7 +11,6 @@ import { sdkIsLoggedIn, getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
 import { compareSdkPCoreVersions } from '@pega/react-sdk-components/lib/components/helpers/versionHelpers';
 import AppHeader from '../../components/AppComponents/AppHeader';
 import AppFooter from '../../components/AppComponents/AppFooter';
-import LogoutPopup from '../../components/AppComponents/LogoutPopup';
 import {
   initTimeout,
   staySignedIn
@@ -27,7 +26,12 @@ import { getSdkComponentMap } from '@pega/react-sdk-components/lib/bridge/helper
 import localSdkComponentMap from '../../../sdk-local-component-map';
 import { checkCookie, setCookie } from '../../components/helpers/cookie';
 import ShutterServicePage from '../../components/AppComponents/ShutterServicePage';
-import { triggerLogout, checkStatus, getCaseId } from '../../components/helpers/utils';
+import {
+  triggerLogout,
+  checkStatus,
+  getCaseId,
+  getCurrentLanguage
+} from '../../components/helpers/utils';
 import RegistrationAgeRestrictionInfo from './RegistrationAgeRestrictionInfo';
 import AlreadyRegisteredUserMessage from './AlreadyRegisteredUserMessage';
 import ApiServiceNotAvailable from '../../components/AppComponents/ApiErrorServiceNotAvailable';
@@ -45,7 +49,6 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
   const [showUserPortal, setShowUserPortal] = useState(false);
   const [bShowAppName, setShowAppName] = useState(false);
   const [bShowResolutionScreen, setShowResolutionScreen] = useState(false);
-  const [showSignoutModal, setShowSignoutModal] = useState(false);
   const [showTimeoutModal, setShowTimeoutModal] = useState(false);
   const [serviceNotAvailable, setServiceNotAvailable] = useState(false);
   const [shutterServicePage, setShutterServicePage] = useState(false);
@@ -60,7 +63,6 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
     banner: null
   });
   const [rootProps, setRootProps] = useState({});
-
   const { t } = useTranslation();
   // This needs to be changed in future when we handle the shutter for multiple service, for now this one's for single service
   const featureID = 'SA';
@@ -112,8 +114,11 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
           ''
         )
         .then(response => {
-          PCore.getPubSubUtils().unsubscribe('summarypageLanguageChange');
-          const summaryData: Array<any> =
+          PCore.getPubSubUtils().unsubscribe(
+            'languageToggleTriggered',
+            'summarypageLanguageChange'
+          );
+          const summaryData: any[] =
             response.data.data.caseInfo.content.ScreenContent.LocalisedContent;
           const currentLang =
             sessionStorage.getItem('rsdk_locale')?.slice(0, 2).toUpperCase() || 'EN';
@@ -158,13 +163,15 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
   function createCase() {
     displayPega();
 
-    let startingFields = {};
-    startingFields = {
-      //  NotificationLanguage: sessionStorage.getItem('rsdk_locale')?.slice(0, 2) || 'en'
+    const startingFields = {
+      NotificationLanguage: getCurrentLanguage()
     };
+
     PCore.getMashupApi()
       .createCase('HMRC-SA-Work-Registration', PCore.getConstants().APP.APP, {
-        startingFields
+        startingFields,
+        pageName: '',
+        channelName: ''
       })
       .then(() => {
         const status = checkStatus();
@@ -177,30 +184,59 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
   }
 
   function closeContainer() {
-    displayUserPortal();
+    setShowPega(false);
   }
 
   // Calls data page to fetch in progress registration,
   // This then sets inprogress registration state value to the registration details.
-  // This funtion also sets 'isloading' value to true before making d_page calls
+  // This function also sets 'isloading' value to true before making d_page calls
   function fetchInProgressRegistrationData() {
     // setLoadingInProgressRegistration(true);
-    let inProgressRegData: any = [];
-    // @ts-ignore
-    PCore.getDataPageUtils()
-      .getDataAsync('D_RegistrantWorkAssignmentSACases', 'root', {
-        CaseType: 'HMRC-SA-Work-Registration'
-      })
-      .then(resp => {
-        if (!resp.resultCount) {
-          createCase();
-        } else {
-          resp = resp.data.slice(0, 10);
-          inProgressRegData = resp;
-          setInprogressRegistration(inProgressRegData);
-        }
-        // setLoadingInProgressRegistration(false);
-      });
+    const pyAssignmentID = sessionStorage.getItem('assignmentID');
+    if (
+      !pyAssignmentID ||
+      pyAssignmentID === 'undefined' ||
+      pyAssignmentID.includes('MANUALINVESTIGATION')
+    ) {
+      let inProgressRegData: any = [];
+      const options = { invalidateCache: true };
+
+      // @ts-ignore
+      PCore.getDataPageUtils()
+        .getDataAsync(
+          'D_RegistrantWorkAssignmentSACases',
+          'root',
+          {
+            CaseType: 'HMRC-SA-Work-Registration'
+          },
+          {},
+          {},
+          options
+        )
+        .then(resp => {
+          if (!resp.resultCount) {
+            createCase();
+          } else {
+            resp = resp.data.slice(0, 10);
+            inProgressRegData = resp;
+            setInprogressRegistration(inProgressRegData);
+          }
+          // setLoadingInProgressRegistration(false);
+        });
+    } else {
+      const container = PCore.getContainerUtils().getActiveContainerItemName(
+        `${PCore.getConstants().APP.APP}/primary`
+      );
+      const target = `${PCore.getConstants().APP.APP}/${container}`;
+      const openAssignmentOptions = { containerName: container };
+      const assignmentID = sessionStorage.getItem('assignmentID');
+      PCore.getMashupApi()
+        .openAssignment(assignmentID, target, openAssignmentOptions)
+        .then(() => {
+          scrollToTop();
+        })
+        .catch((err: Error) => console.log('Error : ', err)); // eslint-disable-line no-console
+    }
     sessionStorage.setItem('assignmentFinishedFlag', 'false');
   }
 
@@ -434,7 +470,9 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
               false,
               false,
               bShowResolutionScreen,
-              { CaseType: 'HMRC-SA-Work-Registration' }
+              {
+                CaseType: 'HMRC-SA-Work-Registration'
+              }
             );
           });
           initTimeout(setShowTimeoutModal, setIsLogout);
@@ -540,28 +578,8 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
 
   function handleSignout(e?) {
     e?.preventDefault();
-    if (bShowPega) {
-      setShowSignoutModal(true);
-    } else {
-      triggerLogout(setIsLogout);
-    }
+    triggerLogout(setIsLogout);
   }
-
-  const handleStaySignIn = (e?) => {
-    e?.preventDefault();
-    setShowSignoutModal(false);
-    // Extends manual signout popup 'stay signed in' to reset the automatic timeout timer also
-    staySignedIn(
-      setShowTimeoutModal,
-      'D_RegistrantWorkAssignmentSACases',
-      null,
-      false,
-      true,
-      bShowResolutionScreen,
-      { CaseType: 'HMRC-SA-Work-Registration' }
-    );
-  };
-
   const handleCaseContinue = () => {
     setShowUserPortal(false);
   };
@@ -624,7 +642,9 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
             false,
             true,
             bShowResolutionScreen,
-            { CaseType: 'HMRC-SA-Work-Registration' }
+            {
+              CaseType: 'HMRC-SA-Work-Registration'
+            }
           )
         }
         signoutHandler={(e?) => {
@@ -643,14 +663,6 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
       )}
       <div className='govuk-width-container'>{renderContent()}</div>
 
-      <LogoutPopup
-        show={showSignoutModal && !showTimeoutModal}
-        hideModal={() => setShowSignoutModal(false)}
-        handleSignoutModal={() => {
-          triggerLogout(setIsLogout);
-        }}
-        handleStaySignIn={handleStaySignIn}
-      />
       {pConn && <AppFooter />}
     </>
   );

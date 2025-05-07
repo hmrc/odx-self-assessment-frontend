@@ -46,16 +46,19 @@ const mockPenaltyData = [
 describe('PenaltyDatails Component', () => {
   test('renders no penalties message when penaltyData is empty', () => {
     render(<PenaltyDatails penaltyData={[]} />);
+    // @ts-ignore
     expect(screen.getByText('NO_PENALTIES_AVAILABLE')).toBeInTheDocument();
   });
 
   test('renders no penalties message when penaltyData is NULL', () => {
     render(<PenaltyDatails penaltyData={null} />);
+    // @ts-ignore
     expect(screen.getByText('NO_PENALTIES_AVAILABLE')).toBeInTheDocument();
   });
 
   test('renders duration heading for penalties', () => {
     render(<PenaltyDatails penaltyData={mockPenaltyData} />);
+    // @ts-ignore
     expect(screen.getByText('PENALTIES_FOR_THE 2022-2023 TAX_YEAR')).toBeInTheDocument();
   });
 
@@ -70,6 +73,7 @@ describe('PenaltyDatails Component', () => {
     render(<PenaltyDatails penaltyData={mockPenaltyData} />);
 
     // Verify penalty type
+    // @ts-ignore
     expect(screen.getByText('Late filing penalties')).toBeInTheDocument();
 
     // Verify penalty rows
@@ -79,9 +83,11 @@ describe('PenaltyDatails Component', () => {
 
     expect(screen.getByText('2nd PENALTY')).toBeInTheDocument();
     expect(screen.getByText('Additional information 2')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('£200.75')).toBeInTheDocument();
 
     // Verify total amount
+    // @ts-ignore
     expect(screen.getByText('£301.25')).toBeInTheDocument();
   });
 
@@ -109,8 +115,9 @@ describe('PenaltyDatails Component', () => {
     ];
 
     render(<PenaltyDatails penaltyData={multiplePenaltiesData} />);
-
+    // @ts-ignore
     expect(screen.getByText('Late filing penalties')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Late payment')).toBeInTheDocument();
   });
 });
@@ -118,13 +125,16 @@ describe('PenaltyDatails Component', () => {
 describe('PenaltyDatails Component - Negative  Cases', () => {
   test('renders no penalties available message when penaltyData is undefined', () => {
     render(<PenaltyDatails penaltyData={undefined} />);
+    // @ts-ignore
     expect(screen.getByText('NO_PENALTIES_AVAILABLE')).toBeInTheDocument();
   });
 
   test('handles penaltyData with empty penalties array', () => {
     const emptyPenaltiesData = [{ duration: '2022-2023', penalties: [] }];
     render(<PenaltyDatails penaltyData={emptyPenaltiesData} />);
+    // @ts-ignore
     expect(screen.getByText('PENALTIES_FOR_THE 2022-2023 TAX_YEAR')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.queryByText('PENALTY')).not.toBeInTheDocument();
   });
 
@@ -148,10 +158,12 @@ describe('PenaltyDatails Component - Negative  Cases', () => {
       }
     ];
     render(<PenaltyDatails penaltyData={zeroAmountPenaltyData} />);
+    // @ts-ignore
     expect(screen.getByText('Late payment')).toBeInTheDocument();
     expect(screen.getByText('1st PENALTY')).toBeInTheDocument();
     expect(
       screen.getByText('Issued 30 days after the payment deadline: 5% of tax owed')
+      // @ts-ignore
     ).toBeInTheDocument();
     expect(screen.getByText('£0.00')).toBeInTheDocument();
   });
@@ -180,7 +192,9 @@ describe('PenaltyDatails Component - Negative  Cases', () => {
       }
     ];
     render(<PenaltyDatails penaltyData={multipleDurationsData} />);
+    // @ts-ignore
     expect(screen.getByText('PENALTIES_FOR_THE 2022-2023 TAX_YEAR')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('PENALTIES_FOR_THE 2021-2022 TAX_YEAR')).toBeInTheDocument();
   });
 
@@ -198,7 +212,9 @@ describe('PenaltyDatails Component - Negative  Cases', () => {
       }
     ];
     render(<PenaltyDatails penaltyData={largeAmountPenaltyData} />);
+    // @ts-ignore
     expect(screen.getByText('Late filing penalties penalties')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('£1000.55')).toBeInTheDocument();
   });
 
@@ -223,10 +239,12 @@ describe('PenaltyDatails Component - Negative  Cases', () => {
       }
     ];
     render(<PenaltyDatails penaltyData={singlePenaltyData} />);
+    // @ts-ignore
     expect(screen.getByText('Late filing penalties')).toBeInTheDocument();
     expect(screen.getByText('1st PENALTY')).toBeInTheDocument();
     expect(
       screen.getByText('Issued when you missed the deadline for submitting your tax return.')
+      // @ts-ignore
     ).toBeInTheDocument();
     expect(screen.getByText('£50.50')).toBeInTheDocument();
   });

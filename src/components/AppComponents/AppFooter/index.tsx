@@ -1,12 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useRouteMatch } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-export default function 
-AppFooter(props) {
-  const match = useRouteMatch();
-  const  { baseurl } = props;
-  const pageUrl = baseurl || `${match.path.replace('/', '')}`;
+export default function AppFooter(props) {
+  const location = useLocation();
+  const { baseurl } = props;
+  const pageUrl = baseurl || `${location.pathname.replace('/', '')}`;
 
   const { t } = useTranslation();
 

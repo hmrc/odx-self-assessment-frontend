@@ -70,7 +70,7 @@ export const resetTimeout = (
       } else {
         // the logout case executes when entire timeout occurs after confirmation page or user clicks
         // exit survey link in pop after confirmation page
-        triggerLogout(setIsLogout);
+        triggerLogout(setIsLogout, true);
       }
     }, milisecondsTilSignout);
   }, milisecondsTilWarning);

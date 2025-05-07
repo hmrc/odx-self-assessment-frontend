@@ -30,18 +30,21 @@ export default function TextInput(props) {
   const isComplexQuestionPage = PCore.getStoreValue('isComplexQuestionPage', '', 'app');
 
   const localizedVal = PCore.getLocaleUtils().getLocaleValue;
+  // @ts-ignore
   const [errorMessage, setErrorMessage] = useState(localizedVal(validatemessage));
 
   registerNonEditableField(!!disabled);
 
   useEffect(() => {
+    // @ts-ignore
     setErrorMessage(localizedVal(validatemessage));
   }, [validatemessage]);
   const thePConn = getPConnect();
   const actionsApi = thePConn.getActionsApi();
 
   const propName = thePConn.getStateProps().value;
-  const formattedPropertyName = name || propName?.split('.')?.pop();
+  const fieldId = propName?.split('.')?.pop();
+  const formattedPropertyName = name || fieldId;
 
   const handleChange = evt => {
     if (name === 'content-pyPostalCode') {
@@ -92,41 +95,44 @@ export default function TextInput(props) {
   const extraInputProps = { onChange, value };
 
   if (configAlternateDesignSystem?.type || inputProps?.type) {
+    // eslint-disable-next-line @typescript-eslint/dot-notation
     extraInputProps['type'] = configAlternateDesignSystem?.type || inputProps?.type;
   } else {
+    // eslint-disable-next-line @typescript-eslint/dot-notation
     extraInputProps['type'] = 'text';
   }
 
   // TODO Investigate more robust way to check if we should display as password
   if (fieldMetadata?.displayAs === 'pxPassword') {
-    extraInputProps['type'] = 'password';
+    // @ts-ignore
+    extraInputProps.type = 'password';
   }
 
   if (configAlternateDesignSystem?.autocomplete) {
-    extraInputProps['autoComplete'] = configAlternateDesignSystem.autocomplete;
+    // @ts-ignore
+    extraInputProps.autoComplete = configAlternateDesignSystem.autocomplete;
   } else {
-    extraInputProps['autoComplete'] = 'off';
+    // @ts-ignore
+    extraInputProps.autoComplete = 'off';
   }
 
   return (
-    <>
-      <GDSTextInput
-        inputProps={{
-          ...inputProps,
-          ...extraInputProps
-        }}
-        hintText={helperText}
-        extraLabelClasses={isComplexQuestionPage ? 'govuk-label--m' : ''}
-        errorText={errorMessage}
-        label={label}
-        labelIsHeading={isOnlyField}
-        name={formattedPropertyName}
-        maxLength={maxLength}
-        id={formattedPropertyName}
-        onBlur={e => handleChange(e)}
-        {...extraProps}
-        disabled={disabled || false}
-      />
-    </>
+    <GDSTextInput
+      inputProps={{
+        ...inputProps,
+        ...extraInputProps
+      }}
+      hintText={helperText}
+      extraLabelClasses={isComplexQuestionPage ? 'govuk-label--m' : ''}
+      errorText={errorMessage}
+      label={label}
+      labelIsHeading={isOnlyField}
+      name={formattedPropertyName}
+      maxLength={maxLength}
+      fieldId={fieldId}
+      onBlur={e => handleChange(e)}
+      {...extraProps}
+      disabled={disabled || false}
+    />
   );
 }

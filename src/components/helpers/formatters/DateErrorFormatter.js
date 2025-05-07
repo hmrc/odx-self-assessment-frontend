@@ -1,13 +1,13 @@
 import i18n from 'i18next';
-import { getWorkareaContainerName } from './../utils';
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 const _DateErrorFormatter = (message, propertyName = '') => {
   const dateRegExp = /(\d*-\d*-\d*)/;
   const matchedDates = message.match(dateRegExp);
   const originalDate = matchedDates?.length > 0 ? matchedDates[0] : null;
   const targets = [];
   // TODO: refactor under US-19023
-  const notAValidDateMessageString = 'is not a valid date'
+  const notAValidDateMessageString = 'is not a valid date';
 
   if (originalDate) {
     const [year, month, day] = originalDate.split('-');
@@ -30,16 +30,12 @@ const _DateErrorFormatter = (message, propertyName = '') => {
     }
     const shortPropertyName = i18n.t('DATE');
 
-    const containerName = getWorkareaContainerName();
-    const formEditablefields = PCore?.getFormUtils()?.getEditableFields(containerName);
-    const formFields = formEditablefields?.filter(field => field.label === propertyName);
-    let langLabelKey = formFields[0]?.fieldC11nEnv?.getStateProps()?.value?.split('.')?.pop();
-    langLabelKey = langLabelKey?.replace(' ', '_')?.toUpperCase();
+    propertyName = propertyName.toUpperCase();
 
     if (missingPartMessage.length > 0) {
-      if (langLabelKey) {
+      if (propertyName) {
         return {
-          message: `${i18n.t(langLabelKey)} ${i18n.t('MUST_INCLUDE')} ${missingPartMessage}`,
+          message: `${i18n.t(propertyName)} ${i18n.t('MUST_INCLUDE')} ${missingPartMessage}`,
           targets
         };
       } else {
@@ -52,9 +48,9 @@ const _DateErrorFormatter = (message, propertyName = '') => {
 
     // TODO: refactor under US-19023
     if (message.search(notAValidDateMessageString)) {
-      if (langLabelKey) {
+      if (propertyName) {
         return {
-          message: `${i18n.t(langLabelKey)} ${i18n.t('MUST_BE_A_REAL_DATE')} `,
+          message: `${i18n.t(propertyName)} ${i18n.t('MUST_BE_A_REAL_DATE')} `,
           targets
         };
       } else {

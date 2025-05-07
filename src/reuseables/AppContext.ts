@@ -21,4 +21,5 @@ const AppContext = createContext<AppContextValues>({
   appNameHeader: ''
 });
 
+// eslint-disable-next-line no-restricted-exports
 export { AppContext as default };

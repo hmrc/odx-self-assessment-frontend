@@ -42,13 +42,19 @@ describe('should render', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(screen.getByText('Skip to main content')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Appeal a Self Assessment penalty')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('GOV.UK')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Beta')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('feedback')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Sign out')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByTitle('GOV.UK')).toBeInTheDocument();
   });
 
@@ -67,13 +73,19 @@ describe('should render', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(screen.getByText('Ewch yn syth i’r prif gynnwys')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Appeal a Self Assessment penalty')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('GOV.UK')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Beta')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('adborth')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Allgofnodi')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByTitle('GOV.UK')).toBeInTheDocument();
   });
 
@@ -92,19 +104,19 @@ describe('should render', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(screen.getByRole('link', { name: 'Skip to main content' })).toHaveAttribute(
       'href',
       '#main-content'
     );
-
+    // @ts-ignore
     expect(screen.getByRole('link', { name: 'GOV.UK' })).toHaveAttribute(
       'href',
       'https://www.gov.uk/'
     );
-
+    // @ts-ignore
     expect(screen.getByRole('link', { name: 'Sign out' })).toHaveAttribute('href', '#');
-
+    // @ts-ignore
     expect(screen.getByRole('link', { name: 'feedback (opens in new tab)' })).toHaveAttribute(
       'href',
       'https://www.staging.tax.service.gov.uk/contact/beta-feedback?service=427&referrerUrl=http://localhost/'

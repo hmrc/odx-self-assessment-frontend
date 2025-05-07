@@ -47,11 +47,7 @@ export const BaseHmrcOdxGoBackGoBack: Story = args => {
     }
   };
 
-  return (
-    <>
-      <HmrcOdxGoBackGoBack {...props} {...args} />
-    </>
-  );
+  return <HmrcOdxGoBackGoBack {...props} {...args} />;
 };
 
 BaseHmrcOdxGoBackGoBack.args = {

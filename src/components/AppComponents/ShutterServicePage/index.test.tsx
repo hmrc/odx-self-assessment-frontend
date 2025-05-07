@@ -40,10 +40,10 @@ describe('ShutterServicePage', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Sorry, the service is unavailable'
-    );
+    ); // @ts-ignore
     expect(screen.getByText('You will be able to use the service later.')).toBeInTheDocument();
   });
 
@@ -67,12 +67,12 @@ describe('ShutterServicePage', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
       'Mae’n ddrwg gennym, ond nid yw’r gwasanaeth ar gael'
     );
     expect(
-      screen.getByText('Byddwch yn gallu defnyddio’r gwasanaeth yn nes ymlaen.')
+      screen.getByText('Byddwch yn gallu defnyddio’r gwasanaeth yn nes ymlaen.') // @ts-ignore
     ).toBeInTheDocument();
   });
 });

@@ -13,7 +13,7 @@ export default function WarningText(props) {
         !
       </span>
       <strong className='govuk-warning-text__text'>
-        <span className='govuk-visually-hidden'>{t("WARNING")}</span>
+        <span className='govuk-visually-hidden'>{t('WARNING')}</span>
         {t('PORTAL_WARNING_TEXT')} {currentDate} {t('PORTAL_WARNING_TEXT2')}
       </strong>
     </div>

@@ -29,11 +29,13 @@ export default function TextArea(props) {
   const isComplexQuestionPage = PCore.getStoreValue('isComplexQuestionPage', '', 'app');
 
   const localizedVal = PCore.getLocaleUtils().getLocaleValue;
+  // @ts-ignore
   const [errorMessage, setErrorMessage] = useState(localizedVal(validatemessage));
 
   registerNonEditableField(!!disabled);
 
   useEffect(() => {
+    // @ts-ignore
     setErrorMessage(localizedVal(validatemessage));
   }, [validatemessage]);
   const thePConn = getPConnect();
@@ -83,9 +85,11 @@ export default function TextArea(props) {
   const extraInputProps = { onChange, value };
 
   if (configAlternateDesignSystem?.autocomplete) {
-    extraInputProps['autoComplete'] = configAlternateDesignSystem.autocomplete;
+    // @ts-ignore
+    extraInputProps.autoComplete = configAlternateDesignSystem.autocomplete;
   } else {
-    extraInputProps['autoComplete'] = 'off';
+    // @ts-ignore
+    extraInputProps.autoComplete = 'off';
   }
 
   return (

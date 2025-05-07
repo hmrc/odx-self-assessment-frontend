@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import 'dayjs/locale/cy';
-
 import languageToggle from '../../helpers/languageToggleHelper';
 
 const LanguageToggle = () => {
@@ -16,10 +15,9 @@ const LanguageToggle = () => {
     setSelectedLang(lang);
 
     const dataBundles = [
-      PCore.getLocaleUtils().GENERIC_BUNDLE_KEY,
       '@BASECLASS!DATAPAGE!D_SALISTREFERENCEDATABYTYPE',
       '@BASECLASS!DATAPAGE!D_SCOPEDREFERENCEDATALISTBYTYPE',
-      '@BASECLASS!DATAPAGE!D_LISTREFERENCEDATABYTYPE',
+      '@BASECLASS!DATAPAGE!D_LISTREFERENCEDATABYTYPE'
     ];
 
     await languageToggle(lang, i18n, dataBundles);

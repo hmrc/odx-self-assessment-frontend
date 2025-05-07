@@ -1,0 +1,767 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render CookiePageTable component. should render CookiePageTable content in English. 1`] = `
+<DocumentFragment>
+  <h1
+    class="govuk-heading-l test"
+  >
+    Cookies
+  </h1>
+  <p
+    class="govuk-body"
+  >
+    Cookies are small text files that we save on your phone, tablet or computer when you use this service.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    We use the following cookies to make this site work and collect information about how you use our service.
+  </p>
+  <table
+    class="govuk-table"
+  >
+    <caption
+      class="govuk-table__caption govuk-table__caption--m"
+    >
+      Essential Cookies
+    </caption>
+    <thead
+      class="govuk-table__head"
+    >
+      <tr
+        class="govuk-table__row"
+      >
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Name
+        </th>
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Purpose
+        </th>
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Expires
+        </th>
+      </tr>
+    </thead>
+    <tbody
+      class="govuk-table__body"
+    >
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          AWSALB
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Used to help manage web traffic between a visitors web browser and the application servers that host HMRC services.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          7 days
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          AWSALBCORS
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Used to help manage web traffic between a visitors web browser and the application servers that host HMRC services.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          7 days
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          JSESSIONID
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Used to identify the visitor’s session information related to the HMRC service being accessed.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Session
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          AKA_A2
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          This Akamai cookie is used to help speed up content delivery on websites using adaptive acceleration.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          1 hour
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p
+    class="govuk-body"
+  >
+    Essential cookies keep your information secure whilst you use this service. We do not need to ask permission to use them.
+  </p>
+  <h2
+    class="govuk-heading-m"
+  >
+    Analytics cookies (Google Analytics)
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    We use Google Analytics software to collect information about how you use this service and help us make it better.  we do not allow Google to use or share this data
+  </p>
+  <table
+    class="govuk-table"
+  >
+    <caption
+      class="govuk-table__caption govuk-table__caption--m"
+    >
+      Analytics cookies
+    </caption>
+    <thead
+      class="govuk-table__head"
+    >
+      <tr
+        class="govuk-table__row"
+      >
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Name
+        </th>
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Purpose
+        </th>
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Expires
+        </th>
+      </tr>
+    </thead>
+    <tbody
+      class="govuk-table__body"
+    >
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          _ga
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Used to distinguish users and assign a unique identifier to each visitor.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          2 years
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          _gid
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Used to distinguish users for statistical purposes.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          24 hours
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          gac
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Contains information about ad campaigns to link advertising data with Google
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          90 days
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          _gat
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Used to throttle request rate, limiting the collection of data on high-traffic sites.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          1 minute
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          AMP_TOKEN
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Used to retrieve a client ID from the AMP Client ID service.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          30 seconds to 1 year
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          _dc_gtm_UA-XXXXXXXX-X
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Used to manage the loading of Google Analytics scripts.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          1 minute
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h2
+    class="govuk-heading-l"
+  >
+    Change your cookie settings
+  </h2>
+  <form
+    action=""
+  >
+    <div
+      class="govuk-form-group "
+    >
+      <fieldset
+        aria-describedby="acceptAnalytics-error"
+        class="govuk-fieldset"
+      >
+        <legend
+          class="govuk-fieldset__legend govuk-fieldset__legend--s"
+        >
+          Do you want to accept analytics cookies?
+        </legend>
+        <div
+          class="govuk-radios"
+          data-module="govuk-radios"
+        >
+          <div
+            class="govuk-radios__item"
+          >
+            <input
+              class="govuk-radios__input"
+              id="acceptAnalytics-1"
+              name="acceptAnalytics"
+              type="radio"
+              value="yes"
+            />
+            <label
+              class="govuk-label govuk-radios__label"
+              for="acceptAnalytics-1"
+            >
+              Yes
+            </label>
+          </div>
+          <div
+            class="govuk-radios__item"
+          >
+            <input
+              class="govuk-radios__input"
+              id="acceptAnalytics-2"
+              name="acceptAnalytics"
+              type="radio"
+              value="no"
+            />
+            <label
+              class="govuk-label govuk-radios__label"
+              for="acceptAnalytics-2"
+            >
+              No
+            </label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+    <button
+      class="govuk-button"
+      data-govuk-button-init=""
+      data-module="govuk-button"
+      type="submit"
+    >
+      Save cookie settings
+    </button>
+  </form>
+  <p
+    class="govuk-body"
+  >
+    <a
+      class="govuk-link govuk-link--no-visited-state"
+      href="https://www.tax.service.gov.uk/help/cookie-details"
+    >
+      Find out more about cookies on HMRC services
+    </a>
+  </p>
+</DocumentFragment>
+`;
+
+exports[`should render CookiePageTable component. should render CookiePageTable content in Welsh. 1`] = `
+<DocumentFragment>
+  <h1
+    class="govuk-heading-l test"
+  >
+    Cwcis
+  </h1>
+  <p
+    class="govuk-body"
+  >
+    Mae cwcis yn ffeiliau testun bach yr ydym yn eu cadw ar eich ffôn, llechen neu gyfrifiadur pan fyddwch yn defnyddio’r gwasanaeth hwn.
+  </p>
+  <p
+    class="govuk-body"
+  >
+    Rydym yn defnyddio’r cwcis canlynol i wneud yn siŵr bod y wefan hon yn gweithio, ac er mwyn casglu gwybodaeth am sut rydych chi’n defnyddio ein gwasanaeth.
+  </p>
+  <table
+    class="govuk-table"
+  >
+    <caption
+      class="govuk-table__caption govuk-table__caption--m"
+    >
+      Cwcis Hanfodol
+    </caption>
+    <thead
+      class="govuk-table__head"
+    >
+      <tr
+        class="govuk-table__row"
+      >
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Enw
+        </th>
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Pwrpass
+        </th>
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Yn dod i ben
+        </th>
+      </tr>
+    </thead>
+    <tbody
+      class="govuk-table__body"
+    >
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          AWSALB
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Defnyddir hyn i helpu i reoli’r traffig rhwng porwr gwe ymwelwr a gweinydd y rhaglen sy’n cynnal gwasanaethau CThEF.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          7 diwrnod
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          AWSALBCORS
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Defnyddir hyn i helpu i reoli’r traffig rhwng porwr gwe ymwelwr a gweinydd y rhaglen sy’n cynnal gwasanaethau CThEF.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          7 diwrnod
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          JSESSIONID
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Defnyddir hyn i adnabod gwybodaeth am sesiwn yr ymwelwr, a’r wybodaeth honno yn ymwneud â’r gwasanaeth sy’n cael ei ddefnyddio.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Sesiwn
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          AKA_A2
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Defnyddir y cwci Akamai hwn i helpu cyflymu’r ddarpariaeth o gynnwys ar wefannau sy’n defnyddio cyflymiad addasol.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          1 awr
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p
+    class="govuk-body"
+  >
+    Mae cwcis hanfodol yn cadw eich gwybodaeth yn ddiogel tra byddwch yn defnyddio’r gwasanaeth hwn. Nid oes angen i ni ofyn am ganiatâd i’w defnyddio
+  </p>
+  <h2
+    class="govuk-heading-m"
+  >
+    Cwcis dadansoddeg (Google Analytics)
+  </h2>
+  <p
+    class="govuk-body"
+  >
+    Rydym yn defnyddio meddalwedd Google Analytics i gasglu gwybodaeth am sut rydych yn defnyddio’r gwasanaeth hwn a’n helpu i’w wella. nid ydym yn caniatáu i Google ddefnyddio na rhannu’r data hwn
+  </p>
+  <table
+    class="govuk-table"
+  >
+    <caption
+      class="govuk-table__caption govuk-table__caption--m"
+    >
+      Cwcis dadansoddeg
+    </caption>
+    <thead
+      class="govuk-table__head"
+    >
+      <tr
+        class="govuk-table__row"
+      >
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Enw
+        </th>
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Pwrpass
+        </th>
+        <th
+          class="govuk-table__header"
+          scope="col"
+        >
+          Yn dod i ben
+        </th>
+      </tr>
+    </thead>
+    <tbody
+      class="govuk-table__body"
+    >
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          _ga
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Defnyddir y cwci Akamai hwn i helpu cyflymu’r ddarpariaeth o gynnwys ar wefannau sy’n defnyddio cyflymiad addasol.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          2 flynedd
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          _gid
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Defnyddir i adnabod defnyddwyr ac i roi dynodydd unigryw i bob ymwelydd.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          24 awr
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          gac
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Yn cynnwys gwybodaeth am ymgyrchoedd hysbysebu i gysylltu data hysbysebu â Google.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          90 diwrnod
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          _gat
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Defnyddir i gyfyngu ar nifer y ceisiadau, gan gyfyngu’r casgliad o ddata ar wefannau â thraffig trwm.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          1 funud
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          AMP_TOKEN
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Defnyddir i adalw ID cleient o’r gwasanaeth AMP Client ID.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          30 eiliad i 1 flwyddyn
+        </td>
+      </tr>
+      <tr
+        class="govuk-table__row"
+      >
+        <td
+          class="govuk-table__cell govuk-table__header"
+        >
+          _dc_gtm_UA-XXXXXXXX-X
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          Defnyddir i reoli llwytho sgriptiau Google Analytics.
+        </td>
+        <td
+          class="govuk-table__cell"
+        >
+          1 funud
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h2
+    class="govuk-heading-l"
+  >
+    Newid eich gosodiadau cwcis
+  </h2>
+  <form
+    action=""
+  >
+    <div
+      class="govuk-form-group "
+    >
+      <fieldset
+        aria-describedby="acceptAnalytics-error"
+        class="govuk-fieldset"
+      >
+        <legend
+          class="govuk-fieldset__legend govuk-fieldset__legend--s"
+        >
+          A ydych am dderbyn cwcis dadansoddeg?
+        </legend>
+        <div
+          class="govuk-radios"
+          data-module="govuk-radios"
+        >
+          <div
+            class="govuk-radios__item"
+          >
+            <input
+              class="govuk-radios__input"
+              id="acceptAnalytics-1"
+              name="acceptAnalytics"
+              type="radio"
+              value="yes"
+            />
+            <label
+              class="govuk-label govuk-radios__label"
+              for="acceptAnalytics-1"
+            >
+              Ydw
+            </label>
+          </div>
+          <div
+            class="govuk-radios__item"
+          >
+            <input
+              class="govuk-radios__input"
+              id="acceptAnalytics-2"
+              name="acceptAnalytics"
+              type="radio"
+              value="no"
+            />
+            <label
+              class="govuk-label govuk-radios__label"
+              for="acceptAnalytics-2"
+            >
+              Nac ydw
+            </label>
+          </div>
+        </div>
+      </fieldset>
+    </div>
+    <button
+      class="govuk-button"
+      data-govuk-button-init=""
+      data-module="govuk-button"
+      type="submit"
+    >
+      Cadw gosodiadau cwcis
+    </button>
+  </form>
+  <p
+    class="govuk-body"
+  >
+    <a
+      class="govuk-link govuk-link--no-visited-state"
+      href="https://www.tax.service.gov.uk/help/cookie-details"
+    >
+      Dysgwch ragor am gwcis ar wasanaethau CThEF
+    </a>
+  </p>
+</DocumentFragment>
+`;

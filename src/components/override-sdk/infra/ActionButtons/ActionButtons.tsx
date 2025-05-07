@@ -22,7 +22,7 @@ export default function ActionButtons(props) {
                 _onButtonPress(mButton.jsAction, 'primary');
               }}
               key={mButton.actionID}
-              attributes={{ type: 'button' }}
+              attributes={{ type: 'submit' }}
             >
               {localizedVal(mButton.name, localeCategory)}
             </Button>
@@ -55,11 +55,9 @@ ActionButtons.propTypes = {
   arMainButtons: PropTypes.array,
   arSecondaryButtons: PropTypes.array,
   onButtonPress: PropTypes.func
-  // buildName: PropTypes.string
 };
 
 ActionButtons.defaultProps = {
   arMainButtons: [],
   arSecondaryButtons: []
-  // buildName: null
 };

@@ -12,24 +12,20 @@ export default function UserPortal(props) {
   }, []);
 
   return (
-    <>
-      <main
-        className={isLogout ? 'govuk-main-wrapper visibility-hidden' : 'govuk-main-wrapper'}
-        id='main-content'
-        role='main'
-      >
-        {showPortalBanner && (
-          <NotificationBanner content={t('SA_PORTAL_NOTIFICATION_BANNER_CONTENT')} />
-        )}
-        <div className='govuk-grid-row'>
-          <div className='govuk-grid-column-full govuk-prototype-kit-common-templates-mainstream-guide-body govuk-!-padding-right-0 govuk-!-padding-left-0'>
-            {/* SA Registration */}
-            <div className='govuk-grid-column-two-thirds'>
-              <>{children}</>
-            </div>
-          </div>
+    <main
+      className={isLogout ? 'govuk-main-wrapper visibility-hidden' : 'govuk-main-wrapper'}
+      id='main-content'
+      role='main'
+    >
+      {showPortalBanner && (
+        <NotificationBanner content={t('SA_PORTAL_NOTIFICATION_BANNER_CONTENT')} />
+      )}
+      <div className='govuk-grid-row'>
+        <div className='govuk-grid-column-full govuk-prototype-kit-common-templates-mainstream-guide-body govuk-!-padding-right-0 govuk-!-padding-left-0'>
+          {/* SA Registration */}
+          <div className='govuk-grid-column-two-thirds'>{children}</div>
         </div>
-      </main>
-    </>
+      </div>
+    </main>
   );
 }

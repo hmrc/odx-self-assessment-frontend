@@ -48,7 +48,7 @@ interface AutoCompleteProps extends PConnFieldProps {
   listType: string;
   parameters?: any;
   datasource: any;
-  columns: Array<any>;
+  columns: any[];
   instructionText: string;
   helperText: string;
   value: string;
@@ -58,6 +58,7 @@ interface AutoCompleteProps extends PConnFieldProps {
   configAlternateDesignSystem: any;
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function AutoComplete(props: AutoCompleteProps) {
   const {
     getPConnect,
@@ -79,6 +80,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   const { hasBeenWrapped } = useContext(ReadOnlyDefaultFormContext);
   const localizedVal = PCore.getLocaleUtils().getLocaleValue;
+  // @ts-ignore
   const [errorMessage, setErrorMessage] = useState(localizedVal(validatemessage));
   const [isAutocompleteLoaded, setAutocompleteLoaded] = useState(false);
   const context = getPConnect().getContextName();
@@ -86,12 +88,12 @@ export default function AutoComplete(props: AutoCompleteProps) {
 
   const { isOnlyField, overrideLabel } = useIsOnlyField(displayOrder);
   if (isOnlyField && !readOnly) label = overrideLabel.trim() ? overrideLabel : label;
-  const [options, setOptions] = useState<Array<IOption>>([]);
+  const [options, setOptions] = useState<IOption[]>([]);
   const [theDatasource, setDatasource] = useState(null);
   const thePConn = getPConnect();
   const actionsApi = thePConn.getActionsApi();
-  const propName = thePConn.getStateProps()['value'];
-  const formattedPropertyName = name || propName?.split('.')?.pop();
+  const propName = thePConn.getStateProps().value;
+  const fieldId = propName?.split('.')?.pop();
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -109,6 +111,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   }, []);
 
   useEffect(() => {
+    // @ts-ignore
     setErrorMessage(localizedVal(validatemessage));
   }, [validatemessage]);
   if (!isDeepEqual(datasource, theDatasource)) {
@@ -164,7 +167,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
   useEffect(() => {
     if (!displayMode && listType !== 'associated') {
       getDataPage(datasource, parameters, context).then((results: any) => {
-        const optionsData: Array<any> = [];
+        const optionsData: any[] = [];
         const displayColumn = getDisplayFieldsMetaData(columns);
         results?.forEach(element => {
           const val = element[displayColumn.primary]?.toString();
@@ -200,10 +203,8 @@ export default function AutoComplete(props: AutoCompleteProps) {
   };
 
   useEffect(() => {
-    const element = document.getElementById(formattedPropertyName) as HTMLInputElement;
-    const elementUl = document.getElementById(
-      `${formattedPropertyName}__listbox`
-    ) as HTMLInputElement;
+    const element = document.getElementById(fieldId) as HTMLInputElement;
+    const elementUl = document.getElementById(`${fieldId}__listbox`) as HTMLInputElement;
 
     if (validatemessage) {
       element?.classList.add('govuk-input--error');
@@ -274,7 +275,7 @@ export default function AutoComplete(props: AutoCompleteProps) {
         testId={testId}
         labelIsHeading={isOnlyField}
         errorText={errorMessage}
-        id={formattedPropertyName}
+        fieldId={fieldId}
       />
     )
   );

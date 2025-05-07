@@ -12,6 +12,7 @@ import setPageTitle from '../../../helpers/setPageTitleHelpers';
 // Redux and creation/update of Redux containers and PConnect.  Modifying this code could have undesireable results and
 // is totally at your own risk.
 //
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function ViewContainer(props) {
   // const { getPConnect, children, routingInfo, name } = props;
   const { getPConnect, name, mode, limit, loadingInfo, routingInfo } = props;
@@ -144,22 +145,21 @@ export default function ViewContainer(props) {
           <>
             {!PCore.getStore()
               .getState()
-              .data[routingInfo.accessedOrder[0]].caseInfo.status.startsWith('Open') &&
-              (
-                <Button
-                  variant='backlink'
-                  onClick={e => {
-                    e.preventDefault();
-                    PCore.getContainerUtils().closeContainerItem(
-                      PCore.getContainerUtils().getActiveContainerItemName(
-                        `${pConn.getContextName()}/${pConn.getContainerName()}`
-                      )
-                    );
-                  }}
-                  key='closePreview'
-                  attributes={{ type: 'link' }}
-                />
-              )}
+              .data[routingInfo.accessedOrder[0]].caseInfo.status.startsWith('Open') && (
+              <Button
+                variant='backlink'
+                onClick={e => {
+                  e.preventDefault();
+                  PCore.getContainerUtils().closeContainerItem(
+                    PCore.getContainerUtils().getActiveContainerItemName(
+                      `${pConn.getContextName()}/${pConn.getContainerName()}`
+                    )
+                  );
+                }}
+                key='closePreview'
+                attributes={{ type: 'link' }}
+              />
+            )}
             {componentVisible && root}
           </>,
           loadingInfo &&

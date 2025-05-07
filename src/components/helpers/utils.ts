@@ -35,7 +35,7 @@ export const getServiceShutteredStatus = async (): Promise<boolean> => {
       `${sdkConfig.serverConfig.infinityRestServerUrl}/app/${sdkConfig.serverConfig.appAlias}/api/application/v2/data_views/D_ShutterLookup`
     ).href;
 
-    const featureID = apiConfig[getJourneyName()]['shuttering'].featureID;
+    const featureID = apiConfig[getJourneyName()].shuttering.featureID;
 
     const featureType = 'Service';
 
@@ -115,48 +115,64 @@ export const checkStatus = () => {
   const containername = PCore.getContainerUtils().getActiveContainerItemName(
     `${PCore.getConstants().APP.APP}/primary`
   );
-  const context = PCore.getContainerUtils().getActiveContainerItemName(`${containername}/workarea`);
-  const status = PCore.getStoreValue('.pyStatusWork', 'caseInfo.content', context);
+  const status = PCore.getStoreValue('.pyStatusWork', 'caseInfo.content', containername);
   return status;
 };
 
-export const triggerLogout = setIsLogout => {
+export const clearSessionStorageExcept = (excludedKeys: string[]) => {
+  for (var item = 0; item < sessionStorage.length; item++) {
+    var key = sessionStorage.key(item);
+
+    if (excludedKeys.indexOf(key) === -1) {
+      sessionStorage.removeItem(key);
+    }
+  }
+};
+
+export const triggerLogout = (setIsLogout, isAutoSignout: boolean = false) => {
   let authType = 'gg';
   getSdkConfig().then(sdkConfig => {
     const sdkConfigAuth = sdkConfig.authConfig;
     authType = sdkConfigAuth.authService;
-  });
-  const authServiceList = {
-    gg: 'GovGateway',
-    'gg-dev': 'GovGateway-Dev',
-    'gg-sa-dev': 'GovGateway-SA-dev'
-  };
-  const authService = authServiceList[authType];
 
-  setIsLogout(false);
+    const authServiceList = {
+      gg: 'GovGateway',
+      'gg-sa': 'GovGateway-SA',
+      'gg-sa-dev': 'GovGateway-SA-dev'
+    };
+    const authService = authServiceList[authType];
 
-  // If the container / case is opened then close the container on signout to prevent locking.
-  const activeCase = PCore.getContainerUtils().getActiveContainerItemContext('app/primary');
-  if (activeCase) {
-    PCore.getContainerUtils().closeContainerItem(activeCase, { skipDirtyCheck: true });
-  }
+    setIsLogout(false);
 
-  type responseType = { URLResourcePath2: string };
+    // If the container / case is opened then close the container on signout to prevent locking.
+    const activeCase = PCore.getContainerUtils().getActiveContainerItemContext('app/primary');
+    if (activeCase) {
+      PCore.getContainerUtils().closeContainerItem(activeCase, { skipDirtyCheck: true });
+    }
 
-  PCore.getDataPageUtils()
-    .getPageDataAsync('D_AuthServiceLogout', 'root', { AuthService: authService })
-    // @ts-ignore
-    .then((response: unknown) => {
-      const logoutUrl = (response as responseType).URLResourcePath2;
+    type responseType = { URLResourcePath2: string };
+    const application = isAutoSignout
+      ? apiConfig[getJourneyName()]?.autoSignoutApplication
+      : apiConfig[getJourneyName()]?.application;
 
-      logout().then(() => {
-        if (logoutUrl) {
-          // Clear previous sessioStorage values
-          sessionStorage.clear();
-          window.location.href = logoutUrl;
-        }
+    PCore.getDataPageUtils()
+      .getPageDataAsync('D_AuthServiceLogout', 'root', {
+        AuthService: authService,
+        Application: application
+      })
+      // @ts-ignore
+      .then((response: unknown) => {
+        const logoutUrl = (response as responseType).URLResourcePath2;
+
+        logout().then(() => {
+          if (logoutUrl) {
+            // Clear previous sessioStorage values
+            clearSessionStorageExcept(['isAnsSaved']);
+            window.location.href = logoutUrl;
+          }
+        });
       });
-    });
+  });
 };
 
 export const getWorkareaContainerName = () => {
@@ -174,6 +190,18 @@ export const getCaseId = () => {
     `${PCore.getConstants().APP.APP}/primary`
   );
   return PCore.getStoreValue('.ID', 'caseInfo', context);
+};
+
+export const resumeOnRefresh = (pConnect, pCoreReady, setShowLandingPage) => {
+  const pyAssignmentID = sessionStorage.getItem('assignmentID');
+  if (pyAssignmentID && pCoreReady) {
+    const container = pConnect?.getContainerName();
+    const target = `${PCore?.getConstants().APP.APP}/${container}`;
+    const openAssignmentOptions = { pageName: '', channelName: '' };
+    const assignmentID = sessionStorage.getItem('assignmentID');
+    PCore.getMashupApi().openAssignment(assignmentID, target, openAssignmentOptions);
+    setShowLandingPage(false);
+  }
 };
 
 // formatDecimal is so that 1.05 becomes 1.05 and any numbers with zeros such as 1.00 become 1.

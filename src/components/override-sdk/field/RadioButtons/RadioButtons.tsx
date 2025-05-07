@@ -29,9 +29,10 @@ export default function RadioButtons(props) {
   if (isOnlyField && !readOnly) label = overrideLabel.trim() ? overrideLabel : label;
 
   const localizedVal = PCore.getLocaleUtils().getLocaleValue;
-
+  // @ts-ignore
   const [errorMessage, setErrorMessage] = useState(localizedVal(validatemessage));
   useEffect(() => {
+    // @ts-ignore
     setErrorMessage(localizedVal(validatemessage));
   }, [validatemessage]);
 
@@ -108,6 +109,7 @@ export default function RadioButtons(props) {
   const extraProps = { testProps: { 'data-test-id': testId } };
   const actionsApi = thePConn.getActionsApi();
   const propName = thePConn.getStateProps().value;
+  const fieldId = propName?.split('.')?.pop();
 
   const handleChange = event => {
     handleEvent(actionsApi, 'changeNblur', propName, event.target.value);
@@ -117,6 +119,7 @@ export default function RadioButtons(props) {
     <GDSRadioButtons
       {...props}
       name={name}
+      fieldId={fieldId}
       label={label}
       onChange={handleChange}
       legendIsHeading={isOnlyField}

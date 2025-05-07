@@ -1,5 +1,4 @@
- 
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Card, CardHeader, Avatar, Typography } from '@material-ui/core';
 import { Utils } from '@pega/react-sdk-components/lib/components/helpers/utils';
@@ -14,9 +13,10 @@ import {
 } from '@pega/react-sdk-components/lib/components/infra/Containers/FlowContainer/helpers';
 import { isContainerInitialized } from '../helpers';
 
-import { withSimpleViewContainerRenderer } from '../SimpleView/SimpleView';
-
 import { getComponentFromMap } from '@pega/react-sdk-components/lib/bridge/helpers/sdk_component_map';
+import { withSimpleViewContainerRenderer } from '../SimpleView/SimpleView';
+import { getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
+import { checkStatus } from '../../../helpers/utils';
 
 // Remove this and use "real" PCore type once .d.ts is fixed (currently shows 3 errors)
 declare const PCore: any;
@@ -50,10 +50,9 @@ export const FlowContainer = props => {
 
   const containerName = assignmentNames && assignmentNames.length > 0 ? assignmentNames[0] : '';
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-  const [checkSvg, setCheckSvg] = useState('');
   const [buildName, setBuildName] = useState('');
   const [bShowConfirm, setShowConfirm] = useState(false);
+  const [resolutionStatuses, setResolutionStatuses] = useState(null);
 
   function getBuildName(): string {
     const ourPConn = getPConnect();
@@ -61,7 +60,7 @@ export const FlowContainer = props => {
     let viewContainerName = ourPConn.getContainerName();
 
     if (!viewContainerName) viewContainerName = '';
-    return `${context.toUpperCase()}/${viewContainerName.toUpperCase()}`;
+    return `${context?.toUpperCase()}/${viewContainerName.toUpperCase()}`;
   }
 
   function initComponent() {
@@ -113,7 +112,7 @@ export const FlowContainer = props => {
     const ourPConn = getPConnect();
 
     let bHasAssignments = false;
-    const assignmentsList: Array<any> = ourPConn.getValue(
+    const assignmentsList: any[] = ourPConn.getValue(
       pCoreConstants.CASE_INFO.D_CASE_ASSIGNMENTS_RESULTS,
       ''
     );
@@ -127,7 +126,7 @@ export const FlowContainer = props => {
     if (PCoreVersion?.includes('8.7') || isEmbedded) {
       const thisOperator = PCore.getEnvironmentInfo().getOperatorIdentifier();
       for (const assignment of assignmentsList) {
-        if (assignment['assigneeInfo']['ID'] === thisOperator) {
+        if (assignment.assigneeInfo.ID === thisOperator) {
           bAssignmentsForThisOperator = true;
         }
       }
@@ -148,24 +147,16 @@ export const FlowContainer = props => {
     return bHasAssignments;
   }
 
+  useEffect(() => {
+    getSdkConfig().then(sdkConfig => {
+      setResolutionStatuses(sdkConfig.showResolutionStatuses);
+    });
+  }, []);
+
   // From SDK-WC updateSelf - so do this in useEffect that's run only when the props change...
   useEffect(() => {
     setBuildName(getBuildName());
-
-    // let loadingInfo: any;
-    // try {
-    //   loadingInfo = thePConn.getLoadingStatus();
-    // } catch (ex) {
-    //   // eslint-disable-next-line no-console
-    //   console.error(`${thePConn.getComponentName()}: loadingInfo catch block`);
-    // }
-
-    // if (!loadingInfo) {
-    //   // turn off spinner
-    //   // this.psService.sendMessage(false);
-    // }
-
-    if (!hasAssignments()) {
+    if (!hasAssignments() || resolutionStatuses?.includes(checkStatus())) {
       setShowConfirm(true);
 
       // publish this "assignmentFinished" for mashup, need to get approved as a standard
@@ -187,6 +178,14 @@ export const FlowContainer = props => {
 
   const bShowBanner = showBanner(getPConnect);
 
+  const assignmentForm = useMemo(() => {
+    return (
+      <Assignment getPConnect={getPConnect} itemKey={itemKey}>
+        {[rootViewElement]}
+      </Assignment>
+    );
+  }, [getPConnect, props]);
+
   return (
     <div id={buildName}>
       {!bShowConfirm && !displayOnlyFA ? (
@@ -199,21 +198,15 @@ export const FlowContainer = props => {
           {instructionText !== '' ? (
             <Typography variant='caption'>{instructionText}</Typography>
           ) : null}
-          <MuiPickersUtilsProvider utils={DayjsUtils}>
-            <Assignment getPConnect={getPConnect} itemKey={itemKey}>
-              {[rootViewElement]}
-            </Assignment>
-          </MuiPickersUtilsProvider>
+          <MuiPickersUtilsProvider utils={DayjsUtils}>{assignmentForm}</MuiPickersUtilsProvider>
         </Card>
       ) : (
         <div>
           {instructionText !== '' ? (
             <Typography variant='caption'>{instructionText}</Typography>
           ) : null}
-          <Assignment getPConnect={getPConnect} itemKey={itemKey}>
-              {[rootViewElement]}
-            </Assignment>
-          </div>
+          {assignmentForm}
+        </div>
       )}
       {bShowConfirm && bShowBanner && <div>{[rootViewElement]}</div>}
     </div>
@@ -238,4 +231,3 @@ FlowContainer.propTypes = {
   // eslint-disable-next-line react/no-unused-prop-types
   pageMessages: PropTypes.arrayOf(PropTypes.any)
 };
-

@@ -14,14 +14,14 @@ jest.mock('../../../components/helpers/hooks/HMRCExternalLinks', () => ({
   __esModule: true,
   default: jest.fn(() => ({
     referrerURL: 'mockReferrer',
-    hmrcURL: 'https://mock.hmrc.gov.uk/',
-  })),
+    hmrcURL: 'https://mock.hmrc.gov.uk/'
+  }))
 }));
 
 describe('AccessibilityAppealsAndPenalties', () => {
-
   test('renders without crashing', () => {
     const { container } = render(<AccessibilityAppealsAndPenalties />);
+    // @ts-ignore
     expect(container).toBeInTheDocument();
   });
 
@@ -32,6 +32,7 @@ describe('AccessibilityAppealsAndPenalties', () => {
 
   test('renders the main heading', () => {
     render(<AccessibilityAppealsAndPenalties />);
+    // @ts-ignore
     expect(screen.getByText('ACCESSIBLITY_STATEMENT_FOR_APPEAL_SERVICE')).toBeInTheDocument();
   });
 
@@ -44,9 +45,10 @@ describe('AccessibilityAppealsAndPenalties', () => {
       'IF_YOU_ARE_NOT_HAPPY',
       'CONTACTING_US_BY',
       'TECHNICAL_INFO_ABOUT_THIS_SERVICE',
-      'HOW_WE_TESTED_THIS',
+      'HOW_WE_TESTED_THIS'
     ];
-    headings.forEach((heading) => {
+    headings.forEach(heading => {
+      // @ts-ignore
       expect(screen.getByText(heading)).toBeInTheDocument();
     });
   });
@@ -54,8 +56,10 @@ describe('AccessibilityAppealsAndPenalties', () => {
   test('ensures all links have target="_blank" and rel="noreferrer noopener"', () => {
     render(<AccessibilityAppealsAndPenalties />);
     const links = screen.getAllByRole('link');
-    links.forEach((link) => {
+    links.forEach(link => {
+      // @ts-ignore
       expect(link).toHaveAttribute('target', '_blank');
+      // @ts-ignore
       expect(link).toHaveAttribute('rel', 'noreferrer noopener');
     });
   });

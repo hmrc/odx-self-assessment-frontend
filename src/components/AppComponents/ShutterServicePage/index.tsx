@@ -6,7 +6,7 @@ import setPageTitle from '../../helpers/setPageTitleHelpers';
 export default function ShutterServicePage() {
   const { t } = useTranslation();
   const lang = sessionStorage.getItem('rsdk_locale')?.substring(0, 2) || 'en';
-  
+
   useEffect(() => {
     setPageTitle();
   }, [lang]);

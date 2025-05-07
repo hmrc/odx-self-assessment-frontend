@@ -40,15 +40,18 @@ describe('should render RegistrationAgeRestrictionInfo component.', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(screen.getByText('Call HMRC to register for Self Assessment')).toBeInTheDocument();
     expect(
       screen.getByText(
         'You need to be older than 15 years and 9 months to register for Self Assessment online.'
-      )
+      ) // @ts-ignore
     ).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('If you need to register, call HMRC.')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Get help')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText("HMRC's online assistant (opens in a new tab)")).toBeInTheDocument();
   });
 
@@ -64,14 +67,18 @@ describe('should render RegistrationAgeRestrictionInfo component.', () => {
 
     expect(
       screen.getByText('Ffoniwch CThEF i gofrestru ar gyfer Hunanasesiad')
+      // @ts-ignore
     ).toBeInTheDocument();
     expect(
       screen.getByText(
         'Mae angen i chi fod yn hŷn na 15 mlynedd a 9 mis oed i gofrestru ar gyfer Hunanasesiad ar-lein.'
-      )
+      ) // @ts-ignore
     ).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Os bydd angen i chi gofrestru, ffoniwch CThEF.')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Help')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('gynorthwyydd ar-lein CThEF (yn agor tab newydd)')).toBeInTheDocument();
   });
 
@@ -86,6 +93,7 @@ describe('should render RegistrationAgeRestrictionInfo component.', () => {
 
     expect(
       screen.getByRole('link', { name: "HMRC's online assistant (opens in a new tab)" })
+      // @ts-ignore
     ).toHaveAttribute(
       'href',
       'https://test-www.tax.service.gov.uk/ask-hmrc/chat/self-assessment-cessation'

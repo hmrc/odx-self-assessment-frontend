@@ -1,4 +1,3 @@
-// eslint-disable-next-line strict
 module.exports = {
   testEnvironment: 'jsdom',
   roots: ['<rootDir>/src'],

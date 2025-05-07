@@ -9,13 +9,12 @@ describe('getPageDataAsync', () => {
   };
 
   beforeEach(() => {
-    // eslint-disable-next-line no-undef
     (global as any).PCore = PCoreMock;
   });
 
   afterEach(() => {
     jest.resetAllMocks();
-    // eslint-disable-next-line no-undef
+
     delete (global as any).PCore;
   });
 

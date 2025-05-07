@@ -1,17 +1,17 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { getInstructions } from './utils';
 import type { PConnProps } from '@pega/react-sdk-components/lib/types/PConnProps';
-
 import './DefaultForm.css';
-
 import StyledHmrcOdxGdsCheckAnswersPageWrapper from './styles';
+
+declare const PCore;
 
 interface HmrcOdxGdsCheckAnswersPageProps extends PConnProps {
   // If any, enter additional props that only exist on this componentName
   NumCols?: string;
   instructions?: string;
   // eslint-disable-next-line react/no-unused-prop-types
-  children: Array<any>;
+  children: any[];
 }
 
 // props passed in combination of props from property panel (config.json) and run time props from Constellation
@@ -19,6 +19,7 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
   // template structure setup
   const { getPConnect, NumCols = '1' } = props;
   const instructions = getInstructions(getPConnect(), props.instructions);
+  const [key, setKey] = useState(1);
 
   let divClass: string;
 
@@ -62,6 +63,7 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
     getPConnect().getActionsApi().finishAssignment(containerItemID);
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   function updateHTML(htmlContent) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
@@ -134,6 +136,7 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   useEffect(() => {
     if (dfChildrenContainerRef.current) {
       const checkChildren = () => {
@@ -144,7 +147,8 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
           let htmlContent = '';
           Array.from(container.children).forEach(child => {
             if (child instanceof HTMLElement) {
-              if (child.tagName === 'H2' || child.tagName === 'H3') {
+              if (child.tagName === 'H2' || child.tagName === 'H3' || child.tagName === 'P') {
+                if (child.tagName === 'P') child.setAttribute('class', 'govuk-body');
                 htmlContent += child.outerHTML;
               } else {
                 htmlContent += child.innerHTML;
@@ -165,8 +169,24 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
     }
   }, [dfChildren]);
 
+  // to force refresh the view
+  async function refreshView() {
+    setKey(previousKey => previousKey + 1);
+  }
+
+  useEffect(() => {
+    PCore.getPubSubUtils().subscribe(
+      'forceRefreshRootComponent',
+      refreshView,
+      'forceRefreshRootComponent'
+    );
+
+    return () =>
+      PCore.getPubSubUtils().unsubscribe('forceRefreshRootComponent', 'forceRefreshRootComponent');
+  }, [getPConnect]);
+
   return (
-    <StyledHmrcOdxGdsCheckAnswersPageWrapper>
+    <StyledHmrcOdxGdsCheckAnswersPageWrapper key={key}>
       <>
         {instructions && (
           <div className='psdk-default-form-instruction-text'>

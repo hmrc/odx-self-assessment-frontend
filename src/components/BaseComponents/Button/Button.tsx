@@ -2,15 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-export default function Button(props:React.PropsWithChildren<any>) {
-  const {
-    disabled,
-    id,
-    variant,
-    onClick,
-    children,
-    attributes = {}
-  } = props;
+export default function Button(props: React.PropsWithChildren<any>) {
+  const { disabled, id, variant, onClick, children, attributes = {} } = props;
 
   const { t } = useTranslation();
   const [pointerState, setPointerState] = useState<Object>({});
@@ -82,9 +75,11 @@ export default function Button(props:React.PropsWithChildren<any>) {
 
   let buttonAttributes = {
     ...attributes,
-    className: `govuk-button ${variant === 'secondary' ? ' govuk-button--secondary' : ''} ${
-      disabled ? ' govuk-button--disabled' : ''
-    }`.concat(' ', attributes.className),
+    className:
+      `govuk-button ${variant === 'secondary' ? ' govuk-button--secondary' : ''} ${disabled ? ' govuk-button--disabled' : ''}`.concat(
+        ' ',
+        attributes.className
+      ),
     'data-module': 'govuk-button',
     'data-prevent-double-click': true
   };

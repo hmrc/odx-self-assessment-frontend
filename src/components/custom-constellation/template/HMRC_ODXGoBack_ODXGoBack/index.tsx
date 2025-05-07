@@ -16,7 +16,6 @@ interface HmrcOdxGoBackOdxGoBackProps extends PConnFieldProps {
 // props passed in combination of props from property panel (config.json) and run time props from Constellation
 // any default values in config.pros should be set in defaultProps at bottom of this file
 function HmrcOdxGoBackOdxGoBack(props: HmrcOdxGoBackOdxGoBackProps) {
-
   const { children = [], NumCols = '1', label, showLabel, getPConnect } = props;
   const propsToUse = { label, showLabel, ...getPConnect().getInheritedProps() };
 
@@ -24,18 +23,18 @@ function HmrcOdxGoBackOdxGoBack(props: HmrcOdxGoBackOdxGoBackProps) {
 
   return (
     <StyledHmrcOdxGoBackOdxGoBackWrapper>
-    <FieldGroup name={propsToUse.showLabel ? propsToUse.label : ''}>
-      <Grid container={{
+      <FieldGroup name={propsToUse.showLabel ? propsToUse.label : ''}>
+        <Grid
+          container={{
             cols: `repeat(${nCols}, minmax(0, 1fr))`,
             gap: 2
-          }}>
-            {children}
-      </Grid>
-    </FieldGroup>
+          }}
+        >
+          {children}
+        </Grid>
+      </FieldGroup>
     </StyledHmrcOdxGoBackOdxGoBackWrapper>
   );
-
-
 }
 
 export default withConfiguration(HmrcOdxGoBackOdxGoBack);

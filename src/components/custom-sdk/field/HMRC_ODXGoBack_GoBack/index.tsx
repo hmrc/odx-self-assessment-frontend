@@ -42,9 +42,11 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
     }
   }
 
-  function removeBackLink() {
-    const existingBackLinks = document.querySelectorAll('.govuk-back-link');
-    existingBackLinks.forEach(link => link.remove());
+  function removeBackLink(errorState: boolean = false) {
+    if (!errorState) {
+      const existingBackLinks = document.querySelectorAll('.govuk-back-link');
+      existingBackLinks.forEach(link => link.remove());
+    }
   }
 
   function addBackLink(isValueTrue: boolean) {
@@ -106,7 +108,7 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
   useEffect(() => {
     PCore.getPubSubUtils().subscribe(
       'CustomAssignmentFinishedInitiated',
-      removeBackLink,
+      errorState => removeBackLink(errorState),
       'CustomAssignmentFinishedInitiated'
     );
     return () => {

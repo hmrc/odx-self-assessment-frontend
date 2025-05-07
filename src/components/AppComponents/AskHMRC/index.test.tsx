@@ -3,7 +3,7 @@ import AskHMRC from '.';
 import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { renderHook } from '@testing-library/react-hooks';
-import '@testing-library/jest-dom/extend-expect';
+// import '@testing-library/jest-dom/extend-expect';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { act } from 'react-dom/test-utils';
 import useHMRCExternalLinks from '../../helpers/hooks/HMRCExternalLinks';
@@ -43,8 +43,9 @@ describe('should render component AskHMRC.', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(screen.getByText('Get help')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText("HMRC's online assistant (opens in a new tab)")).toBeInTheDocument();
   });
 
@@ -59,7 +60,7 @@ describe('should render component AskHMRC.', () => {
       );
     });
 
-    expect(screen.getByText('Help')).toBeInTheDocument();
+    expect(screen.getByText('Cael help')).toBeInTheDocument();
     expect(screen.getByText('gynorthwyydd ar-lein CThEF (yn agor tab newydd)')).toBeInTheDocument();
   });
 
@@ -71,7 +72,7 @@ describe('should render component AskHMRC.', () => {
         </I18nextProvider>
       );
     });
-
+    // @ts-ignore
     expect(
       screen.getByRole('link', { name: "HMRC's online assistant (opens in a new tab)" })
     ).toHaveAttribute(

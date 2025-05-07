@@ -165,11 +165,9 @@ export const BaseHmrcOdxGdsCheckAnswersPage: Story = args => {
   });
 
   return (
-    <>
-      <HmrcOdxGdsCheckAnswersPage {...props} {...args}>
-        {regionAChildren}
-      </HmrcOdxGdsCheckAnswersPage>
-    </>
+    <HmrcOdxGdsCheckAnswersPage {...props} {...args}>
+      {regionAChildren}
+    </HmrcOdxGdsCheckAnswersPage>
   );
 };
 

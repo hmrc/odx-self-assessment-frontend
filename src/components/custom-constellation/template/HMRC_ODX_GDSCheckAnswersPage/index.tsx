@@ -58,18 +58,18 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
 
   function navigateToStep(event, stepId) {
     event.preventDefault();
-    // eslint-disable-next-line no-console
+
     console.log('navigation', stepId);
     const navigateToStepPromise = actions.navigateToStep(stepId, containerItemID);
 
     navigateToStepPromise
       .then(() => {
         //  navigate to step success handling
-        console.log('navigation successful'); // eslint-disable-line
+        console.log('navigation successful');
       })
       .catch(error => {
         // navigate to step failure handling
-        // eslint-disable-next-line no-console
+
         console.log('Change link Navigation failed', error);
       });
   }
@@ -151,6 +151,7 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
     }, 0);
 
     return () => clearTimeout(timerId); // Cleanup the timer
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dfChildren]);
 
   return (

@@ -2,10 +2,7 @@ import React, { useState, useLayoutEffect, useEffect, useContext } from 'react';
 import DateInput from '../../../BaseComponents/DateInput/DateInput';
 import useIsOnlyField from '../../../helpers/hooks/QuestionDisplayHooks';
 import ReadOnlyDisplay from '../../../BaseComponents/ReadOnlyDisplay/ReadOnlyDisplay';
-import {
-  DateErrorFormatter,
-  DateErrorTargetFields
-} from '../../../helpers/formatters/DateErrorFormatter';
+import { DateErrorFormatter, DateErrorTargetFields } from '../../../helpers/formatters/DateErrorFormatter';
 import { GBdate, checkStatus } from '../../../helpers/utils';
 import handleEvent from '@pega/react-sdk-components/lib/components/helpers/event-utils';
 import dayjs from 'dayjs';
@@ -13,19 +10,9 @@ import GDSCheckAnswers from '../../../BaseComponents/CheckAnswer/index';
 import { ReadOnlyDefaultFormContext } from '../../../helpers/HMRCAppContext';
 
 export default function Date(props) {
-  const {
-    getPConnect,
-    value = '',
-    validatemessage,
-    helperText,
-    placeholder,
-    readOnly,
-    name,
-    testId,
-    configAlternateDesignSystem
-  } = props;
+  const { getPConnect, value = '', validatemessage, helperText, placeholder, readOnly, testId, configAlternateDesignSystem } = props;
   const pConn = getPConnect();
-
+  const fieldId = pConn.getStateProps().value.split('.').pop();
   let label = props.label;
   const { isOnlyField, overrideLabel } = useIsOnlyField(props.displayOrder);
   if (isOnlyField && !readOnly) label = overrideLabel.trim() ? overrideLabel : label;
@@ -34,12 +21,10 @@ export default function Date(props) {
   const [day, setDay] = useState(value ? value.split('-')[2] : '');
   const [month, setMonth] = useState(value ? value.split('-')[1] : '');
   const [year, setYear] = useState(value ? value.split('-')[0] : '');
-  const [editedValidateMessage, setEditedValidateMessage] = useState(
-    DateErrorFormatter(
-      validatemessage,
-      getPConnect().resolveConfigProps(getPConnect().getMetadata().config).label
-    )
-  );
+  const formattedPropertyName = getPConnect().getMetadata().config.value.includes('.')
+    ? getPConnect().getMetadata().config.value.split('.').pop()
+    : null;
+  const [editedValidateMessage, setEditedValidateMessage] = useState(DateErrorFormatter(validatemessage, formattedPropertyName));
   const [specificErrors, setSpecificErrors] = useState<any>(null);
   const { hasBeenWrapped } = useContext(ReadOnlyDefaultFormContext);
 
@@ -72,12 +57,8 @@ export default function Date(props) {
 
   useEffect(() => {
     setEditedValidateMessage(
-      localizedVal(
-        DateErrorFormatter(
-          validatemessage,
-          getPConnect().resolveConfigProps(getPConnect().getMetadata().config).label
-        )
-      )
+      // @ts-ignore
+      localizedVal(DateErrorFormatter(validatemessage, formattedPropertyName))
     );
     const errorTargets = DateErrorTargetFields(validatemessage);
     let specificError: any = null;
@@ -90,12 +71,12 @@ export default function Date(props) {
 
     // This sets a state prop to be exposed to the error summary set up in Assisgnment component - and should match the id of the first field of
     //  the date component. Will investigate better way to do this, to avoid mismatches if the Date BaseComponent changes.
-    pConn.setStateProps({ fieldId: `${name}-day` });
+    pConn.setStateProps({ fieldId: `${fieldId}-day` });
     if (!specificError?.day) {
       if (specificError?.month) {
-        pConn.setStateProps({ fieldId: `${name}-month` });
+        pConn.setStateProps({ fieldId: `${fieldId}-month` });
       } else if (specificError?.year) {
-        pConn.setStateProps({ fieldId: `${name}-year` });
+        pConn.setStateProps({ fieldId: `${fieldId}-year` });
       }
     }
     setSpecificErrors(specificError);
@@ -122,16 +103,12 @@ export default function Date(props) {
 
   const inprogressStatus = checkStatus();
 
-  if (
-    hasBeenWrapped &&
-    configAlternateDesignSystem?.ShowChangeLink &&
-    inprogressStatus === 'Open-InProgress'
-  ) {
+  if (hasBeenWrapped && configAlternateDesignSystem?.ShowChangeLink && inprogressStatus === 'Open-InProgress') {
     return (
       <GDSCheckAnswers
         label={props.label}
         value={dayjs(value).format('D MMMM YYYY')}
-        name={name}
+        name={fieldId}
         stepId={configAlternateDesignSystem.stepId}
         hiddenText={configAlternateDesignSystem.hiddenText}
         getPConnect={getPConnect}
@@ -155,7 +132,8 @@ export default function Date(props) {
   const extraProps = { testProps: { 'data-test-id': testId } };
 
   if (configAlternateDesignSystem?.autocomplete) {
-    extraProps['autoComplete'] = configAlternateDesignSystem.autocomplete;
+    // @ts-ignore
+    extraProps.autoComplete = configAlternateDesignSystem.autocomplete;
   }
 
   return (
@@ -166,7 +144,7 @@ export default function Date(props) {
       onChangeMonth={handleChangeMonth}
       onChangeYear={handleChangeYear}
       value={{ day, month, year }}
-      name={name}
+      name={fieldId}
       errorText={editedValidateMessage}
       hintText={helperText}
       errorProps={specificErrors ? { specificError: specificErrors } : null}

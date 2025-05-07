@@ -43,28 +43,41 @@ describe('should render AlreadyRegisteredUserMessage component.', () => {
 
     expect(
       screen.getByText("You've previously registered for Self Assessment")
+      // @ts-ignore
     ).toBeInTheDocument();
     expect(
       screen.getByText(
         "It looks like you're already registered for Self Assessment or were registered in the past. This service is in Beta and can't process your request at the moment."
       )
+      // @ts-ignore
     ).toBeInTheDocument();
     expect(
       screen.getByText('You can reactivate your online account for Self Assessment.')
+      // @ts-ignore
     ).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText("You'll need:")).toBeInTheDocument();
     expect(
       screen.getByText('Your Government Gateway user ID and password to sign in')
+      // @ts-ignore
     ).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Unique Taxpayer Reference (UTR) number')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('If you cannot us the online form')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('form CWF1')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Send the completed form to:')).toBeInTheDocument();
     expect(
       screen.getByText(/Self Assessment*HM Revenue and Customs*BX9 1AN*United Kingdom/)
+      // @ts-ignore
     ).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Unique Taxpayer Reference (UTR) number.')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Get help')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText("HMRC's online assistant (opens in a new tab)")).toBeInTheDocument();
   });
 
@@ -80,28 +93,40 @@ describe('should render AlreadyRegisteredUserMessage component.', () => {
 
     expect(
       screen.getByText('Rydych wedi cofrestru ar gyfer Hunanasesiad yn flaenorol')
+      // @ts-ignore
     ).toBeInTheDocument();
     expect(
       screen.getByText(
         'Mae’n debyg eich bod eisoes wedi cofrestru ar gyfer Hunanasesiad, neu eich bod wedi cofrestru yn y gorffennol. Gwasanaeth Beta yw hwn ac felly nid oes modd prosesu’ch cais ar hyn o bryd.'
-      )
+      ) // @ts-ignore
     ).toBeInTheDocument();
     expect(
       screen.getByText('Gallwch ailactifadu’ch cyfrif ar-lein ar gyfer Hunanasesiad.')
+      // @ts-ignore
     ).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Bydd angen y canlynol arnoch:')).toBeInTheDocument();
     expect(
       screen.getByText('Eich Dynodydd Defnyddiwr (ID) a’ch cyfrinair ar gyfer Porth y Llywodraeth')
+      // @ts-ignore
     ).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Cyfeirnod Unigryw y Trethdalwr (UTR)')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Os na allwch ddefnyddio’r ffurflen ar-lein')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('ffurflen CWF1')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Anfonwch y ffurflen wedi’i llenwi i:')).toBeInTheDocument();
     expect(
       screen.getByText(/Hunanasesiad*Gwasanaeth Cwsmeriaid Cymraeg CThEF*BX9 1ST*Y Deyrnas Unedig/)
+      // @ts-ignore
     ).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Cyfeirnod Unigryw y Trethdalwr (UTR) arnoch.')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Help')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('gynorthwyydd ar-lein CThEF (yn agor tab newydd)')).toBeInTheDocument();
   });
 
@@ -118,8 +143,9 @@ describe('should render AlreadyRegisteredUserMessage component.', () => {
       screen.getByRole('link', {
         name: 'Unique Taxpayer Reference (UTR) number (opens in new tab)'
       })
+      // @ts-ignore
     ).toHaveAttribute('href', 'https://www.gov.uk/find-lost-utr-number');
-
+    // @ts-ignore
     expect(screen.getByRole('link', { name: 'form CWF1 (opens in new tab)' })).toHaveAttribute(
       'href',
       'https://public-online.hmrc.gov.uk/lc/content/xfaforms/profiles/forms.html?contentRoot=repository:///Applications/NICs_iForms/1.0&template=CWF1_en_1.0.xdp'
@@ -128,13 +154,13 @@ describe('should render AlreadyRegisteredUserMessage component.', () => {
     expect(
       screen.getByRole('link', {
         name: 'Unique Taxpayer Reference (UTR) number. (opens in new tab)'
-      })
+      }) // @ts-ignore
     ).toHaveAttribute('href', 'https://www.gov.uk/find-lost-utr-number');
 
     expect(
       screen.getByRole('link', {
         name: "HMRC's online assistant (opens in a new tab)"
-      })
+      }) // @ts-ignore
     ).toHaveAttribute(
       'href',
       'https://test-www.tax.service.gov.uk/ask-hmrc/chat/self-assessment-cessation'

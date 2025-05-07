@@ -15,9 +15,10 @@ module.exports = (env, argv) => {
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: 'index.html',
-      baseUrl:'./'
+      baseUrl: './'
     })
   );
+
   pluginsToAdd.push(
     new CopyWebpackPlugin({
       patterns: [
@@ -48,25 +49,14 @@ module.exports = (env, argv) => {
         {
           from: './assets/icons/*',
           to() {
-            return Promise.resolve('constellation/icons/[name].[ext]');
+            return Promise.resolve('constellation/icons/[name][ext]');
           }
         },
         {
           from: './assets/css/*',
           to: './'
         },
-        {
-          from: './assets/img/*',
-          to: './'
-        },
-        {
-          from: './assets/css/*',
-          to: './'
-        },
-        {
-          from: './node_modules/tinymce',
-          to: './tinymce'
-        },
+
         {
           from: './node_modules/@pega/constellationjs/dist/bootstrap-shell.js',
           to: './constellation'
@@ -74,7 +64,10 @@ module.exports = (env, argv) => {
         {
           from: './node_modules/@pega/constellationjs/dist/bootstrap-shell.*.*',
           to() {
-            return Promise.resolve('constellation/[name].[ext]');
+            return Promise.resolve('constellation/[name][ext]');
+          },
+          globOptions: {
+            ignore: webpackMode === 'production' ? ['**/constellation-core.*.map'] : undefined
           }
         },
         {
@@ -84,7 +77,7 @@ module.exports = (env, argv) => {
         {
           from: './node_modules/@pega/constellationjs/dist/constellation-core.*.*',
           to() {
-            return Promise.resolve('constellation/prerequisite/[name].[ext]');
+            return Promise.resolve('constellation/prerequisite/[name][ext]');
           }
         },
         {
@@ -94,6 +87,11 @@ module.exports = (env, argv) => {
         {
           from: './assets/lib/*',
           to: './'
+        },
+
+        {
+          from: './node_modules/@pega/constellationjs/dist/js',
+          to: './constellation/prerequisite/js'
         }
       ]
     })
@@ -117,7 +115,7 @@ module.exports = (env, argv) => {
         filename: '[path][base].gz',
         algorithm: 'gzip',
         test: /\.js$|\.ts$|\.css$|\.html$/,
-        exclude: /constellation-core.*.js|bootstrap-shell.js/,
+        exclude: /constellation-core.*.js|bootstrap-shell.js|531.*.js/,
         threshold: 10240,
         minRatio: 0.8
       })
@@ -127,7 +125,7 @@ module.exports = (env, argv) => {
         filename: '[path][base].br',
         algorithm: 'brotliCompress',
         test: /\.(js|ts|css|html|svg)$/,
-        exclude: /constellation-core.*.js|bootstrap-shell.js/,
+        exclude: /constellation-core.*.js|bootstrap-shell.js|531.*.js/,
         compressionOptions: {
           params: {
             [zlib.constants.BROTLI_PARAM_QUALITY]: 11
@@ -152,7 +150,7 @@ module.exports = (env, argv) => {
     };
     pluginsToAdd.push(new LiveReloadPlugin(liveReloadOptions));
     publicPathValue = '/';
-  } 
+  }
 
   // need to set mode to 'development' to get LiveReload to work
   //  and for debugger statements to not be stripped out of the bundle
@@ -161,6 +159,7 @@ module.exports = (env, argv) => {
     entry: {
       app: './src/index.tsx'
     },
+
     devServer: {
       static: path.join(__dirname, 'dist'), // was called contentBase in earlier versions
       historyApiFallback: true,
@@ -173,7 +172,7 @@ module.exports = (env, argv) => {
     output: {
       filename: '[name].bundle.js',
       path: path.resolve(__dirname, 'dist'),
-      // publicPath: publicPathValue
+      clean: true
     },
     module: {
       rules: [
@@ -204,31 +203,45 @@ module.exports = (env, argv) => {
           use: [
             { loader: MiniCssExtractPlugin.loader },
             { loader: 'css-loader' },
-            { loader: 'sass-loader' }
+            {
+              loader: 'sass-loader',
+              options: {
+                sassOptions: {
+                  quietDeps: true,
+                  logger: {
+                    warn: (message, options) => {
+                      if (!message.includes('@import rules are deprecated')) {
+                        console.warn(message, options);
+                      }
+                    }
+                  }
+                }
+              }
+            }
           ]
         },
-        { test: /\.(png|gif|jpg|cur)$/i, loader: 'url-loader', options: { limit: 8192 } },
+        { test: /\.(png|gif|jpg|cur)$/i, type: 'asset/inline' },
         {
           test: /\.woff2(\?v=[0-9]\.[0-9]\.[0-9])?$/i,
-          loader: 'url-loader',
-          options: { limit: 10000, mimetype: 'application/font-woff2' }
+          type: 'asset/inline'
         },
         {
           test: /\.woff(\?v=[0-9]\.[0-9]\.[0-9])?$/i,
-          loader: 'url-loader',
-          options: { limit: 10000, mimetype: 'application/font-woff' }
+          type: 'asset/inline'
         },
         {
           test: /\.(ttf|eot|svg|otf)(\?v=[0-9]\.[0-9]\.[0-9])?$/i,
-          loader: 'file-loader'
+          type: 'asset/resource'
         },
         {
-          test: /\.(d.ts)$/ /* latest react-sdk-components needs to ignore compiling .d.ts and .map files */,
-          loader: 'null-loader'
+          test: /\.d.ts$/ /* latest react-sdk-components needs to ignore compiling .d.ts and .map files */,
+          use: [],
+          exclude: /node_modules/
         },
         {
-          test: /\.(map)$/ /* latest react-sdk-components needs to ignore compiling .d.ts and .map files */,
-          loader: 'null-loader'
+          test: /\.map$/ /* latest react-sdk-components needs to ignore compiling .d.ts and .map files */,
+          use: [],
+          exclude: /node_modules/
         }
       ]
     },
@@ -238,8 +251,8 @@ module.exports = (env, argv) => {
     }
   };
 
-  if(webpackMode==='development'){
-    initConfig.output.publicPath = publicPathValue
+  if (webpackMode === 'development') {
+    initConfig.output.publicPath = publicPathValue;
   }
 
   return initConfig;

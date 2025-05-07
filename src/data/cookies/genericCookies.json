@@ -1,0 +1,6 @@
+[
+  { "name": "AWSALB", "description": "COOKIE_AWSALB_DESCRIPTION", "expires": "SEVEN_DAYS" },
+  { "name": "AWSALBCORS", "description": "COOKIE_AWSALBCORS_DESCRIPTION", "expires": "SEVEN_DAYS" },
+  { "name": "JSESSIONID", "description": "COOKIE_JSESSIONID_DESCRIPTION", "expires": "SESSION" },
+  { "name": "AKA_A2", "description": "COOKIE_AKA_A2_DESCRIPTION", "expires": "ONE_HOUR" }
+]

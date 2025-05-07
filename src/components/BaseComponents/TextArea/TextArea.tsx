@@ -11,7 +11,7 @@ export default function TextArea(props) {
     hintText,
     inputProps = {},
     expectedLength,
-    id,
+    fieldId,
     onBlur,
     disabled,
     rows = 5,
@@ -33,24 +33,23 @@ export default function TextArea(props) {
     );
   }
 
-  const describedByIDs = `${hintText ? makeHintId(name) : ''} ${
-    errorText ? makeErrorId(name) : ''
-  }`.trim();
+  const describedByIDs =
+    `${hintText ? makeHintId(name) : ''} ${errorText ? makeErrorId(name) : ''}`.trim();
   if (describedByIDs.length !== 0) {
     inputProps['aria-describedby'] = describedByIDs;
   }
 
+  // eslint-disable-next-line no-unsafe-optional-chaining
   const remainingChars = expectedLength && expectedLength - inputProps.value?.length;
-  const inputClasses = `govuk-textarea ${
-    errorText || remainingChars < 0 ? 'govuk-textarea--error' : ''
-  }`.trim();
+  const inputClasses =
+    `govuk-textarea ${errorText || remainingChars < 0 ? 'govuk-textarea--error' : ''}`.trim();
 
   return (
     <FormGroup {...props} useCharacterCount={useCharacterCount}>
       <textarea
         className={inputClasses}
         {...inputProps}
-        id={id}
+        id={fieldId}
         name={name}
         onBlur={onBlur}
         rows={rows}
@@ -61,9 +60,7 @@ export default function TextArea(props) {
       {expectedLength && (
         <div
           id='with-hint-info'
-          className={`govuk-character-count__message govuk-character-count__status ${
-            remainingChars < 0 ? 'govuk-error-message' : 'govuk-hint'
-          }`}
+          className={`govuk-character-count__message govuk-character-count__status ${remainingChars < 0 ? 'govuk-error-message' : 'govuk-hint'}`}
         >
           {`${t('YOU_HAVE')}  ${Math.abs(remainingChars)} ${
             Math.abs(remainingChars) === 1 ? t('CHARACTER') : t('CHARACTERS')

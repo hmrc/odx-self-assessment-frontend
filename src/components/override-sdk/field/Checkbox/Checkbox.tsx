@@ -10,15 +10,7 @@ import GDSCheckAnswers from '../../../BaseComponents/CheckAnswer/index';
 import { ReadOnlyDefaultFormContext, GroupContext } from '../../../helpers/HMRCAppContext';
 
 export default function CheckboxComponent(props) {
-  const {
-    getPConnect,
-    inputProps,
-    validatemessage,
-    readOnly,
-    value,
-    configAlternateDesignSystem,
-    placeholder
-  } = props;
+  const { getPConnect, inputProps, validatemessage, readOnly, value, configAlternateDesignSystem, placeholder } = props;
 
   const { cyLabel, cyHelperText } = configAlternateDesignSystem || {};
   const { setErrorMessage: groupSetError } = useContext(GroupContext);
@@ -32,11 +24,7 @@ export default function CheckboxComponent(props) {
   // exclusiveOptionChangeHandler will always be called in the onChange event, and so each checkbox should be passed a
   // relevant handler (mainly - non-exclusive checkboxes should have a handler that clears the exclusive option ,
   // and exclusive option will need a different handler to clear all other items )
-  const {
-    exclusiveOption,
-    exclusiveOptionChangeHandler = () => {},
-    index = 0
-  } = getPConnect().getConfigProps();
+  const { exclusiveOption, exclusiveOptionChangeHandler = () => {}, index = 0 } = getPConnect().getConfigProps();
   // const {isOnlyField, overrideLabel} = useIsOnlyField(props.displayOrder);
   /* retaining for future reference, incase changes need to be reverted
 
@@ -50,6 +38,7 @@ export default function CheckboxComponent(props) {
   const inprogressStatus = checkStatus();
 
   const localizedVal = PCore.getLocaleUtils().getLocaleValue;
+  // @ts-ignore
   const [errorMessage, setErrorMessage] = useState(localizedVal(validatemessage));
   const [displayLabel, setDisplayLabel] = useState(caption);
   const [displayHelperText, setDisplayHelperText] = useState(hintText);
@@ -57,21 +46,17 @@ export default function CheckboxComponent(props) {
   const lang = sessionStorage.getItem('rsdk_locale')?.substring(0, 2) || 'en';
 
   // build name for id, allows for error message navigation to field
-  const propertyContext = getPConnect().options.pageReference
-    ? getPConnect().options.pageReference.split('.').pop()
-    : '';
-  const propertyName = getPConnect().getStateProps().value.split('.').pop();
+  const propertyContext = getPConnect().options.pageReference ? getPConnect().options.pageReference.split('.').pop() : '';
+  const formattedPropertyName = propName.split('.').pop();
   /* If its the declaration view then group the checkboxes separately so the error message is assigned correctly */
-  const name =
-    getPConnect().viewName.toLowerCase() === 'declaration'
-      ? `${propertyName}`
-      : `${propertyContext}-${propertyName}`;
+  const fieldId = `${propertyContext}-${formattedPropertyName}`;
 
   useEffect(() => {
-    const found = checkErrorMsgs(errorMsgs, name);
+    const found = checkErrorMsgs(errorMsgs, fieldId);
     if (groupSetError) groupSetError(found);
 
     if (!found) {
+      // @ts-ignore
       setErrorMessage(localizedVal(validatemessage));
     }
   }, [errorMsgs, validatemessage]);
@@ -86,16 +71,12 @@ export default function CheckboxComponent(props) {
     }
   }, [lang]);
 
-  if (
-    hasBeenWrapped &&
-    configAlternateDesignSystem?.ShowChangeLink &&
-    inprogressStatus === 'Open-InProgress'
-  ) {
+  if (hasBeenWrapped && configAlternateDesignSystem?.ShowChangeLink && inprogressStatus === 'Open-InProgress') {
     return (
       <GDSCheckAnswers
         label={lang === 'cy' && cyLabel ? cyLabel : props.label}
         value={value ? props.trueLabel : props.falseLabel}
-        name={name}
+        name={fieldId}
         stepId={configAlternateDesignSystem.stepId}
         hiddenText={configAlternateDesignSystem.hiddenText}
         getPConnect={getPConnect}
@@ -113,9 +94,7 @@ export default function CheckboxComponent(props) {
   }
 
   if (readOnly) {
-    return (
-      <ReadOnlyDisplay value={value ? props.trueLabel : props.falseLabel} label={displayLabel} />
-    );
+    return <ReadOnlyDisplay value={value ? props.trueLabel : props.falseLabel} label={displayLabel} />;
   }
 
   const handleChange = event => {
@@ -124,17 +103,14 @@ export default function CheckboxComponent(props) {
 
   return (
     <>
-      {exclusiveOption && (
-        <div className='govuk-checkboxes__divider'>{t('EXCLUSIVEOPTION_OR')}</div>
-      )}
+      {exclusiveOption && <div className='govuk-checkboxes__divider'>{t('EXCLUSIVEOPTION_OR')}</div>}
 
       {/* If its the declaration view then group the checkboxes separately so the error message is assigned correctly */}
       {getPConnect().viewName.toLowerCase() === 'declaration' ? (
         <div className={`govuk-form-group ${errorMessage ? 'govuk-form-group--error' : ''}`}>
           {errorMessage && (
-            <p id={`${name}-error`} className='govuk-error-message'>
-              <span className='govuk-visually-hidden'>{t('ERROR')}:</span>{' '}
-              {removeRedundantString(errorMessage)}
+            <p id={`${fieldId}-error`} className='govuk-error-message'>
+              <span className='govuk-visually-hidden'>{t('ERROR')}:</span> {removeRedundantString(errorMessage)}
             </p>
           )}
           <GDSCheckbox
@@ -145,13 +121,14 @@ export default function CheckboxComponent(props) {
               hintText: displayHelperText
             }}
             index={index}
-            name={name}
-            inputProps={{ ...inputProps }}
+            name={fieldId}
+            inputProps={inputProps}
             onChange={evt => {
               handleChange(evt);
               exclusiveOptionChangeHandler();
             }}
-            key={name}
+            key={fieldId}
+            fieldId={fieldId}
           />
         </div>
       ) : (
@@ -163,13 +140,14 @@ export default function CheckboxComponent(props) {
             hintText: displayHelperText
           }}
           index={index}
-          name={name}
-          inputProps={{ ...inputProps }}
+          name={fieldId}
+          inputProps={inputProps}
           onChange={evt => {
             handleChange(evt);
             exclusiveOptionChangeHandler();
           }}
-          key={name}
+          key={fieldId}
+          fieldId={fieldId}
         />
       )}
     </>

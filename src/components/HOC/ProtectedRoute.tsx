@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
   getSdkConfig,
@@ -7,21 +7,29 @@ import {
   sdkIsLoggedIn,
   sdkSetAuthHeader
 } from '@pega/auth/lib/sdk-auth-manager';
-import { useHistory } from 'react-router-dom';
 
+/**
+ * ProtectedRoute: A wrapper around a route that ensures the user is authenticated before rendering the component.
+ * If the user is not logged in, it triggers authentication and redirects to the appropriate login flow.
+ */
 const ProtectedRoute = ({ component: Component, ...rest }) => {
-  const history = useHistory();
-  const { pathname } = history.location;
+  const location = useLocation();
+  const navigate = useNavigate();
 
+  /**
+   * Called after a successful login redirect. Ensures the user is navigated to the correct page.
+   */
   const onRedirectDone = () => {
-    history.replace(pathname, { replace: true });
+    navigate(location.pathname, { replace: true });
     // appName and mainRedirect params have to be same as earlier invocation
     loginIfNecessary({ appName: 'sa', mainRedirect: true });
   };
 
+  // If the user is not logged in, initiate login flow
   if (!sdkIsLoggedIn()) {
     getSdkConfig().then(sdkConfig => {
       const sdkConfigAuth = sdkConfig.authConfig;
+
       if (!sdkConfigAuth.mashupClientId && sdkConfigAuth.customAuthType === 'Basic') {
         // Service package to use custom auth with Basic
         const sB64 = window.btoa(
@@ -38,9 +46,7 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
         sISOTime = sISOTime.replace(regex, '');
         // Service package to use custom auth with Basic
         const sB64 = window.btoa(
-          `${sdkConfigAuth.mashupUserIdentifier}:${window.atob(
-            sdkConfigAuth.mashupPassword
-          )}:${sISOTime}`
+          `${sdkConfigAuth.mashupUserIdentifier}:${window.atob(sdkConfigAuth.mashupPassword)}:${sISOTime}`
         );
         sdkSetAuthHeader(`Basic ${sB64}`);
       }
@@ -49,12 +55,8 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
       loginIfNecessary({ appName: 'sa', mainRedirect: true, redirectDoneCB: onRedirectDone });
     });
   }
-  return (
-    <Route
-      {...rest}
-      render={(props: any) => <Component {...props} journeyName={rest.journeyName} />}
-    />
-  );
+
+  return <Component {...rest} journeyName={rest.journeyName} />;
 };
 
 export default ProtectedRoute;

@@ -2,18 +2,23 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import useHMRCExternalLinks from '../../helpers/hooks/HMRCExternalLinks';
 import LanguageToggle from '../LanguageToggle';
+import CookieBanner from '../../BaseComponents/CookieBanner/CookieBanner';
+import { useLocation } from 'react-router-dom';
 
 export default function AppHeader(props) {
-  const { handleSignout, appname, hasLanguageToggle } = props;
+  const { handleSignout, appname, hasLanguageToggle, baseurl } = props;
   const { t } = useTranslation();
   const { hmrcURL } = useHMRCExternalLinks();
+  const location = useLocation();
   const pathname = window.location.href;
+  const pageUrl = baseurl || `${location.pathname.replace('/', '')}`;
 
   return (
     <>
       <a href='#main-content' className='govuk-skip-link' data-module='govuk-skip-link'>
         {t('SKIP_TO_MAIN')}
       </a>
+      <CookieBanner pageUrl={`${pageUrl}`} />
       <header role='banner'>
         <div
           className='govuk-header hmrc-header  hmrc-header--with-additional-navigation'
@@ -69,8 +74,7 @@ export default function AppHeader(props) {
                   target='_blank'
                   rel='noreferrer'
                 >
-                  {t('BANNER_FEEDBACK_LINK')}
-                  <span className='govuk-visually-hidden'>{t('OPENS_IN_NEW_TAB')}</span>
+                  {t('BANNER_FEEDBACK_LINK')} {t('OPENS_IN_NEW_TAB')}
                 </a>
                 &nbsp;
                 {t('BANNER_FEEDBACK_2')}.

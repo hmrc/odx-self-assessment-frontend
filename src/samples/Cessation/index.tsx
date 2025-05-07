@@ -3,11 +3,10 @@ import { useTranslation } from 'react-i18next';
 import setPageTitle, { registerServiceName } from '../../components/helpers/setPageTitleHelpers';
 import { getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
 import AppFooter from '../../components/AppComponents/AppFooter';
-import { triggerLogout } from '../../components/helpers/utils';
+import { resumeOnRefresh, triggerLogout } from '../../components/helpers/utils';
 import useHMRCExternalLinks from '../../components/helpers/hooks/HMRCExternalLinks';
 import TimeoutPopup from '../../components/AppComponents/TimeoutPopup';
 import ShutterServicePage from '../../components/AppComponents/ShutterServicePage';
-import LogoutPopup from '../../components/AppComponents/LogoutPopup';
 import SummaryPage from '../../components/AppComponents/SummaryPage';
 import {
   initTimeout,
@@ -31,7 +30,7 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
   // Adding hardcoded value as key to sort translation issue.
   const serviceNameAndHeader = 'LEAVE_SELF_ASSESSMENT';
   const inProgressCaseCountEndPoint = 'D_RegistrantWorkAssignmentSACases';
-  const creatCaseApi = 'HMRC-SA-Work-Cessation';
+  const createCaseApi = 'HMRC-SA-Work-Cessation';
   const caseListApiParams = { CaseType: 'HMRC-SA-Work-Cessation' };
 
   const summaryPageRef = useRef<HTMLDivElement>(null);
@@ -54,7 +53,6 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
     banner: null
   });
   const [showTimeoutModal, setShowTimeoutModal] = useState(false);
-  const [showSignoutModal, setShowSignoutModal] = useState(false);
   const [showPortalBanner, setShowPortalBanner] = useState(false);
   const [pConnect, setPconnect] = useState(null);
   const [isLogout, setIsLogout] = useState(false);
@@ -95,7 +93,6 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
 
   // Function to force re-render the pega Root component
   const forceRefreshRootComponent = () => {
-     
     renderRootComponent();
   };
 
@@ -120,27 +117,8 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
 
   function handleSignout(e?) {
     e?.preventDefault();
-    if (currentDisplay === 'pegapage') {
-      setShowSignoutModal(true);
-    } else {
-      triggerLogout(setIsLogout);
-    }
+    triggerLogout(setIsLogout);
   }
-
-  const handleStaySignIn = (e?) => {
-    e?.preventDefault();
-    setShowSignoutModal(false);
-    // Extends manual signout popup 'stay signed in' to reset the automatic timeout timer also
-    staySignedIn(
-      setShowTimeoutModal,
-      inProgressCaseCountEndPoint,
-      null,
-      false,
-      true,
-      currentDisplay === 'resolutionpage',
-      caseListApiParams
-    );
-  };
 
   const handleCaseStart = () => {
     setShowLandingPage(false);
@@ -230,7 +208,7 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
               'languageToggleTriggered',
               'summarypageLanguageChange'
             );
-            const summaryData: Array<any> =
+            const summaryData: any[] =
               response.data.data.caseInfo.content.ScreenContent.LocalisedContent;
             const currentLang =
               sessionStorage.getItem('rsdk_locale')?.slice(0, 2).toUpperCase() || 'EN';
@@ -270,6 +248,10 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
   ]);
 
   useEffect(() => {
+    resumeOnRefresh(pConnect, pCoreReady, setShowLandingPage);
+  }, [pCoreReady, showPega]);
+
+  useEffect(() => {
     document.addEventListener('SdkConstellationReady', () => {
       PCore.onPCoreReady(() => {
         if (!pCoreReady) {
@@ -287,7 +269,7 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
               setmillisecondsTillSignout(config.timeoutConfig.secondsTilLogout * 1000);
             }
           });
-          loadBundles(sessionStorage.getItem('rsdk_locale') as BundleLanguage || 'en_GB');
+          loadBundles((sessionStorage.getItem('rsdk_locale') as BundleLanguage) || 'en_GB');
         }
       });
       settingTimer();
@@ -379,6 +361,10 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
             e?.preventDefault();
             triggerLogout(setIsLogout);
           }}
+          autoSignoutHandler={(e?) => {
+            e?.preventDefault();
+            triggerLogout(setIsLogout, true);
+          }}
           isAuthorised
           staySignedInButtonText='Stay signed in'
           signoutButtonText='Sign out'
@@ -424,6 +410,10 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
             e?.preventDefault();
             triggerLogout(setIsLogout);
           }}
+          autoSignoutHandler={(e?) => {
+            e?.preventDefault();
+            triggerLogout(setIsLogout, true);
+          }}
           isAuthorised
           staySignedInButtonText='Stay signed in'
           signoutButtonText='Sign out'
@@ -451,7 +441,7 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
                   isLogout={isLogout}
                   pConn={pConnect}
                   inProgressCaseCountEndPoint={inProgressCaseCountEndPoint}
-                  creatCaseEndpoint={creatCaseApi}
+                  createCaseEndpoint={createCaseApi}
                   buttonContent={t('CONTINUE_YOUR_REQUEST')}
                   title={t('YOUR_REQUEST')}
                   bannerContent={t('CES_PORTAL_NOTIFICATION_BANNER_CONTENT')}
@@ -472,14 +462,6 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
           )}
         </div>
 
-        <LogoutPopup
-          show={showSignoutModal && !showTimeoutModal}
-          hideModal={() => setShowSignoutModal(false)}
-          handleSignoutModal={() => {
-            triggerLogout(setIsLogout);
-          }}
-          handleStaySignIn={handleStaySignIn}
-        />
         {pConnect && <AppFooter />}
       </AppContext.Provider>
     );

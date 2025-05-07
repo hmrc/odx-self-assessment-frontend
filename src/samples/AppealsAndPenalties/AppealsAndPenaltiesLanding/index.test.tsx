@@ -35,9 +35,77 @@ const defaultProps: LandingPropsType = {
   penaltyDataEndpointParams: { LocalisedContent: true }
 };
 
+const responseContentObject = {
+  fetchDateTime: '2025-03-18T17:26:45.613Z',
+  pxObjClass: 'Pega-API-DataExploration-Data',
+  resultCount: 1,
+  data: [
+    {
+      pxObjClass: 'HMRC-SA-Data-Appeal',
+      LocalisedContent: [
+        {
+          pxObjClass: 'HMRC-SA-Data-LocalisedContent',
+          Language: 'EN',
+          penaltyData: [
+            {
+              duration: '6 April 2024 to 5 April 2025',
+              pxObjClass: 'HMRC-SA-Data-PenaltyData',
+              penalties: [
+                {
+                  pxObjClass: 'HMRC-SA-Data-PenaltyData-Results',
+                  totalAmount: 1600.0,
+                  penaltyType: 'Late filing penalties',
+                  results: [
+                    {
+                      pxObjClass: 'HMRC-SA-Data-Penalty',
+                      AdditionalInfo:
+                        'Issued when you missed the deadline for submitting your tax return.',
+                      PenaltyNumber: 1,
+                      Amount: 100.0,
+                      RelevantDueDate: '2024-04-20'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          pxObjClass: 'HMRC-SA-Data-LocalisedContent',
+          Language: 'CY',
+          penaltyData: [
+            {
+              duration: '6 Ebrill 2024 i 5 Ebrill 2025',
+              pxObjClass: 'HMRC-SA-Data-PenaltyData',
+              penalties: [
+                {
+                  pxObjClass: 'HMRC-SA-Data-PenaltyData-Results',
+                  totalAmount: 1600.0,
+                  penaltyType: 'Cosbau am gyflwyno’n hwyr',
+                  results: [
+                    {
+                      pxObjClass: 'HMRC-SA-Data-Penalty',
+                      AdditionalInfo:
+                        'Codwyd pan wnaethoch fethu’r dyddiad cau ar gyfer cyflwyno’ch Ffurflen Dreth.',
+                      PenaltyNumber: 1,
+                      Amount: 100.0,
+                      RelevantDueDate: '2024-04-20'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+};
+
 describe('AppealsAndPenaltiesLanding Component.', () => {
   let t;
   afterEach(cleanup);
+  let mockGetPageDataAsync;
 
   beforeEach(async () => {
     mockGetSdkConfigWithBasepath();
@@ -59,6 +127,23 @@ describe('AppealsAndPenaltiesLanding Component.', () => {
     });
 
     jest.clearAllMocks();
+
+    sessionStorage.setItem('rsdk_locale', `en_GB`);
+    mockCreateCase.mockResolvedValue({ data: [] });
+    mockGetPageDataAsync = jest.fn();
+    const mockEventEmitter = {
+      subscribe: jest.fn(),
+      unsubscribe: jest.fn()
+    };
+
+    (window as any).PCore = {
+      getDataPageUtils: jest.fn(() => ({
+        getDataAsync: mockGetPageDataAsync
+      })),
+      getPubSubUtils: jest.fn(() => {
+        return mockEventEmitter;
+      })
+    };
   });
 
   it('renders correctly with default props', async () => {
@@ -71,24 +156,102 @@ describe('AppealsAndPenaltiesLanding Component.', () => {
         </I18nextProvider>
       );
     });
+    // @ts-ignore
     expect(screen.getByRole('main')).toBeInTheDocument();
+    // @ts-ignore
     expect(screen.getByText('Your Self Assessment penalties')).toBeInTheDocument();
   });
 
-  it('renders "no penalties" message when no data is fetched', async () => {
+  it('renders "no penalties" message in english when no data is fetched', async () => {
     mockCreateCase.mockResolvedValue({ data: [] });
 
+    mockGetPageDataAsync.mockResolvedValue(null);
+
     await act(async () => {
-      render(
-        <I18nextProvider i18n={t.result.current.i18n}>
-          render(
-          <AppealsAndPenaltiesLanding {...defaultProps} />
-          );
-        </I18nextProvider>
-      );
+      t.result.current.i18n.changeLanguage('en');
+      render(<AppealsAndPenaltiesLanding {...defaultProps} />);
+    });
+
+    await waitFor(() => {
+      // @ts-ignore
+      expect(screen.getByText('You do not have any Self Assessment penalties')).toBeInTheDocument();
+    });
+  });
+
+  it('renders "no penalties" message in welsh when no data is fetched', async () => {
+    mockCreateCase.mockResolvedValue({ data: [] });
+
+    mockGetPageDataAsync.mockResolvedValue(null);
+
+    await act(async () => {
+      t.result.current.i18n.changeLanguage('cy');
+      render(<AppealsAndPenaltiesLanding {...defaultProps} />);
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText('Nid oes gennych unrhyw gosbau Hunanasesiad')).toBeInTheDocument();
+    });
+  });
+
+  it('renders dashboard common content in english', async () => {
+    sessionStorage.setItem('rsdk_locale', `en_GB`);
+    mockGetPageDataAsync.mockResolvedValue(responseContentObject);
+
+    await act(async () => {
+      t.result.current.i18n.changeLanguage('en');
+      render(<AppealsAndPenaltiesLanding {...defaultProps} />);
     });
     await waitFor(() => {
-      expect(screen.getByText('You do not have any Self Assessment penalties')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Make an appeal if you have received a penalty for filing your tax return or paying your tax bill late.'
+        )
+      ).toBeInTheDocument();
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+      expect(
+        screen.getByText('You can use this service to appeal penalties issued after', {
+          exact: false
+        })
+      ).toBeInTheDocument();
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+      expect(
+        screen.getByRole('link', { name: 'use the SA370 form (opens in new tab)' })
+      ).toHaveAttribute(
+        'href',
+        'https://assets.publishing.service.gov.uk/media/657af4f6095987001295e0d7/SA370__Appeal.pdf'
+      );
+    });
+  });
+
+  it('renders dashboard common content in welsh', async () => {
+    sessionStorage.setItem('rsdk_locale', `cy_GB`);
+    mockGetPageDataAsync.mockResolvedValue(responseContentObject);
+
+    await act(async () => {
+      t.result.current.i18n.changeLanguage('cy');
+      render(<AppealsAndPenaltiesLanding {...defaultProps} />);
+    });
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'Gwnewch apêl os ydych wedi cael cosb am gyflwyno neu dalu eich bil treth yn hwyr.'
+        )
+      ).toBeInTheDocument();
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+      expect(
+        screen.getByText(
+          'Gallwch ddefnyddio’r gwasanaeth hwn i apelio yn erbyn cosbau a godwyd ar ôl',
+          { exact: false }
+        )
+      ).toBeInTheDocument();
+      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
+      expect(
+        screen.getByRole('link', { name: 'defnyddiwch ffurflen SA370. (yn agor tab newydd)' })
+      ).toHaveAttribute(
+        'href',
+        'https://assets.publishing.service.gov.uk/media/657af4f6095987001295e0d7/SA370__Appeal.pdf'
+      );
     });
   });
 });

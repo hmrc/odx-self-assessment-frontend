@@ -44,6 +44,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export default function CaseView(props) {
   const {
     getPConnect,
@@ -76,14 +77,8 @@ export default function CaseView(props) {
    */
   function getChildRegionByName(inName: string): any {
     for (const child of children) {
-      const theMetadataType: string = child.props
-        .getPConnect()
-        .getRawMetadata()
-        ['type'].toLowerCase();
-      const theMetadataName: string = child.props
-        .getPConnect()
-        .getRawMetadata()
-        ['name'].toLowerCase();
+      const theMetadataType: string = child.props.getPConnect().getRawMetadata().type.toLowerCase();
+      const theMetadataName: string = child.props.getPConnect().getRawMetadata().name.toLowerCase();
 
       if (theMetadataType === 'region' && theMetadataName === inName) {
         return child;
@@ -110,10 +105,10 @@ export default function CaseView(props) {
   const theTabsRegionChildren = theTabsRegion.props.getPConnect().getChildren();
 
   // vertTabInfo is sent to VerticalTabs component
-  const vertTabInfo: Array<Object> = [];
+  const vertTabInfo: Object[] = [];
 
   // deferLoadInfo is sent to DeferLoad component (currently selected entry)
-  const deferLoadInfo: Array<any> = [];
+  const deferLoadInfo: any[] = [];
 
   if (theTabsRegionChildren) {
     // populate vertTabInfo and deferLoadInfo

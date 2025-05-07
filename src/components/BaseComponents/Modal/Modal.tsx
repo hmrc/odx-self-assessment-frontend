@@ -5,7 +5,7 @@ import FocusTrap from 'focus-trap-react';
 import '../../../../assets/css/appStyles.scss';
 
 export default function Modal(props) {
-  const { handleClose, show, children, id='modal-id'} = props;
+  const { handleClose, show, children, id = 'modal-id' } = props;
   const showHideClassName = show
     ? 'govuk-!-display-block hmrc-timeout-dialog'
     : 'govuk-!-display-none';
@@ -20,23 +20,31 @@ export default function Modal(props) {
 
   return (
     <>
-    {show && (
-      <>
-        <div className='hmrc-timeout-overlay'></div>
-        <FocusTrap>
-          <div className={showHideClassName} tabIndex={-1} role='dialog' aria-modal='true' id={id}>
-            <section>
-              {children}
-              {handleClose && <a className='govuk-link signout-modal' href='#' onClick={handleClose}>
-                  {t('CLOSE')}
-                <span className='govuk-visually-hidden'> {t('SIGN_OUT_MESSAGE')}</span>
-              </a>}
-            </section>
-          </div>
-        </FocusTrap>
-      </>
-    )}
-  </>
+      {show && (
+        <>
+          <div className='hmrc-timeout-overlay'></div>
+          <FocusTrap>
+            <div
+              className={showHideClassName}
+              tabIndex={-1}
+              role='dialog'
+              aria-modal='true'
+              id={id}
+            >
+              <section>
+                {children}
+                {handleClose && (
+                  <a className='govuk-link signout-modal' href='#' onClick={handleClose}>
+                    {t('CLOSE')}
+                    <span className='govuk-visually-hidden'> {t('SIGN_OUT_MESSAGE')}</span>
+                  </a>
+                )}
+              </section>
+            </div>
+          </FocusTrap>
+        </>
+      )}
+    </>
   );
 }
 

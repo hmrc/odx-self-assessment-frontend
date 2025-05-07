@@ -23,7 +23,7 @@ export default function FormGroup({
   errorText,
   hintText,
   name,
-  id,
+  fieldId,
   extraLabelClasses = '',
   children,
   testProps = {},
@@ -34,7 +34,7 @@ export default function FormGroup({
   const { errorMsgs } = useContext(ErrorMsgContext);
   const [errMessage, setErrorMessage] = useState(errorText);
   useEffect(() => {
-    const found = checkErrorMsgs(errorMsgs, id, name);
+    const found = checkErrorMsgs(errorMsgs, fieldId, name);
     if (!found) {
       setErrorMessage(errorText);
     }
@@ -44,9 +44,8 @@ export default function FormGroup({
     useCharacterCount ? 'govuk-character-count' : ''
   }`.trim();
 
-  const labelClasses = `govuk-label ${
-    labelIsHeading ? 'govuk-label--l' : ''
-  } ${extraLabelClasses}`.trim();
+  const labelClasses =
+    `govuk-label ${labelIsHeading ? 'govuk-label--l' : ''} ${extraLabelClasses}`.trim();
 
   return (
     <div className={formGroupDivClasses} {...testProps}>
@@ -56,7 +55,7 @@ export default function FormGroup({
           return <h1 className='govuk-label-wrapper govuk-heading-l'>{child}</h1>;
         }}
         childrenToWrap={
-          <label className={labelClasses} htmlFor={id || name}>
+          <label className={labelClasses} htmlFor={fieldId}>
             {label}
           </label>
         }
@@ -65,12 +64,12 @@ export default function FormGroup({
         <InstructionTextComponent instructionText={instructionText} />
       )}
       {hintText && (
-        <div id={makeHintId(name)} className='govuk-hint'>
+        <div id={makeHintId(fieldId)} className='govuk-hint'>
           <HintTextComponent htmlString={hintText} />
         </div>
       )}
       {errMessage && (
-        <p id={makeErrorId(name)} className='govuk-error-message'>
+        <p id={makeErrorId(fieldId)} className='govuk-error-message'>
           <span className='govuk-visually-hidden'>{t('ERROR')}:</span>
           {removeRedundantString(errMessage)}
         </p>
@@ -87,7 +86,7 @@ FormGroup.propTypes = {
   errorText: PropTypes.string,
   children: PropTypes.node,
   extraLabelClasses: PropTypes.string,
-  id: PropTypes.string,
+  fieldId: PropTypes.string,
   useCharacterCount: PropTypes.bool
 };
 

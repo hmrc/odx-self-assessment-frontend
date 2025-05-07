@@ -3,11 +3,11 @@ import { render, waitFor } from '@testing-library/react';
 import TopLevelApp from '.';
 import { mockGetSdkConfigWithBasepath } from '../../../tests/mocks/getSdkConfigMock';
 
-// Component specific Mocking 
+// Component specific Mocking
 jest.mock('../AppSelector', () => () => <div>AppSelector Component</div>);
 
 jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
-  getSdkConfig: jest.fn(),
+  getSdkConfig: jest.fn()
 }));
 
 describe('TopLevelApp Component', () => {
@@ -16,11 +16,12 @@ describe('TopLevelApp Component', () => {
   });
 
   test('renders AppSelector when basepath is set', async () => {
-    mockGetSdkConfigWithBasepath(); // Common mock 
+    mockGetSdkConfigWithBasepath(); // Common mock
 
     const { getByText } = render(<TopLevelApp />);
 
     await waitFor(() => {
+      // @ts-ignore
       expect(getByText('AppSelector Component')).toBeInTheDocument();
     });
   });

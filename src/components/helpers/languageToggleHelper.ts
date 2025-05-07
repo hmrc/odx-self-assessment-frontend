@@ -2,7 +2,7 @@ import { i18n } from 'i18next';
 import setPageTitle from './setPageTitleHelpers';
 import dayjs from 'dayjs';
 
-const languageToggle = async (lang: string, i18nRef: i18n, dataBundles: Array<string> = []) => {
+const languageToggle = async (lang: string, i18nRef: i18n, dataBundles: string[] = []) => {
   sessionStorage.setItem('rsdk_locale', `${lang}_GB`);
   dayjs.locale(lang);
   i18nRef.changeLanguage(lang).then(() => {
@@ -29,7 +29,7 @@ const languageToggle = async (lang: string, i18nRef: i18n, dataBundles: Array<st
   }
 };
 
-export type BundleLanguage = 'en_GB' | 'cy_GB'
+export type BundleLanguage = 'en_GB' | 'cy_GB';
 
 export const loadBundles = async (lang: BundleLanguage) => {
   if (typeof PCore !== 'undefined') {
@@ -50,6 +50,6 @@ export const loadBundles = async (lang: BundleLanguage) => {
     PCore.getLocaleUtils().resetLocaleStore();
     await PCore.getLocaleUtils().loadLocaleResources(resourceBundles);
   }
-}
+};
 
 export default languageToggle;

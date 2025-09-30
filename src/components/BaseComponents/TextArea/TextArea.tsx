@@ -1,22 +1,33 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import FormGroup, { makeErrorId, makeHintId } from '../FormGroup/FormGroup';
+import FormGroup, { makeErrorId, makeHintId, FormGroupProps } from '../FormGroup/FormGroup';
 import HintTextComponent from '../../helpers/formatters/ParsedHtml';
 import { useTranslation } from 'react-i18next';
 
-export default function TextArea(props) {
+interface TextAreaProps extends FormGroupProps {
+  name: string;
+  inputProps;
+  disabled: boolean;
+  expectedLength: number;
+  fieldId: string;
+  rows: number;
+  useCharacterCount: boolean;
+  hintText: string;
+  errorText: string;
+}
+
+export default function TextArea(props: TextAreaProps) {
   const {
     name,
-    errorText,
-    hintText,
-    inputProps = {},
+    inputProps,
+    disabled,
     expectedLength,
     fieldId,
-    onBlur,
-    disabled,
-    rows = 5,
-    useCharacterCount = true // Add this prop
+    rows,
+    useCharacterCount,
+    hintText,
+    errorText
   } = props;
+
   const { t } = useTranslation();
 
   if (disabled) {
@@ -46,40 +57,28 @@ export default function TextArea(props) {
 
   return (
     <FormGroup {...props} useCharacterCount={useCharacterCount}>
-      <textarea
-        className={inputClasses}
-        {...inputProps}
-        id={fieldId}
-        name={name}
-        onBlur={onBlur}
-        rows={rows}
-        aria-describedby='with-hint-info'
-      >
-        {inputProps.value}
-      </textarea>
-      {expectedLength && (
-        <div
-          id='with-hint-info'
-          className={`govuk-character-count__message govuk-character-count__status ${remainingChars < 0 ? 'govuk-error-message' : 'govuk-hint'}`}
+      <>
+        <textarea
+          className={inputClasses}
+          {...inputProps}
+          id={fieldId}
+          name={name}
+          rows={rows}
+          aria-describedby='with-hint-info'
         >
-          {`${t('YOU_HAVE')}  ${Math.abs(remainingChars)} ${
-            Math.abs(remainingChars) === 1 ? t('CHARACTER') : t('CHARACTERS')
-          } ${remainingChars >= 0 ? t('REMAINING') : t('TOO_MANY')}`}
-        </div>
-      )}
+          {inputProps.value}
+        </textarea>
+        {expectedLength && (
+          <div
+            id='with-hint-info'
+            className={`govuk-character-count__message govuk-character-count__status ${remainingChars < 0 ? 'govuk-error-message' : 'govuk-hint'}`}
+          >
+            {`${t('YOU_HAVE')}  ${Math.abs(remainingChars)} ${
+              Math.abs(remainingChars) === 1 ? t('CHARACTER') : t('CHARACTERS')
+            } ${remainingChars >= 0 ? t('REMAINING') : t('TOO_MANY')}`}
+          </div>
+        )}
+      </>
     </FormGroup>
   );
 }
-
-TextArea.propTypes = {
-  ...FormGroup.propTypes,
-  name: PropTypes.string,
-  maxLength: PropTypes.number,
-  rows: PropTypes.number,
-  inputProps: PropTypes.object,
-  id: PropTypes.string,
-  disabled: PropTypes.bool,
-  onBlur: PropTypes.func,
-  useCharacterCount: PropTypes.bool, // Add this prop type
-  expectedLength: PropTypes.number
-};

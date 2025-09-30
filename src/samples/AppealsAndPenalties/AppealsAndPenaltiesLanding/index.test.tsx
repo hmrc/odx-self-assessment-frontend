@@ -5,26 +5,31 @@ import { renderHook } from '@testing-library/react-hooks';
 import { act } from 'react-dom/test-utils';
 import { mockGetSdkConfigWithBasepath } from '../../../../tests/mocks/getSdkConfigMock';
 import useHMRCExternalLinks from '../../../components/helpers/hooks/HMRCExternalLinks';
-import AppealsAndPenaltiesLanding from '.';
-import C11nEnv from '@pega/pcore-pconnect-typedefs/interpreter/c11n-env';
+import AppealsAndPenaltiesLanding, { LandingProps } from '../AppealsAndPenaltiesLanding';
 
 jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
   getSdkConfig: jest.fn()
 }));
 
+jest.mock('../../../components/helpers/getServiceStatus', () => ({
+  getServiceStatus: jest.fn().mockResolvedValue({
+    loading: false,
+    isServiceHealthy: true,
+    shuttered: false,
+    outage: false,
+    time: undefined,
+    date: undefined,
+    time_cy: undefined,
+    date_cy: undefined
+  })
+}));
+
 const mockCreateCase = jest.fn();
 const mockHandleCaseStart = jest.fn();
+const mockHandleApiError = jest.fn();
+const mockSetServiceStatus = jest.fn();
 
-interface LandingPropsType {
-  isLogout: boolean;
-  pConn: Partial<C11nEnv>;
-  penaltyDataEndpoint: string;
-  createCaseEndpoint: string;
-  handleCaseStart: () => void;
-  penaltyDataEndpointParams: {};
-}
-
-const defaultProps: LandingPropsType = {
+const defaultProps: LandingProps = {
   isLogout: false,
   pConn: {
     getContextName: () => 'mockContext'
@@ -32,7 +37,9 @@ const defaultProps: LandingPropsType = {
   penaltyDataEndpoint: '/mock/penalty-data-endpoint',
   createCaseEndpoint: '/mock/create-case-endpoint',
   handleCaseStart: mockHandleCaseStart,
-  penaltyDataEndpointParams: { LocalisedContent: true }
+  penaltyDataEndpointParams: { LocalisedContent: true },
+  handleApiError: mockHandleApiError,
+  setServiceStatus: mockSetServiceStatus
 };
 
 const responseContentObject = {
@@ -42,6 +49,7 @@ const responseContentObject = {
   data: [
     {
       pxObjClass: 'HMRC-SA-Data-Appeal',
+      pyHTTPResponseCode: 200,
       LocalisedContent: [
         {
           pxObjClass: 'HMRC-SA-Data-LocalisedContent',

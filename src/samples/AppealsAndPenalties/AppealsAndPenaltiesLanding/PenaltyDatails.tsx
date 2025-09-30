@@ -6,7 +6,7 @@ import DurationHeading from './DurationHeading';
 const PenaltyDatails = ({ penaltyData }) => {
   const { t } = useTranslation();
 
-  if (!penaltyData || penaltyData.length === 0) {
+  if (!penaltyData || penaltyData?.length === 0) {
     return <p>{t('NO_PENALTIES_AVAILABLE')}</p>;
   }
 

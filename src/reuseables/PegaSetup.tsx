@@ -8,8 +8,13 @@ import { getSdkComponentMap } from '@pega/react-sdk-components/lib/bridge/helper
 import AppContext, { AppContextValues } from './AppContext';
 import localSdkComponentMap from '../../sdk-local-component-map';
 import { checkCookie, setCookie } from '../components/helpers/cookie';
-import { checkStatus, getServiceShutteredStatus } from '../components/helpers/utils';
+import { checkStatus } from '../components/helpers/utils';
 import checkAuthAndRedirectIfTens from '../components/helpers/checkAuthAndRedirectIfTens';
+import {
+  defaultServiceStatus,
+  getServiceStatus,
+  ServiceStatusType
+} from '../components/helpers/getServiceStatus';
 
 declare const myLoadMashup: any;
 declare const PCore: any;
@@ -17,17 +22,10 @@ declare const PCore: any;
 /*
  * This fucntion is to invoke shuttering service
  */
-async function checkShutterService({ setShutterServicePage, setIsPegaLoading }) {
-  try {
-    const status = await getServiceShutteredStatus();
-    setShutterServicePage(status);
-  } catch (error) {
-    setShutterServicePage(false);
-    // Handle error appropriately, e.g., log it or show a notification
-    console.error('Error setting shutter status:', error); // eslint-disable-line
-  } finally {
-    setIsPegaLoading(false);
-  }
+async function checkServiceStatus({ setServiceStatus, setIsLoading }) {
+  const serviceStatusResponse = await getServiceStatus();
+  setServiceStatus(serviceStatusResponse);
+  setIsLoading(serviceStatusResponse.loading);
 }
 
 export function establishPCoreSubscriptions({
@@ -77,6 +75,15 @@ export function establishPCoreSubscriptions({
           PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.END_OF_ASSIGNMENT_PROCESSING,
           'assignmentFinished'
         );
+      } else if (status === 'Resolved-iFormRoute') {
+        sessionStorage.setItem('assignmentFinishedFlag', 'true');
+        PCore?.getPubSubUtils().unsubscribe(
+          PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.END_OF_ASSIGNMENT_PROCESSING,
+          'assignmentFinished'
+        );
+        setShowPega(false);
+        window.location.href =
+          'https://www.tax.service.gov.uk/digital-forms/form/self-assessment-appeal-late-filing-penalty/draft/guide';
       } else {
         showResolutionScreen();
         setShowPega(false);
@@ -266,15 +273,14 @@ export function startMashup(
     setCaseId,
     setCaseStatus,
     setAssignmentPConnect,
-    setShutterServicePage,
+    setServiceStatus,
     setServiceNotAvailable,
     setAssignmentCancelled,
     setContainerClosed,
-    setIsPegaLoading,
+    setIsLoading,
     setRootProps
   },
-  _AppContextValues: AppContextValues,
-  checkDefaultShutteringEnabled: boolean
+  _AppContextValues: AppContextValues
 ) {
   // NOTE: When loadMashup is complete, this will be called.
   PCore.onPCoreReady(async renderObj => {
@@ -327,8 +333,7 @@ export function startMashup(
     console.log(`SdkComponentMap initialized`);
   });
 
-  if (checkDefaultShutteringEnabled)
-    checkShutterService({ setShutterServicePage, setIsPegaLoading });
+  checkServiceStatus({ setServiceStatus, setIsLoading });
 
   // load the Mashup and handle the onPCoreEntry response that establishes the
   //  top level Pega root element (likely a RootContainer)
@@ -336,20 +341,17 @@ export function startMashup(
 }
 
 // One time (initialization) subscriptions and related unsubscribe
-export const useStartMashup = (
-  _AppContextValues: AppContextValues,
-  checkDefaultShutteringEnabled = true
-) => {
+export const useStartMashup = (_AppContextValues: AppContextValues) => {
   const [showPega, setShowPega] = useState(false);
   const [showResolutionPage, setShowResolutionPage] = useState(false);
-  const [shutterServicePage, setShutterServicePage] = useState(false);
+  const [serviceStatus, setServiceStatus] = useState<ServiceStatusType>(defaultServiceStatus);
   const [serviceNotAvailable, setServiceNotAvailable] = useState(false);
   const [assignmentCancelled, setAssignmentCancelled] = useState(false);
   const [caseId, setCaseId] = useState('');
   const [caseStatus, setCaseStatus] = useState('');
   const [assignmentPConnect, setAssignmentPConnect] = useState(null);
   const [containerClosed, setContainerClosed] = useState(false);
-  const [isPegaLoading, setIsPegaLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [rootProps, setRootProps] = useState({});
 
   useEffect(() => {
@@ -363,15 +365,14 @@ export const useStartMashup = (
             setCaseId,
             setCaseStatus,
             setAssignmentPConnect,
-            setShutterServicePage,
+            setServiceStatus,
             setServiceNotAvailable,
             setAssignmentCancelled,
             setContainerClosed,
-            setIsPegaLoading,
+            setIsLoading,
             setRootProps
           },
-          _AppContextValues,
-          checkDefaultShutteringEnabled
+          _AppContextValues
         );
       }
     });
@@ -401,8 +402,8 @@ export const useStartMashup = (
     showResolutionPage,
     setShowResolutionPage,
     caseId,
-    shutterServicePage,
-    setShutterServicePage,
+    serviceStatus,
+    setServiceStatus,
     caseStatus,
     serviceNotAvailable,
     setServiceNotAvailable,
@@ -410,7 +411,7 @@ export const useStartMashup = (
     assignmentCancelled,
     setAssignmentCancelled,
     containerClosed,
-    isPegaLoading,
+    isLoading,
     renderRootComponent,
     rootProps
   };

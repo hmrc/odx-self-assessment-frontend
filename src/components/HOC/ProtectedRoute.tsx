@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import {
@@ -15,11 +15,22 @@ import {
 const ProtectedRoute = ({ component: Component, ...rest }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [prevRoute, setprevRoute] = useState(sessionStorage.getItem('preRoute') || '');
+
+  useEffect(() => {
+    if (prevRoute !== location.pathname) {
+      sessionStorage.removeItem('assignmentID');
+      // console.log(`Location changed from ${prevRoute} to ${location.pathname}`);
+      sessionStorage.setItem('preRoute', location.pathname);
+      setprevRoute(location.pathname);
+    }
+  }, [location]);
 
   /**
    * Called after a successful login redirect. Ensures the user is navigated to the correct page.
    */
   const onRedirectDone = () => {
+    sessionStorage.removeItem('assignmentID');
     navigate(location.pathname, { replace: true });
     // appName and mainRedirect params have to be same as earlier invocation
     loginIfNecessary({ appName: 'sa', mainRedirect: true });

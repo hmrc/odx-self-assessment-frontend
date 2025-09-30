@@ -3,7 +3,7 @@ import parse from 'html-react-parser';
 import DOMPurify from 'dompurify';
 
 /*
-  Accepts optional prop of DOMSanitiseHooks to allow customisation of the sanitise call, 
+  Accepts optional prop of DOMSanitiseHooks to allow customisation of the sanitise call,
   Can be used, for example, to inject required class into <p> tags
   Expects a list of DomPurify hook callbacks, which will be called with 'beforeSanitizeAttributes' option
 */
@@ -28,6 +28,10 @@ export default function InstructionComp({
 
   useEffect(() => {
     isHTML();
+
+    return () => {
+      DOMPurify.removeAllHooks();
+    };
   }, []);
 
   if (invalidHTML) {

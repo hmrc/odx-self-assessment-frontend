@@ -2,7 +2,10 @@ import React, { useState, useLayoutEffect, useEffect, useContext } from 'react';
 import DateInput from '../../../BaseComponents/DateInput/DateInput';
 import useIsOnlyField from '../../../helpers/hooks/QuestionDisplayHooks';
 import ReadOnlyDisplay from '../../../BaseComponents/ReadOnlyDisplay/ReadOnlyDisplay';
-import { DateErrorFormatter, DateErrorTargetFields } from '../../../helpers/formatters/DateErrorFormatter';
+import {
+  DateErrorFormatter,
+  DateErrorTargetFields
+} from '../../../helpers/formatters/DateErrorFormatter';
 import { GBdate, checkStatus } from '../../../helpers/utils';
 import handleEvent from '@pega/react-sdk-components/lib/components/helpers/event-utils';
 import dayjs from 'dayjs';
@@ -10,7 +13,16 @@ import GDSCheckAnswers from '../../../BaseComponents/CheckAnswer/index';
 import { ReadOnlyDefaultFormContext } from '../../../helpers/HMRCAppContext';
 
 export default function Date(props) {
-  const { getPConnect, value = '', validatemessage, helperText, placeholder, readOnly, testId, configAlternateDesignSystem } = props;
+  const {
+    getPConnect,
+    value = '',
+    validatemessage,
+    helperText,
+    placeholder,
+    readOnly,
+    testId,
+    configAlternateDesignSystem
+  } = props;
   const pConn = getPConnect();
   const fieldId = pConn.getStateProps().value.split('.').pop();
   let label = props.label;
@@ -24,11 +36,14 @@ export default function Date(props) {
   const formattedPropertyName = getPConnect().getMetadata().config.value.includes('.')
     ? getPConnect().getMetadata().config.value.split('.').pop()
     : null;
-  const [editedValidateMessage, setEditedValidateMessage] = useState(DateErrorFormatter(validatemessage, formattedPropertyName));
+  const [editedValidateMessage, setEditedValidateMessage] = useState(
+    DateErrorFormatter(validatemessage, formattedPropertyName)
+  );
   const [specificErrors, setSpecificErrors] = useState<any>(null);
   const { hasBeenWrapped } = useContext(ReadOnlyDefaultFormContext);
 
   const localizedVal = PCore.getLocaleUtils().getLocaleValue;
+  const lang = sessionStorage.getItem('rsdk_locale')?.substring(0, 2) || 'en';
 
   const actionsApi = getPConnect().getActionsApi();
   const propName = getPConnect().getStateProps().value;
@@ -80,7 +95,7 @@ export default function Date(props) {
       }
     }
     setSpecificErrors(specificError);
-  }, [validatemessage]);
+  }, [validatemessage, lang]);
 
   // PM - Handlers for each part of date inputs, update state for each respectively
   //      0 pad for ISOString compatibilitiy, with conditions to allow us to clear the fields
@@ -103,7 +118,11 @@ export default function Date(props) {
 
   const inprogressStatus = checkStatus();
 
-  if (hasBeenWrapped && configAlternateDesignSystem?.ShowChangeLink && inprogressStatus === 'Open-InProgress') {
+  if (
+    hasBeenWrapped &&
+    configAlternateDesignSystem?.ShowChangeLink &&
+    inprogressStatus === 'Open-InProgress'
+  ) {
     return (
       <GDSCheckAnswers
         label={props.label}

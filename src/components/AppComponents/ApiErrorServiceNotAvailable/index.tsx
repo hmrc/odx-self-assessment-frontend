@@ -23,7 +23,7 @@ export default function ApiServiceNotAvailable() {
             href='https://www.gov.uk/government/organisations/hm-revenue-customs/contact/self-assessment'
             className='govuk-link'
           >
-            {t('CONTACT_HRMC_ABOUT_SA')}
+            {t('CONTACT_HRMC_ABOUT_SA')} {t('OPENS_IN_NEW_TAB')}
           </a>
           {t('IF_STILL_NEED_TO_SPEAK')}
         </p>

@@ -71,7 +71,7 @@
     "@mui/styles": "^5.16.7",
     "@mui/x-date-pickers": "^7.20.0",
     "@pega/auth": "^0.2.23",
-    "@pega/constellationjs": "~24.2.0",
+    "@pega/constellationjs": "0.2421.1",
     "@pega/cosmos-react-condition-builder": "^7.0.4",
     "@pega/cosmos-react-core": "^7.0.4",
     "@pega/cosmos-react-work": "^7.0.4",

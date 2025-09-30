@@ -24,13 +24,12 @@ import HmrcOdxGdsInfoPanel from './src/components/custom-sdk/template/HMRC_ODX_G
 import HmrcOdxGdsSummaryCard from './src/components/custom-sdk/template/HMRC_ODX_GDSSummaryCard/';
 import HmrcOdxGdsButton from './src/components/custom-sdk/field/HMRC_ODX_GDSButton/';
 import HmrcOdxComplexQuestionExplanation from './src/components/custom-sdk/field/HMRC_ODX_ComplexQuestionExplanation/';
-import HmrcOdxGdsTaskList from './src/components/custom-sdk/widget/HMRC_ODX_GDSTaskList/';
 import HmrcOdxGdsTaskListTemplate from './src/components/custom-sdk/template/HMRC_ODX_GDSTaskListTemplate/';
 import AutoComplete from './src/components/override-sdk/field/AutoComplete/';
 import HmrcOdxGdsTextPresentation from './src/components/custom-sdk/field/HMRC_ODX_GDSTextPresentation/';
 import HmrcOdxGdsCheckAnswersPage from './src/components/custom-sdk/template/HMRC_ODX_GDSCheckAnswersPage/';
 import HmrcOdxGoBackGoBack from './src/components/custom-sdk/field/HMRC_ODXGoBack_GoBack/';
-/*import end - DO NOT REMOVE*/
+/* import end - DO NOT REMOVE */
 
 // localSdkComponentMap is the JSON object where we'll store the components that are
 // found locally. If not found here, we'll look in the Pega-provided component map
@@ -48,7 +47,6 @@ const localSdkComponentMap = {
   Assignment: InfraAssignment,
   AssignmentCard: InfraAssignmentCard,
   ActionButtons: InfraActionButtons,
-  Assignment: InfraAssignment,
   FlowContainer: InfraFlowContainer,
   HMRC_ODX_PhoneNumber: FieldPhone,
   View: InfraView,
@@ -61,12 +59,12 @@ const localSdkComponentMap = {
   HMRC_ODX_GDSSummaryCard: HmrcOdxGdsSummaryCard,
   HMRC_ODX_GDSButton: HmrcOdxGdsButton,
   HMRC_ODX_ComplexQuestionExplanation: HmrcOdxComplexQuestionExplanation,
-  AutoComplete: AutoComplete,
+  AutoComplete,
   HMRC_ODX_GDSTextPresentation: HmrcOdxGdsTextPresentation,
   HMRC_ODX_GDSTaskListTemplate: HmrcOdxGdsTaskListTemplate,
-  HMRC_ODXGoBack_GoBack : HmrcOdxGoBackGoBack,
+  HMRC_ODXGoBack_GoBack: HmrcOdxGoBackGoBack,
   HMRC_ODX_GDSCheckAnswersPage: HmrcOdxGdsCheckAnswersPage
-  /*map end - DO NOT REMOVE*/
+  /* map end - DO NOT REMOVE */
 };
 
 export default localSdkComponentMap;

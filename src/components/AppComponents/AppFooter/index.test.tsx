@@ -6,7 +6,7 @@ import { renderHook } from '@testing-library/react-hooks';
 // import '@testing-library/jest-dom/extend-expect';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { act } from 'react-dom/test-utils';
-import { MemoryRouter, Route } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
 describe('should render component AppFooter', () => {
   let t;
@@ -23,10 +23,14 @@ describe('should render component AppFooter', () => {
   it('should render the footer links with appropriate text in English.', () => {
     const component = render(
       <I18nextProvider i18n={t.result.current.i18n}>
-        <MemoryRouter initialEntries={[{ pathname: '/appeal-a-self-assessment-penalty' }]}>
-          <Route path='/appeal-a-self-assessment-penalty'>
-            <AppFooter baseurl='' />
-          </Route>
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+          initialEntries={[{ pathname: '/appeal-a-self-assessment-penalty' }]}
+        >
+          <AppFooter baseurl='' />
         </MemoryRouter>
       </I18nextProvider>
     );
@@ -57,7 +61,13 @@ describe('should render component AppFooter', () => {
 
     const component = render(
       <I18nextProvider i18n={t.result.current.i18n}>
-        <MemoryRouter initialEntries={['/appeal-a-self-assessment-penalty']}>
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+          initialEntries={['/appeal-a-self-assessment-penalty']}
+        >
           <AppFooter baseurl='' />
         </MemoryRouter>
       </I18nextProvider>
@@ -85,7 +95,13 @@ describe('should render component AppFooter', () => {
   it('should navigate to appropriate footer links when specific link is clicked.', () => {
     render(
       <I18nextProvider i18n={t.result.current.i18n}>
-        <MemoryRouter initialEntries={['/appeal-a-self-assessment-penalty']}>
+        <MemoryRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+          initialEntries={['/appeal-a-self-assessment-penalty']}
+        >
           <AppFooter baseurl='' />
         </MemoryRouter>
       </I18nextProvider>

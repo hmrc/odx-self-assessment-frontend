@@ -79,10 +79,10 @@ export default function FieldSet({
             wrapper={child => <h1 className='govuk-fieldset__heading'>{child}</h1>}
             childrenToWrap={label}
           />
+          {instructionText && legendIsHeading && (
+            <InstructionTextComponent instructionText={instructionText} />
+          )}
         </legend>
-        {instructionText && legendIsHeading && (
-          <InstructionTextComponent instructionText={instructionText} />
-        )}
         {hintTextExists && (
           <div id={hintID} className='govuk-hint'>
             {' '}
@@ -92,7 +92,7 @@ export default function FieldSet({
         {(errMessage || errorText) && (
           <p id={errorID} className='govuk-error-message'>
             <span className='govuk-visually-hidden'>{t('ERROR')}:</span>
-            {errMessageToDisplay || errorText}
+            {errorText || errMessageToDisplay}
           </p>
         )}
         {children}

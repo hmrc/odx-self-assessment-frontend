@@ -4,11 +4,20 @@ import PropTypes from 'prop-types';
 import { scrollToTop } from '../../helpers/utils';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
+import { getServiceStatus } from '../../helpers/getServiceStatus';
 
 declare const PCore: any;
 
 export default function CaseDetails(props) {
-  const { thePConn, data, rowClickAction, buttonContent, title, handleCaseStart } = props;
+  const {
+    thePConn,
+    data,
+    rowClickAction,
+    buttonContent,
+    title,
+    handleCaseStart,
+    setServiceStatus
+  } = props;
   const { t } = useTranslation();
   const [caseDetail, setCaseDetail] = useState([]);
 
@@ -44,6 +53,12 @@ export default function CaseDetails(props) {
     // Todo: Pega constellation is expecting primary case only.
     // Research is in progress to keep it dynamic
     const target = `${PCore.getConstants().APP.APP}/${container}`;
+
+    const serviceStatusResponse = await getServiceStatus();
+    if (!serviceStatusResponse.isServiceHealthy) {
+      setServiceStatus(serviceStatusResponse);
+      return;
+    }
 
     if (rowClickAction === 'OpenAssignment') {
       resetContainer();
@@ -124,5 +139,6 @@ CaseDetails.propTypes = {
   rowClickAction: PropTypes.oneOf(['OpenAssignment']),
   buttonContent: PropTypes.string,
   title: PropTypes.string,
-  handleCaseStart: PropTypes.func
+  handleCaseStart: PropTypes.func,
+  setServiceStatus: PropTypes.func.isRequired
 };

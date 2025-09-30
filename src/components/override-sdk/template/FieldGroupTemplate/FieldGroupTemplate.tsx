@@ -43,7 +43,6 @@ export default function Group(props) {
   const [errorMessage, setErrorMessage] = useState(null);
 
   if (children?.length > 0) {
-    const errors = [''];
     if (children[0].props?.getPConnect().getMetadata().type === 'Checkbox') {
       const valuesList = children
         .filter(child => {
@@ -121,14 +120,6 @@ export default function Group(props) {
         const childPConnect = child.props.getPConnect();
         const resolvedProps = childPConnect.resolveConfigProps(childPConnect.getConfigProps());
         childPConnect.populateAdditionalProps(childPConnect.getConfigProps());
-        errors.push(
-          PCore.getMessageManager().getMessages({
-            property: child.props.getPConnect().getStateProps().value,
-            pageReference: child.props.getPConnect().getPageReference(),
-            context: child.props.getPConnect().getContextName(),
-            type: 'error'
-          })[0]?.message
-        );
 
         const formattedPropertyName =
           childPConnect.getStateProps().value &&
@@ -170,7 +161,7 @@ export default function Group(props) {
             hintText={instructions}
             label={heading}
             legendIsHeading={isOnlyField}
-            errorText={errors.join(' ').trim() !== '' ? errors.join(' ').trim() : null}
+            errorText={errorMessage?.message?.message}
             {...props}
           >
             <div className={checkboxClasses} data-module='govuk-checkboxes'>

@@ -30,7 +30,7 @@ export const enableGATracking = (): void => {
       script.src = `https://www.googletagmanager.com/gtm.js?id=${id}${dataLayerName !== 'dataLayer' ? `&l=${dataLayerName}` : ''}`;
 
       // Insert the script before the first existing script tag
-      firstScript.parentNode?.insertBefore(script, firstScript);
+      firstScript?.parentNode?.insertBefore(script, firstScript);
     }
   };
 

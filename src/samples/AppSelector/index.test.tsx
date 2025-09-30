@@ -9,7 +9,7 @@ jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
 
 // Mock components
 jest.mock('../Registration/index', () => () => <div>Registration Component</div>);
-jest.mock('../Registration/cookiePage/index', () => () => <div>CookiePage Component</div>);
+jest.mock('../cookiePage/index', () => () => <div>CookiePage Component</div>);
 jest.mock('../Registration/AccessibilityPage', () => () => <div>Accessibility Component</div>);
 jest.mock('../Cessation/AccessibilityPage', () => () => (
   <div>AccessibilityCessation Component</div>
@@ -43,7 +43,12 @@ describe('AppSelector Component', () => {
 
   test('renders nothing until i18n is loaded', async () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+      >
         <AppSelector />
       </MemoryRouter>
     );
@@ -57,7 +62,13 @@ describe('AppSelector Component', () => {
 
   test('redirects to /registration by default', async () => {
     render(
-      <MemoryRouter initialEntries={['/']}>
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+        initialEntries={['/']}
+      >
         <AppSelector />
       </MemoryRouter>
     );
@@ -69,7 +80,13 @@ describe('AppSelector Component', () => {
 
   test('renders protected routes with ProtectedRoute wrapper', async () => {
     render(
-      <MemoryRouter initialEntries={['/registration']}>
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+        initialEntries={['/registration']}
+      >
         <AppSelector />
       </MemoryRouter>
     );
@@ -83,7 +100,13 @@ describe('AppSelector Component', () => {
 
   test('renders public routes with AppWrapper', async () => {
     render(
-      <MemoryRouter initialEntries={['/registration-cookies']}>
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+        initialEntries={['/registration-cookies']}
+      >
         <AppSelector />
       </MemoryRouter>
     );
@@ -97,7 +120,13 @@ describe('AppSelector Component', () => {
 
   test('renders cessation accessibility route', async () => {
     render(
-      <MemoryRouter initialEntries={['/cessation-accessibility']}>
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+        initialEntries={['/cessation-accessibility']}
+      >
         <AppSelector />
       </MemoryRouter>
     );
@@ -111,7 +140,13 @@ describe('AppSelector Component', () => {
 
   test('renders appeals and penalties accessibility route', async () => {
     render(
-      <MemoryRouter initialEntries={['/appeal-a-self-assessment-penalty-accessibility']}>
+      <MemoryRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }}
+        initialEntries={['/appeal-a-self-assessment-penalty-accessibility']}
+      >
         <AppSelector />
       </MemoryRouter>
     );

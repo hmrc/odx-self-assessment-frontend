@@ -1,24 +1,30 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
-  getServiceShutteredStatus,
   scrollToTop,
   shouldRemoveFormTagForReadOnly,
   removeRedundantString,
   getCurrentLanguage
 } from '../../../helpers/utils';
 import ErrorSummary from '../../../BaseComponents/ErrorSummary/ErrorSummary';
-import { DateErrorFormatter, DateErrorTargetFields } from '../../../helpers/formatters/DateErrorFormatter';
+import {
+  DateErrorFormatter,
+  DateErrorTargetFields
+} from '../../../helpers/formatters/DateErrorFormatter';
 import Button from '../../../BaseComponents/Button/Button';
 import setPageTitle from '../../../helpers/setPageTitleHelpers';
 import { SdkComponentMap } from '@pega/react-sdk-components/lib/bridge/helpers/sdk_component_map';
 import MainWrapper from '../../../BaseComponents/MainWrapper';
-import ShutterServicePage from '../../../../components/AppComponents/ShutterServicePage';
 import { ErrorMsgContext } from '../../../helpers/HMRCAppContext';
-import useServiceShuttered from '../../../helpers/hooks/useServiceShuttered';
 import dayjs from 'dayjs';
 import AskHMRC from '../../../../components/AppComponents/AskHMRC';
 import useIsOnlyField from '../../../helpers/hooks/QuestionDisplayHooks';
+import ServiceFallbackPageWrapper from '../../../AppComponents/ServiceFallbackPageWrapper';
+import {
+  defaultServiceStatus,
+  getServiceStatus,
+  ServiceStatusType
+} from '../../../helpers/getServiceStatus';
 
 export interface ErrorMessageDetails {
   message: string;
@@ -38,7 +44,6 @@ export default function Assignment(props) {
   const thePConn = getPConnect();
   const [arSecondaryButtons, setArSecondaryButtons] = useState([]);
   const [actionButtons, setActionButtons] = useState<any>({});
-  const serviceShuttered = useServiceShuttered();
 
   const AssignmentCard = SdkComponentMap.getLocalComponentMap().AssignmentCard
     ? SdkComponentMap.getLocalComponentMap().AssignmentCard
@@ -47,7 +52,8 @@ export default function Assignment(props) {
   const actionsAPI = thePConn.getActionsApi();
   const localizedVal = PCore.getLocaleUtils().getLocaleValue;
   const localeCategory = 'Assignment';
-  const localeReference = `${getPConnect().getCaseInfo().getClassName()}!CASE!${getPConnect().getCaseInfo().getName()}`.toUpperCase();
+  const localeReference =
+    `${getPConnect().getCaseInfo().getClassName()}!CASE!${getPConnect().getCaseInfo().getName()}`.toUpperCase();
 
   // store off bound functions to above pointers
   const finishAssignment = actionsAPI.finishAssignment.bind(actionsAPI);
@@ -56,7 +62,7 @@ export default function Assignment(props) {
   const saveAssignment = actionsAPI.saveAssignment?.bind(actionsAPI);
   const cancelCreateStageAssignment = actionsAPI.cancelCreateStageAssignment.bind(actionsAPI);
   const [errorMessages, setErrorMessages] = useState<OrderedErrorMessage[]>([]);
-  const [serviceShutteredStatus, setServiceShutteredStatus] = useState(serviceShuttered);
+  const [serviceStatus, setServiceStatus] = useState<ServiceStatusType>(defaultServiceStatus);
   const [hasAutoCompleteError, setHasAutoCompleteError] = useState('');
   const [header, setHeader] = useState('');
   const isOnlyFieldDetails = useIsOnlyField(null, children); // .isOnlyField;
@@ -65,12 +71,9 @@ export default function Assignment(props) {
 
   const context = getPConnect().getContextName();
 
-  useEffect(() => {
-    setServiceShutteredStatus(serviceShuttered);
-  }, [serviceShuttered]);
-
   const callLocalActionSilently = async () => {
-    const { invokeRestApi, invokeCustomRestApi, getCancelTokenSource, isRequestCanceled } = PCore.getRestClient();
+    const { invokeRestApi, invokeCustomRestApi, getCancelTokenSource, isRequestCanceled } =
+      PCore.getRestClient();
     const cancelTokenSource = getCancelTokenSource();
     lang = getCurrentLanguage();
     const LOCAL_ACTION_NAME = lang === 'en' ? 'SwitchLanguageToEnglish' : 'SwitchLanguageToWelsh';
@@ -117,9 +120,11 @@ export default function Assignment(props) {
     // this will refresh the case view and load all required translations
     try {
       await callLocalActionSilently();
-      await thePConn.getActionsApi().refreshCaseView(thePConn.getCaseInfo()?.getKey(), '', thePConn.getPageReference(), {
-        autoDetectRefresh: true
-      });
+      await thePConn
+        .getActionsApi()
+        .refreshCaseView(thePConn.getCaseInfo()?.getKey(), '', thePConn.getPageReference(), {
+          autoDetectRefresh: true
+        });
 
       // emit this event to reload the react component forcefully
       PCore.getPubSubUtils().publish('forceRefreshRootComponent');
@@ -139,9 +144,17 @@ export default function Assignment(props) {
   }, [errorMessages]);
 
   useEffect(() => {
-    PCore.getPubSubUtils().subscribe('callLocalActionSilently', callLocalActionSilently, 'callLocalActionSilently');
+    PCore.getPubSubUtils().subscribe(
+      'callLocalActionSilently',
+      callLocalActionSilently,
+      'callLocalActionSilently'
+    );
 
-    PCore.getPubSubUtils().subscribe('languageToggleTriggered', refreshView, 'languageToggleTriggered');
+    PCore.getPubSubUtils().subscribe(
+      'languageToggleTriggered',
+      refreshView,
+      'languageToggleTriggered'
+    );
 
     return () => {
       PCore.getPubSubUtils().unsubscribe('callLocalActionSilently', 'callLocalActionSilently');
@@ -154,18 +167,43 @@ export default function Assignment(props) {
       // Perform actions before the component unloads
       sessionStorage.setItem('isAutocompleteRendered', 'false');
 
-      const assignmentID = thePConn.getCaseInfo().getAssignmentID();
-      sessionStorage.setItem('assignmentID', assignmentID);
+      if (sessionStorage.getItem('assignmentID') === 'disableRefresh') {
+        sessionStorage.removeItem('assignmentID');
+      } else {
+        const assignmentID = thePConn.getCaseInfo().getAssignmentID();
+        sessionStorage.setItem('assignmentID', assignmentID);
+      }
 
-      PCore.getContainerUtils().closeContainerItem(PCore.getContainerUtils().getActiveContainerItemContext('app/primary'), { skipDirtyCheck: true });
+      PCore.getContainerUtils().closeContainerItem(
+        PCore.getContainerUtils().getActiveContainerItemContext('app/primary'),
+        { skipDirtyCheck: true }
+      );
 
       PCore.getPubSubUtils().unsubscribe('autoCompleteFieldPresent', errorMessage => {
         setHasAutoCompleteError(errorMessage);
       });
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
+
+    PCore?.getPubSubUtils().subscribe(
+      'CUSTOM_EVENT_CYA_CHANGE_INITIATED',
+      async responseCallback => {
+        const serviceStatusResponse = await getServiceStatus();
+        responseCallback.resolve(serviceStatusResponse.isServiceHealthy);
+        if (!serviceStatusResponse.isServiceHealthy) {
+          setServiceStatus(serviceStatusResponse);
+        }
+        scrollToTop();
+      },
+      'CUSTOM_EVENT_CYA_CHANGE_INITIATED'
+    );
+
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
+      PCore.getPubSubUtils().unsubscribe(
+        'CUSTOM_EVENT_CYA_CHANGE_INITIATED',
+        'CUSTOM_EVENT_CYA_CHANGE_INITIATED'
+      );
     };
   }, []);
 
@@ -182,14 +220,6 @@ export default function Assignment(props) {
   PCore.getPubSubUtils().subscribe('languageToggleTriggered', langreference => {
     setSelectedLang(langreference?.language);
   });
-
-  // To update the title when we toggle the language
-  useEffect(() => {
-    setTimeout(() => {
-      setHeader(localizedVal(containerName, 'Assignment', '@BASECLASS!GENERIC!PYGENERICFIELDS'));
-      setPageTitle(false);
-    }, 60);
-  }, [headerLocaleLocation, containerName, selectedLang]);
 
   useEffect(() => {
     if (children && children.length > 0) {
@@ -226,7 +256,12 @@ export default function Assignment(props) {
       if (formFields) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
         for (const [key, value] of formFields) {
-          const { propertyName, pageReference, componentName: type, index: displayOrder } = value.props;
+          const {
+            propertyName,
+            pageReference,
+            componentName: type,
+            index: displayOrder
+          } = value.props;
 
           const errorMessagesList = PCore.getMessageManager().getMessages({
             property: propertyName,
@@ -237,13 +272,17 @@ export default function Assignment(props) {
 
           let validateMessage = '';
           if (errorMessagesList.length > 0) {
-            validateMessage = errorMessagesList.map(error => localizedVal(removeRedundantString(error.message), 'Messages')).join('. ');
+            validateMessage = errorMessagesList
+              .map(error => localizedVal(removeRedundantString(error.message), 'Messages'))
+              .join('. ');
           }
 
           // eslint-disable-next-line no-continue
           if (!validateMessage) continue;
 
-          const formattedPropertyName = propertyName.includes('.') ? propertyName.split('.').pop() : null;
+          const formattedPropertyName = propertyName.includes('.')
+            ? propertyName.split('.').pop()
+            : null;
           let fieldId = formattedPropertyName;
 
           if (type === 'Date') {
@@ -275,6 +314,15 @@ export default function Assignment(props) {
     }
     setErrorMessages([...errorStateProps]);
   }
+
+  // To update the title when we toggle the language
+  useEffect(() => {
+    setTimeout(() => {
+      setHeader(localizedVal(containerName, 'Assignment', '@BASECLASS!GENERIC!PYGENERICFIELDS'));
+      checkErrorMessages(false);
+      setPageTitle(false);
+    }, 60);
+  }, [headerLocaleLocation, containerName, selectedLang]);
 
   function clearErrors() {
     errorMessages.forEach(error =>
@@ -316,7 +364,10 @@ export default function Assignment(props) {
 
   function onSaveActionSuccess(data) {
     actionsAPI.cancelAssignment(itemKey).then(() => {
-      PCore.getPubSubUtils().publish(PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.CREATE_STAGE_SAVED, data);
+      PCore.getPubSubUtils().publish(
+        PCore.getConstants().PUB_SUB_EVENTS.CASE_EVENTS.CREATE_STAGE_SAVED,
+        data
+      );
     });
   }
 
@@ -328,7 +379,8 @@ export default function Assignment(props) {
     if (dateField) {
       dateField?.forEach(field => {
         const childPagRef = childPconnect.getPageReference();
-        const pageRef = thePConn.getPageReference() === childPagRef ? thePConn.getPageReference() : childPagRef;
+        const pageRef =
+          thePConn.getPageReference() === childPagRef ? thePConn.getPageReference() : childPagRef;
         const storedRefName = field.name?.replace(pageRef, '');
         const storedDateValue = childPconnect.getValue(`.${storedRefName}`);
         if (!dayjs(storedDateValue, 'YYYY-MM-DD', true).isValid()) {
@@ -343,6 +395,13 @@ export default function Assignment(props) {
   }
 
   async function buttonPress(sAction: string, sButtonType: string) {
+    const serviceStatusResponse = await getServiceStatus();
+    if (!serviceStatusResponse.isServiceHealthy) {
+      setServiceStatus(serviceStatusResponse);
+      PCore.getPubSubUtils().publish('CUSTOM_EVENT_PAGE_NAVIGATION'); // Triggering an event on page navigation
+      return;
+    }
+
     if (sButtonType === 'secondary') {
       switch (sAction) {
         case 'navigateToStep': {
@@ -371,7 +430,9 @@ export default function Assignment(props) {
           savePromise
             .then(() => {
               sessionStorage.removeItem('assignmentID');
-              const caseType = thePConn.getCaseInfo().c11nEnv.getValue(PCore.getConstants().CASE_INFO.CASE_TYPE_ID);
+              const caseType = thePConn
+                .getCaseInfo()
+                .c11nEnv.getValue(PCore.getConstants().CASE_INFO.CASE_TYPE_ID);
               onSaveActionSuccess({ caseType, caseID, assignmentID });
               scrollToTop();
             })
@@ -422,29 +483,18 @@ export default function Assignment(props) {
       // eslint-disable-next-line sonarjs/no-small-switch
       switch (sAction) {
         case 'finishAssignment': {
-          PCore.getPubSubUtils().publish('CustomAssignmentFinishedInitiated', {
-            errorState: errorMessages.length > 0
-          });
+          const finishPromise = finishAssignment(itemKey);
 
-          // resetting Back button control on click of 'Continue'
-          sessionStorage.setItem('overrideControl', 'false');
-          const status = await getServiceShutteredStatus();
-          if (status) {
-            setServiceShutteredStatus(status);
-          } else {
-            const finishPromise = finishAssignment(itemKey);
-
-            finishPromise
-              .then(() => {
-                sessionStorage.removeItem('assignmentID');
-                scrollToTop();
-                PCore.getPubSubUtils().publish('CustomAssignmentFinished');
-              })
-              .catch(() => {
-                scrollToTop();
-                showErrorSummary();
-              });
-          }
+          finishPromise
+            .then(() => {
+              sessionStorage.removeItem('assignmentID');
+              scrollToTop();
+              PCore.getPubSubUtils().publish('CustomAssignmentFinished');
+            })
+            .catch(() => {
+              scrollToTop();
+              showErrorSummary();
+            });
           break;
         }
 
@@ -487,37 +537,43 @@ export default function Assignment(props) {
 
   const shouldRemoveFormTag = shouldRemoveFormTagForReadOnly(containerName);
   return (
-    <>
-      {serviceShutteredStatus ? (
-        <ShutterServicePage />
-      ) : (
-        <div id='Assignment'>
-          {arSecondaryButtons?.map(sButton =>
-            sButton.name === 'Previous' ? (
-              <Button
-                variant='backlink'
-                onClick={e => {
-                  e.target.blur();
-                  _onButtonPress(sButton.jsAction, 'secondary');
-                }}
-                key={sButton.actionID}
-                attributes={{ type: 'link' }}
-              ></Button>
-            ) : null
+    <ServiceFallbackPageWrapper serviceStatus={serviceStatus}>
+      <div id='Assignment'>
+        {arSecondaryButtons?.map(sButton =>
+          sButton.name === 'Previous' ? (
+            <Button
+              variant='backlink'
+              onClick={e => {
+                e.target.blur();
+                _onButtonPress(sButton.jsAction, 'secondary');
+              }}
+              key={sButton.actionID}
+              attributes={{ type: 'link' }}
+            ></Button>
+          ) : null
+        )}
+        <MainWrapper>
+          {errorMessages.length > 0 && (
+            <ErrorSummary
+              errors={errorMessages.map(item =>
+                localizedVal(item.message, localeCategory, localeReference)
+              )}
+            />
           )}
-          <MainWrapper>
-            {errorMessages.length > 0 && (
-              <ErrorSummary errors={errorMessages.map(item => localizedVal(item.message, localeCategory, localeReference))} />
-            )}
-            {(!isOnlyFieldDetails.isOnlyField ||
-              containerName?.toLowerCase().includes('check your answer') ||
-              containerName?.toLowerCase().includes('declaration')) && <h1 className='govuk-heading-l'>{header}</h1>}
-            {shouldRemoveFormTag ? renderAssignmentCard() : <form onSubmit={onSubmit}>{renderAssignmentCard()}</form>}
-            <AskHMRC />
-          </MainWrapper>
-        </div>
-      )}
-    </>
+          {(!isOnlyFieldDetails.isOnlyField ||
+            containerName?.toLowerCase().includes('check your answer') ||
+            containerName?.toLowerCase().includes('declaration')) && (
+            <h1 className='govuk-heading-l'>{header}</h1>
+          )}
+          {shouldRemoveFormTag ? (
+            renderAssignmentCard()
+          ) : (
+            <form onSubmit={onSubmit}>{renderAssignmentCard()}</form>
+          )}
+          <AskHMRC />
+        </MainWrapper>
+      </div>
+    </ServiceFallbackPageWrapper>
   );
 }
 

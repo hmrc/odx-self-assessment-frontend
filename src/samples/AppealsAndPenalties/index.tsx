@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useEffect, useContext, useRef } from 'react';
+import { FunctionComponent, useState, useEffect, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import setPageTitle, { registerServiceName } from '../../components/helpers/setPageTitleHelpers';
 import { getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
@@ -6,7 +6,7 @@ import AppFooter from '../../components/AppComponents/AppFooter';
 import { resumeOnRefresh, triggerLogout } from '../../components/helpers/utils';
 import useHMRCExternalLinks from '../../components/helpers/hooks/HMRCExternalLinks';
 import TimeoutPopup from '../../components/AppComponents/TimeoutPopup';
-import ShutterServicePage from '../../components/AppComponents/ShutterServicePage';
+import ServiceFallbackPageWrapper from '../../components/AppComponents/ServiceFallbackPageWrapper';
 import SummaryPage from '../../components/AppComponents/SummaryPage';
 import {
   initTimeout,
@@ -32,19 +32,13 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
   const penaltyDataEndpoint = 'D_GetChargesForPastFourTaxYears';
   const penaltyDataEndpointParams = { LocalisedContent: true };
   const createCaseApi = 'HMRC-SA-Work-Appeal';
-  const caseListApiParams = { CaseType: 'HMRC-SA-Work-Appeal' };
 
   const [showLandingPage, setShowLandingPage] = useState<boolean>(true);
   const [pCoreReady, setPCoreReady] = useState(false);
   const { showLanguageToggle } = useContext(AppContext);
   const [showLanguageToggleState, setShowLanguageToggleState] = useState(showLanguageToggle);
   const [currentDisplay, setCurrentDisplay] = useState<
-    | 'pegapage'
-    | 'resolutionpage'
-    | 'servicenotavailable'
-    | 'shutterpage'
-    | 'loading'
-    | 'landingpage'
+    'pegapage' | 'resolutionpage' | 'servicenotavailable' | 'loading' | 'landingpage'
   >('pegapage');
   const [summaryPageContent, setSummaryPageContent] = useState<any>({
     content: null,
@@ -61,16 +55,18 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
   const {
     showPega,
     setShowPega,
-    shutterServicePage,
+    serviceStatus,
+    setServiceStatus,
     showResolutionPage,
     setShowResolutionPage,
     caseId,
     serviceNotAvailable,
+    setServiceNotAvailable,
     assignmentPConnect,
     assignmentCancelled,
     setAssignmentCancelled,
     containerClosed,
-    isPegaLoading,
+    isLoading,
     renderRootComponent,
     rootProps
   } = useStartMashup({
@@ -120,6 +116,12 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
     setShowPega(true);
   };
 
+  const handleApiError = () => {
+    setServiceNotAvailable(true);
+    setShowPega(false);
+    setShowLandingPage(false);
+  };
+
   function closeContainer() {
     if (PCore.getContainerUtils().getActiveContainerItemName('app/primary')) {
       PCore.getContainerUtils().closeContainerItem(
@@ -132,14 +134,18 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
   function returnedToPortal() {
     closeContainer();
     setShowPega(false);
-    setShowLandingPage(true);
     setShowResolutionPage(false);
+    setShowLandingPage(true);
     setAssignmentCancelled(false);
     setSummaryPageContent({
       content: null,
       title: null,
       banner: null
     });
+  }
+
+  function handleServiceNameClick() {
+    returnedToPortal();
   }
 
   useEffect(() => {
@@ -170,14 +176,11 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
   }, [assignmentCancelled]);
 
   useEffect(() => {
-    if (isPegaLoading) {
+    if (isLoading) {
       setCurrentDisplay('loading');
       return;
     }
-
-    if (shutterServicePage) {
-      setCurrentDisplay('shutterpage');
-    } else if (showLandingPage && pCoreReady && !showResolutionPage && !shutterServicePage) {
+    if (showLandingPage && pCoreReady && !showResolutionPage && serviceStatus.isServiceHealthy) {
       setCurrentDisplay('landingpage');
     } else if (showPega) {
       setCurrentDisplay('pegapage');
@@ -192,7 +195,7 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
       getSdkConfig().then(config => {
         PCore.getRestClient()
           .invokeCustomRestApi(
-            `${config.serverConfig.infinityRestServerUrl}/api/application/v2/cases/${caseId}?pageName=SubmissionSummary`,
+            `${config.serverConfig.infinityRestServerUrl}/app/${config.serverConfig.appAlias}/api/application/v2/cases/${caseId}?pageName=SubmissionSummary`,
             {
               method: 'GET',
               body: '',
@@ -238,17 +241,17 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
   }, [
     showResolutionPage,
     showPega,
-    shutterServicePage,
     serviceNotAvailable,
     pCoreReady,
     showLandingPage,
     containerClosed,
-    isPegaLoading
+    isLoading,
+    serviceStatus.isServiceHealthy
   ]);
 
   useEffect(() => {
-    resumeOnRefresh(pConnect, pCoreReady, setShowLandingPage);
-  }, [pCoreReady, showPega]);
+    resumeOnRefresh(pConnect, pCoreReady, setShowLandingPage, setServiceStatus);
+  }, [pCoreReady, pConnect]);
 
   useEffect(() => {
     document.addEventListener('SdkConstellationReady', () => {
@@ -306,16 +309,16 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
         false,
         true,
         currentDisplay === 'resolutionpage',
-        caseListApiParams
+        penaltyDataEndpointParams
       )
     );
 
     PCore?.getPubSubUtils().subscribe(
-      'showPortalScreenOnBackPress',
+      'CUSTOM_EVENT_BACK',
       () => {
         returnedToPortal();
       },
-      'showPortalScreenOnBackPress'
+      'CUSTOM_EVENT_BACK'
     );
   });
 
@@ -348,7 +351,7 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
               false,
               true,
               false,
-              caseListApiParams
+              penaltyDataEndpointParams
             )
           }
           signoutHandler={(e?) => {
@@ -367,6 +370,7 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
           appname={t('APPEAL_A_SELF_ASSESSMENT_PENALTY')}
           hasLanguageToggle={showLanguageToggleState}
           handleSignout={handleSignout}
+          handleServiceNameClick={handleServiceNameClick}
           betafeedbackurl={`${hmrcURL}contact/beta-feedback?service=claim-child-benefit-frontend&backUrl=/fill-online/claim-child-benefit/recently-claimed-child-benefit`}
         />
         <div className='govuk-width-container'>
@@ -396,7 +400,7 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
               false,
               true,
               currentDisplay === 'resolutionpage',
-              caseListApiParams
+              penaltyDataEndpointParams
             )
           }
           signoutHandler={(e?) => {
@@ -414,6 +418,7 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
         {pConnect && (
           <AppHeader
             handleSignout={handleSignout}
+            handleServiceNameClick={handleServiceNameClick}
             appname={t('APPEAL_A_SELF_ASSESSMENT_PENALTY')}
             hasLanguageToggle={showLanguageToggleState}
             isPegaApp={showPega}
@@ -421,32 +426,34 @@ const AppealsAndPenalties: FunctionComponent<{ journeyName: string }> = ({ journ
           />
         )}
         <div className='govuk-width-container'>
-          {currentDisplay === 'shutterpage' ? (
-            <ShutterServicePage />
-          ) : (
-            <>
-              <div id='pega-part-of-page'>
-                <div id='pega-root' className={`${isLogout ? 'visibility-hidden' : ''}`}></div>
-              </div>
-              {currentDisplay === 'landingpage' && pConnect && (
-                <AppealsAndPenaltiesLanding
-                  isLogout={isLogout}
-                  pConn={pConnect}
-                  penaltyDataEndpoint={penaltyDataEndpoint}
-                  createCaseEndpoint={createCaseApi}
-                  handleCaseStart={handleCaseStart}
-                  penaltyDataEndpointParams={penaltyDataEndpointParams}
-                ></AppealsAndPenaltiesLanding>
-              )}
-              {currentDisplay === 'resolutionpage' && (
-                <SummaryPage
-                  summaryContent={summaryPageContent?.Content}
-                  summaryTitle={summaryPageContent?.Title}
-                  summaryBanner={summaryPageContent?.Banner}
-                  ref={summaryPageRef}
-                />
-              )}
-            </>
+          {pCoreReady && (
+            <ServiceFallbackPageWrapper serviceStatus={serviceStatus}>
+              <>
+                <div id='pega-part-of-page'>
+                  <div id='pega-root' className={`${isLogout ? 'visibility-hidden' : ''}`}></div>
+                </div>
+                {currentDisplay === 'landingpage' && pConnect && (
+                  <AppealsAndPenaltiesLanding
+                    isLogout={isLogout}
+                    pConn={pConnect}
+                    penaltyDataEndpoint={penaltyDataEndpoint}
+                    createCaseEndpoint={createCaseApi}
+                    handleCaseStart={handleCaseStart}
+                    penaltyDataEndpointParams={penaltyDataEndpointParams}
+                    handleApiError={handleApiError}
+                    setServiceStatus={setServiceStatus}
+                  ></AppealsAndPenaltiesLanding>
+                )}
+                {currentDisplay === 'resolutionpage' && (
+                  <SummaryPage
+                    summaryContent={summaryPageContent?.Content}
+                    summaryTitle={summaryPageContent?.Title}
+                    summaryBanner={summaryPageContent?.Banner}
+                    ref={summaryPageRef}
+                  />
+                )}
+              </>
+            </ServiceFallbackPageWrapper>
           )}
         </div>
 

@@ -86,9 +86,17 @@ export function staySignedIn(
   caseListApiParams = {}
 ) {
   if (refreshSignin && !!claimsListApi) {
+    const options = { invalidateCache: true };
     // @ts-ignore
     // Sends 'ping' to pega to keep session alive and then initiates the timeout
-    PCore.getDataPageUtils().getDataAsync(claimsListApi, 'root', { ...caseListApiParams });
+    PCore.getDataPageUtils().getDataAsync(
+      claimsListApi,
+      'root',
+      { ...caseListApiParams },
+      {},
+      {},
+      options
+    );
   }
   setShowTimeoutModal(false);
   initTimeout(setShowTimeoutModal, deleteData, isAuthorised, isConfirmationPage);

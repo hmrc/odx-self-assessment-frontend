@@ -39,7 +39,11 @@ const LanguageToggle = () => {
   }, [selectedLang]);
 
   return (
-    <nav id='hmrc-language-toggle' className='hmrc-language-select' aria-label='Language switcher'>
+    <nav
+      id='hmrc-language-toggle'
+      className='hmrc-language-select'
+      aria-label={selectedLang === 'en' ? 'Language switcher' : 'Newid yr Iaith'}
+    >
       <ul className='hmrc-language-select__list'>
         <li className='hmrc-language-select__list-item'>
           {selectedLang === 'en' ? (

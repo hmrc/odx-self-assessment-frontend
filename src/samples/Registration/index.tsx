@@ -25,20 +25,25 @@ import TimeoutPopup from '../../components/AppComponents/TimeoutPopup';
 import { getSdkComponentMap } from '@pega/react-sdk-components/lib/bridge/helpers/sdk_component_map';
 import localSdkComponentMap from '../../../sdk-local-component-map';
 import { checkCookie, setCookie } from '../../components/helpers/cookie';
-import ShutterServicePage from '../../components/AppComponents/ShutterServicePage';
+import ServiceFallbackPageWrapper from '../../components/AppComponents/ServiceFallbackPageWrapper';
 import {
   triggerLogout,
   checkStatus,
   getCaseId,
-  getCurrentLanguage
+  getCurrentLanguage,
+  scrollToTop
 } from '../../components/helpers/utils';
-import RegistrationAgeRestrictionInfo from './RegistrationAgeRestrictionInfo';
-import AlreadyRegisteredUserMessage from './AlreadyRegisteredUserMessage';
 import ApiServiceNotAvailable from '../../components/AppComponents/ApiErrorServiceNotAvailable';
 import { setJourneyName } from '../../components/helpers/journeyRegistry';
 import { TIMEOUT_115_SECONDS } from '../../components/helpers/constants';
 import SummaryPage from '../../components/AppComponents/SummaryPage';
 import checkAuthAndRedirectIfTens from '../../components/helpers/checkAuthAndRedirectIfTens';
+import {
+  defaultServiceStatus,
+  getServiceStatus,
+  ServiceStatusType
+} from '../../components/helpers/getServiceStatus';
+import PageNotWorkingProperly from '../../components/AppComponents/PageNotWorkingProperly';
 
 declare const myLoadMashup: any;
 let millisecondsTillSignout = TIMEOUT_115_SECONDS;
@@ -51,11 +56,9 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
   const [bShowResolutionScreen, setShowResolutionScreen] = useState(false);
   const [showTimeoutModal, setShowTimeoutModal] = useState(false);
   const [serviceNotAvailable, setServiceNotAvailable] = useState(false);
-  const [shutterServicePage, setShutterServicePage] = useState(false);
+  const [serviceStatus, setServiceStatus] = useState<ServiceStatusType>(defaultServiceStatus);
   const [showPortalBanner, setShowPortalBanner] = useState(false);
   const [inprogressRegistration, setInprogressRegistration] = useState([]);
-  const [showAgeRestrictionInfo, setshowAgeRestrictionInfo] = useState(false);
-  const [showAlreadyRegisteredUserMessage, setShowAlreadyRegisteredUserMessage] = useState(false);
   const [isLogout, setIsLogout] = useState(false);
   const [summaryPageContent, setSummaryPageContent] = useState<any>({
     content: null,
@@ -64,18 +67,16 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
   });
   const [rootProps, setRootProps] = useState({});
   const { t } = useTranslation();
-  // This needs to be changed in future when we handle the shutter for multiple service, for now this one's for single service
-  const featureID = 'SA';
-  const featureType = 'Service';
-  const caseStatusForRestrictedUser = 'resolved-rejectedvulnerable';
-  const caseStatusForAlreadyRegisteredUser = 'resolved-rejectedutrexists';
+
+  async function checkServiceStatus() {
+    const serviceStatusResponse = await getServiceStatus();
+    setServiceStatus(serviceStatusResponse);
+  }
 
   function resetAppDisplay() {
     setShowUserPortal(false);
     setShowResolutionScreen(false);
     setShowPega(false);
-    setshowAgeRestrictionInfo(false);
-    setShowAlreadyRegisteredUserMessage(false);
   }
 
   function displayPega() {
@@ -104,7 +105,7 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
     getSdkConfig().then(config => {
       PCore.getRestClient()
         .invokeCustomRestApi(
-          `${config.serverConfig.infinityRestServerUrl}/api/application/v2/cases/${caseId}?pageName=SubmissionSummary`,
+          `${config.serverConfig.infinityRestServerUrl}/app/${config.serverConfig.appAlias}/api/application/v2/cases/${caseId}?pageName=SubmissionSummary`,
           {
             method: 'GET',
             body: '',
@@ -125,7 +126,15 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
 
           setSummaryPageContent(summaryData.find(data => data.Language === currentLang));
 
-          PCore.getPubSubUtils().subscribe('summarypageLanguageChange');
+          PCore.getPubSubUtils().subscribe(
+            'languageToggleTriggered',
+            ({ language }) => {
+              setSummaryPageContent(
+                summaryData.find(data => data.Language === language.toUpperCase())
+              );
+            },
+            'summarypageLanguageChange'
+          );
 
           resetAppDisplay();
           setShowResolutionScreen(true);
@@ -140,16 +149,6 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
     setShowPega(false);
 
     getResolutionContent();
-  }
-
-  function displayShowAgeRestrictionInfo() {
-    resetAppDisplay();
-    setshowAgeRestrictionInfo(true);
-  }
-
-  function displayShowAlreadyRegisteredUserMessage() {
-    resetAppDisplay();
-    setShowAlreadyRegisteredUserMessage(true);
   }
 
   const serviceName = t('REGISTER_FOR_SELF_ASSESSMENT');
@@ -167,20 +166,11 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
       NotificationLanguage: getCurrentLanguage()
     };
 
-    PCore.getMashupApi()
-      .createCase('HMRC-SA-Work-Registration', PCore.getConstants().APP.APP, {
-        startingFields,
-        pageName: '',
-        channelName: ''
-      })
-      .then(() => {
-        const status = checkStatus();
-        if (status?.toLowerCase() === caseStatusForRestrictedUser) {
-          displayShowAgeRestrictionInfo();
-        } else if (status?.toLowerCase() === caseStatusForAlreadyRegisteredUser) {
-          displayShowAlreadyRegisteredUserMessage();
-        }
-      });
+    PCore.getMashupApi().createCase('HMRC-SA-Work-Registration', PCore.getConstants().APP.APP, {
+      startingFields,
+      pageName: '',
+      channelName: ''
+    });
   }
 
   function closeContainer() {
@@ -236,6 +226,7 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
           scrollToTop();
         })
         .catch((err: Error) => console.log('Error : ', err)); // eslint-disable-line no-console
+      sessionStorage.removeItem('assignmentID');
     }
     sessionStorage.setItem('assignmentFinishedFlag', 'false');
   }
@@ -251,10 +242,13 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
 
   async function customAssignmentFinished() {
     const sdkConfig = await getSdkConfig();
-    if (sdkConfig.showResolutionStatuses?.includes(checkStatus())) {
-      setShowPega(false);
-      getResolutionContent();
-    }
+    const unsubscribe = PCore.getStore().subscribe(() => {
+      if (sdkConfig.showResolutionStatuses?.includes(checkStatus())) {
+        unsubscribe();
+        setShowPega(false);
+        getResolutionContent();
+      }
+    });
   }
 
   function establishPCoreSubscriptions() {
@@ -515,25 +509,8 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
       // eslint-disable-next-line no-console
       console.log(`SdkComponentMap initialized`);
     });
-    PCore.getDataPageUtils()
-      .getPageDataAsync('D_ShutterLookup', 'root', {
-        FeatureID: featureID,
-        FeatureType: featureType
-      })
-      .then(resp => {
-        const isShuttered = resp.Shuttered;
-        if (isShuttered) {
-          setShutterServicePage(true);
-          resetAppDisplay();
-        } else {
-          setShutterServicePage(false);
-          displayUserPortal();
-        }
-      })
-      .catch(err => {
-        // eslint-disable-next-line no-console
-        console.error(err);
-      });
+
+    checkServiceStatus();
 
     // load the Mashup and handle the onPCoreEntry response that establishes the
     //  top level Pega root element (likely a RootContainer)
@@ -580,6 +557,12 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
     e?.preventDefault();
     triggerLogout(setIsLogout);
   }
+
+  function handleServiceNameClick() {
+    sessionStorage.setItem('assignmentID', 'disableRefresh');
+    window.location.href = `${journeyName}`;
+  }
+
   const handleCaseContinue = () => {
     setShowUserPortal(false);
   };
@@ -587,12 +570,6 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
   const renderContent = () => {
     if (serviceNotAvailable) {
       return <ApiServiceNotAvailable />;
-    } else if (shutterServicePage) {
-      return <ShutterServicePage />;
-    } else if (showAgeRestrictionInfo) {
-      return <RegistrationAgeRestrictionInfo />;
-    } else if (showAlreadyRegisteredUserMessage) {
-      return <AlreadyRegisteredUserMessage />;
     } else if (bShowResolutionScreen) {
       return (
         <SummaryPage
@@ -603,28 +580,32 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
       );
     } else {
       return (
-        <>
-          <div id='pega-part-of-page' className={isLogout ? 'visibility-hidden' : ''}>
-            <div id='pega-root'></div>
-          </div>
-          {showUserPortal && (
-            <UserPortal showPortalBanner={showPortalBanner} isLogout={isLogout}>
-              {inprogressRegistration.length > 0 && (
-                <>
-                  <CaseDetails
-                    thePConn={pConn}
-                    data={inprogressRegistration}
-                    rowClickAction='OpenAssignment'
-                    buttonContent={t('CONTINUE_YOUR_REGISTRATION')}
-                    title={t('YOUR_REGISTRATION')}
-                    handleCaseContinue={handleCaseContinue}
-                  />
-                  <AskHMRC />
-                </>
-              )}
-            </UserPortal>
-          )}
-        </>
+        <ServiceFallbackPageWrapper serviceStatus={serviceStatus}>
+          <>
+            <div id='pega-part-of-page' className={isLogout ? 'visibility-hidden' : ''}>
+              <div id='pega-root'></div>
+            </div>
+            {showUserPortal && (
+              <UserPortal showPortalBanner={showPortalBanner} isLogout={isLogout}>
+                {inprogressRegistration.length > 0 && (
+                  <>
+                    <CaseDetails
+                      thePConn={pConn}
+                      data={inprogressRegistration}
+                      rowClickAction='OpenAssignment'
+                      buttonContent={t('CONTINUE_YOUR_REGISTRATION')}
+                      title={t('YOUR_REGISTRATION')}
+                      handleCaseContinue={handleCaseContinue}
+                      setServiceStatus={setServiceStatus}
+                    />
+                    <AskHMRC />
+                    <PageNotWorkingProperly />
+                  </>
+                )}
+              </UserPortal>
+            )}
+          </>
+        </ServiceFallbackPageWrapper>
       );
     }
   };
@@ -651,11 +632,16 @@ const Registration: FunctionComponent<any> = ({ journeyName }) => {
           e?.preventDefault();
           triggerLogout(setIsLogout);
         }}
+        autoSignoutHandler={(e?) => {
+          e?.preventDefault();
+          triggerLogout(setIsLogout, true);
+        }}
       />
 
       {pConn && (
         <AppHeader
           handleSignout={handleSignout}
+          handleServiceNameClick={handleServiceNameClick}
           appname={t('REGISTER_FOR_SELF_ASSESSMENT')}
           hasLanguageToggle
           isPegaApp={bShowPega}

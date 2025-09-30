@@ -16,8 +16,8 @@ export default function Accessibility() {
 
   return (
     <>
-      <h1 className='govuk-heading-xl'>{t('ACCESSIBLITY_STATEMENT_FOR_CHB_SERVICE')}</h1>
-      <p className='govuk-body-l'>{t('THIS_AS_EXPLAINS_HOW')}</p>
+      <h1 className='govuk-heading-xl'>{t('ACCESSIBLITY_STATEMENT_FOR_REGISTER_SERVICE')}</h1>
+
       <p className='govuk-body'>
         {t('THIS_SERVICE_IS_A_PART_GOVUK_WEBSITE')}
         <a
@@ -31,15 +31,17 @@ export default function Accessibility() {
         .
       </p>
       <p className='govuk-body'>
-        {t('THIS_PAGE_CONTAINS_INFO_ABOUT_CHB_SERVICE')}{' '}
-        https://www.tax.service.gov.uk/fill-online/claim-child-benefit.
+        {t('THIS_PAGE_CONTAINS_INFO_ABOUT_REGISTER_SERVICE')}{' '}
+        <a
+          className='govuk-link'
+          href='https://account.hmrc.gov.uk/self-assessment/registration'
+          target='_blank'
+          rel='noreferrer noopener'
+        >
+          https://www.tax.service.gov.uk/fill-online/registration {t('OPENS_IN_NEW_TAB')}
+        </a>
       </p>
 
-      <h2 className='govuk-heading-l'>{t('USING_THIS_SERVICE')}</h2>
-      <p className='govuk-body'>
-        {t('USE_THIS_FORM_TO_CLAIM')}
-        {t('USE_THIS_FORM_TO_CLAIM_CONTD')}.
-      </p>
       <p className='govuk-body'>{t('THIS_IS_RUN_BY_HMRC')}</p>
       <ul className='govuk-list govuk-list--bullet'>{makeList(1, 5)}</ul>
       <p className='govuk-body'>{t('WE_HAVE_MADE_TEXTS_SIMPLER')}</p>

@@ -1,32 +1,50 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import AskHMRC from '../../../components/AppComponents/AskHMRC';
 import Button from '../../../components/BaseComponents/Button/Button';
 import { useTranslation } from 'react-i18next';
-import useHMRCExternalLinks from '../../../components/helpers/hooks/HMRCExternalLinks';
 import PenaltyDatails from './PenaltyDatails';
 import setPageTitle from '../../../components/helpers/setPageTitleHelpers';
 import { Content, PenaltyDataProps } from './PenaltyTypes';
 import C11nEnv from '@pega/pcore-pconnect-typedefs/interpreter/c11n-env';
 import { getCurrentLanguage } from '../../../components/helpers/utils';
+import { getServiceStatus, ServiceStatusType } from '../../../components/helpers/getServiceStatus';
+import PageNotWorkingProperly from '../../../components/AppComponents/PageNotWorkingProperly';
 
-interface LandingProps {
+export interface LandingProps {
   isLogout: boolean;
   pConn: Partial<C11nEnv>;
   penaltyDataEndpoint: string;
   createCaseEndpoint: string;
   handleCaseStart: () => void;
   penaltyDataEndpointParams: {};
+  handleApiError: () => void;
+  setServiceStatus: Dispatch<SetStateAction<ServiceStatusType>>;
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 const AppealsAndPenaltiesLanding: React.FC<LandingProps> = props => {
-  const { isLogout, pConn, penaltyDataEndpoint, createCaseEndpoint, handleCaseStart, penaltyDataEndpointParams } = props;
+  const {
+    isLogout,
+    pConn,
+    penaltyDataEndpoint,
+    createCaseEndpoint,
+    handleCaseStart,
+    penaltyDataEndpointParams,
+    handleApiError,
+    setServiceStatus
+  } = props;
 
   const [dashboardData, setDashboardData] = useState<PenaltyDataProps>(null);
   const [dashboardDataLoaded, setDashboardDataLoaded] = useState<boolean>(false);
   const { t } = useTranslation();
-  const { hmrcURL } = useHMRCExternalLinks();
+  const serviceUnavailableErrorStatusCodes = [401, 502];
 
-  function createCase() {
+  async function createCase() {
+    const serviceStatusResponse = await getServiceStatus();
+    if (!serviceStatusResponse.isServiceHealthy) {
+      setServiceStatus(serviceStatusResponse);
+      return;
+    }
     const startingFields = {
       NotificationLanguage: getCurrentLanguage()
     };
@@ -42,6 +60,11 @@ const AppealsAndPenaltiesLanding: React.FC<LandingProps> = props => {
   }
 
   const fetchInProgressCaseDetailData = async () => {
+    const serviceStatusResponse = await getServiceStatus();
+    if (!serviceStatusResponse.isServiceHealthy) {
+      setServiceStatus(serviceStatusResponse);
+      return;
+    }
     const context = pConn.getContextName();
     const options = { invalidateCache: true };
     try {
@@ -55,28 +78,49 @@ const AppealsAndPenaltiesLanding: React.FC<LandingProps> = props => {
         options
       );
 
-      PCore.getPubSubUtils().unsubscribe('languageToggleTriggered', 'PenaltiesLandingPageLanguageChange');
+      if (response?.data?.length > 0 && response?.data[0].pyHTTPResponseCode !== 200) {
+        // eslint-disable-next-line @typescript-eslint/no-throw-literal
+        throw { status: response?.data[0].pyHTTPResponseCode };
+      }
+
+      PCore.getPubSubUtils().unsubscribe(
+        'languageToggleTriggered',
+        'PenaltiesLandingPageLanguageChange'
+      );
 
       const currentLang = getCurrentLanguage();
 
       const data: PenaltyDataProps =
         response?.data?.length > 0 && response.data[0].LocalisedContent?.length > 0
-          ? response.data[0].LocalisedContent.find(item => item.Language.toLowerCase() === currentLang)
+          ? response.data[0].LocalisedContent.find(
+              item => item.Language.toLowerCase() === currentLang
+            )
           : null;
 
       setDashboardData(data);
       PCore.getPubSubUtils().subscribe(
         'languageToggleTriggered',
         ({ language }) => {
-          setDashboardData(response?.data[0].LocalisedContent?.find(item => item.Language.toLowerCase() === language.toLowerCase()));
+          setDashboardData(
+            response?.data[0].LocalisedContent?.find(
+              item => item.Language.toLowerCase() === language.toLowerCase()
+            )
+          );
         },
         'PenaltiesLandingPageLanguageChange'
       );
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log('Error fetching dashboard detail:', error);
-    } finally {
       setDashboardDataLoaded(true);
+    } catch (error: any) {
+      // eslint-disable-next-line no-console
+      console.log('Error fetching dashboard detail:', error.status);
+      setDashboardDataLoaded(false);
+
+      if (serviceUnavailableErrorStatusCodes.includes(error.status)) {
+        handleApiError();
+      } else {
+        window.location.href =
+          'https://www.tax.service.gov.uk/digital-forms/form/self-assessment-appeal-late-filing-penalty/draft/guide';
+      }
     }
     sessionStorage.setItem('assignmentFinishedFlag', 'false');
   };
@@ -128,27 +172,24 @@ const AppealsAndPenaltiesLanding: React.FC<LandingProps> = props => {
         {t('START_AN_APPEAL')}
       </Button>
       <AskHMRC />
-      <p className='govuk-body'>
-        <a
-          className='govuk-link'
-          rel='noreferrer noopener'
-          target='_blank'
-          href={`${hmrcURL}contact/report-technical-problem?service=427&referrerUrl=${window.location}`}
-        >
-          {t('PAGE_NOT_WORKING_PROPERLY')} {t('OPENS_IN_NEW_TAB')}
-        </a>
-      </p>
+      <PageNotWorkingProperly />
     </>
   );
 
   return (
     dashboardDataLoaded && (
-      <main className={`govuk-main-wrapper ${isLogout ? 'visibility-hidden' : ''}`} id='main-content' role='main'>
+      <main
+        className={`govuk-main-wrapper ${isLogout ? 'visibility-hidden' : ''}`}
+        id='main-content'
+        role='main'
+      >
         <div className='govuk-grid-row'>
           <div className='govuk-grid-column-full govuk-prototype-kit-common-templates-mainstream-guide-body govuk-!-padding-right-0 govuk-!-padding-left-0'>
             <div className='govuk-grid-column-two-thirds'>
               <h1 className='govuk-heading-l'>{t('YOUR_SELF_ASSESSMENT_PENALTIES')}</h1>
-              {dashboardData === null || dashboardData.penaltyData.length === 0 ? (
+              {dashboardData === null ||
+              dashboardData?.penaltyData === null ||
+              dashboardData?.penaltyData?.length === 0 ? (
                 <p>{t('YOU_DO_NOT_HAVE_SA_PENALTIES')}</p>
               ) : (
                 dashboardData && renderPenaltiesSection()

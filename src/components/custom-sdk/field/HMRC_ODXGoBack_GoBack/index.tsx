@@ -28,7 +28,15 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
 
   registerIgnoredField();
 
+  function removeBackLink() {
+    // resetting Back button control on click of 'Continue'
+    sessionStorage.setItem('overrideControl', 'false');
+
+    const existingBackLinks = document.querySelectorAll('.govuk-back-link');
+    existingBackLinks.forEach(link => link.remove());
+  }
   function handleBackClick(isValueTrue: boolean) {
+    removeBackLink();
     if (isValueTrue) {
       PCore.getPubSubUtils().publish('CUSTOM_EVENT_BACK', {});
     } else {
@@ -41,14 +49,6 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
       }
     }
   }
-
-  function removeBackLink(errorState: boolean = false) {
-    if (!errorState) {
-      const existingBackLinks = document.querySelectorAll('.govuk-back-link');
-      existingBackLinks.forEach(link => link.remove());
-    }
-  }
-
   function addBackLink(isValueTrue: boolean) {
     const assignmentDiv = document.getElementById('Assignment');
     const mainContent = document.getElementById('main-content');
@@ -98,6 +98,18 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
     }
   }, []);
 
+  function translateBackLinkText() {
+    const existingBackLinks = document.querySelectorAll('.govuk-back-link');
+
+    existingBackLinks.forEach(link => {
+      (link as HTMLElement).innerText = t('BACK');
+    });
+  }
+
+  useEffect(() => {
+    translateBackLinkText();
+  }, [t]);
+
   useEffect(() => {
     if (referenceList?.length > 0) {
       thePConn.setReferenceList(selectionList);
@@ -107,14 +119,15 @@ export default function HmrcOdxGoBackGoBack(props: HmrcOdxGoBackGoBackProps) {
 
   useEffect(() => {
     PCore.getPubSubUtils().subscribe(
-      'CustomAssignmentFinishedInitiated',
-      errorState => removeBackLink(errorState),
-      'CustomAssignmentFinishedInitiated'
+      'CUSTOM_EVENT_PAGE_NAVIGATION',
+      () => removeBackLink(),
+      'CUSTOM_EVENT_PAGE_NAVIGATION'
     );
+
     return () => {
       PCore.getPubSubUtils().unsubscribe(
-        'CustomAssignmentFinishedInitiated',
-        'CustomAssignmentFinishedInitiated'
+        'CUSTOM_EVENT_PAGE_NAVIGATION',
+        'CUSTOM_EVENT_PAGE_NAVIGATION'
       );
     };
   }, []);

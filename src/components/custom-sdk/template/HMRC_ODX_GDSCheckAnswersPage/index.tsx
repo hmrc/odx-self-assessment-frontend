@@ -53,64 +53,75 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
   // const actions = pConn.getActionsApi();
   const containerItemID = pConn.getContextName();
 
-  function navigateToStep(event, stepId) {
+  async function navigateToStep(event: MouseEvent, stepId: string) {
     event.preventDefault();
-    const initialValue = '';
-    const isImplicit = false;
-    // resetting Back button control on click of 'Change'
-    sessionStorage.setItem('overrideControl', 'false');
-    getPConnect().setValue('.NextStep', stepId, initialValue, isImplicit);
-    getPConnect().getActionsApi().finishAssignment(containerItemID);
+    const customEventExecuted = await new Promise(resolve => {
+      PCore.getPubSubUtils().publish('CUSTOM_EVENT_CYA_CHANGE_INITIATED', { resolve });
+    });
+
+    if (customEventExecuted) {
+      const initialValue = '';
+      const isImplicit = false;
+      getPConnect().setValue('.NextStep', stepId, initialValue, isImplicit);
+      getPConnect().getActionsApi().finishAssignment(containerItemID);
+    }
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   function updateHTML(htmlContent) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
-    const summaryListRows = doc.querySelectorAll('div.govuk-summary-list__row, h2, p');
+    const summaryListRows = doc.querySelectorAll('div.govuk-summary-list__row, h2, p, ul');
 
     const fragment = document.createDocumentFragment();
     let openDL = false;
     let currentDL;
 
-    summaryListRows.forEach(elem => {
-      if (
-        elem.tagName === 'H1' ||
-        elem.tagName === 'H2' ||
-        elem.tagName === 'H3' ||
-        elem.tagName === 'p'
-      ) {
-        if (openDL) {
-          fragment.appendChild(currentDL);
-          fragment.appendChild(elem.cloneNode(true));
-          openDL = false;
-        } else {
-          fragment.appendChild(elem.cloneNode(true));
-        }
-      } else if (elem.tagName === 'DIV') {
-        const isCsV = (elem.children[1] as HTMLElement).dataset.isCsv;
-        if (isCsV === 'true') {
-          const csvItems = (elem as HTMLElement).children[1].textContent.split(',');
-          if (csvItems.length > 1) {
-            (elem as HTMLElement).children[1].innerHTML = '';
-            csvItems.forEach(item => {
-              const textNode = document.createTextNode(item.trim());
-              (elem as HTMLElement).children[1].appendChild(textNode);
-              (elem as HTMLElement).children[1].appendChild(document.createElement('br'));
-            });
+    const processCSVNodes = (elem: HTMLElement) => {
+      const csvItems = elem.textContent.split(',');
+      if (csvItems.length > 1) {
+        elem.innerHTML = '';
+        csvItems.forEach(item => {
+          const textNode = document.createTextNode(item.trim());
+          elem.appendChild(textNode);
+          elem.appendChild(document.createElement('br'));
+        });
+      }
+    };
+
+    summaryListRows?.forEach(elem => {
+      const tagname = elem.tagName.toLowerCase();
+      switch (tagname) {
+        case 'h1':
+        case 'h2':
+        case 'h3':
+        case 'p':
+        case 'ul':
+          if (openDL) {
+            fragment.appendChild(currentDL);
+            openDL = false;
           }
-        }
-        if (!openDL) {
-          openDL = true;
-          currentDL = document.createElement('dl');
-          //  currentDL.className = 'govuk-summary-list govuk-!-margin-bottom-9';
-          currentDL.className = 'govuk-summary-list';
+
+          fragment.appendChild(elem.cloneNode(true));
+          break;
+
+        case 'div': {
+          const isCsV = (elem.children[1] as HTMLElement).dataset.isCsv;
+          if (isCsV === 'true') {
+            processCSVNodes(elem.children[1] as HTMLElement);
+          }
+
+          if (!openDL) {
+            openDL = true;
+            currentDL = document.createElement('dl');
+            currentDL.className = 'govuk-summary-list';
+          }
+
           currentDL.appendChild(elem.cloneNode(true));
-        } else {
-          currentDL.appendChild(elem.cloneNode(true));
+          break;
         }
-      } else if (elem.tagName === 'P') {
-        fragment.appendChild(elem.cloneNode(true));
+
+        default:
+          break;
       }
     });
 
@@ -147,8 +158,11 @@ export default function HmrcOdxGdsCheckAnswersPage(props: HmrcOdxGdsCheckAnswers
           let htmlContent = '';
           Array.from(container.children).forEach(child => {
             if (child instanceof HTMLElement) {
-              if (child.tagName === 'H2' || child.tagName === 'H3' || child.tagName === 'P') {
-                if (child.tagName === 'P') child.setAttribute('class', 'govuk-body');
+              const tagName = child.tagName.toLowerCase();
+              if (tagName === 'h2' || tagName === 'h3' || tagName === 'p' || tagName === 'ul') {
+                if (tagName === 'p') {
+                  child.setAttribute('class', 'govuk-body');
+                }
                 htmlContent += child.outerHTML;
               } else {
                 htmlContent += child.innerHTML;

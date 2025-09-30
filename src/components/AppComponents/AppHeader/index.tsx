@@ -2,23 +2,30 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import useHMRCExternalLinks from '../../helpers/hooks/HMRCExternalLinks';
 import LanguageToggle from '../LanguageToggle';
-import CookieBanner from '../../BaseComponents/CookieBanner/CookieBanner';
-import { useLocation } from 'react-router-dom';
+// import CookieBanner from '../../BaseComponents/CookieBanner/CookieBanner';
+
+/* Commented all CookieBanner code as per the business requirement. Refer: User Story
+(US-20235) Remove GA code, cookie banner, revert cookie page - SA & IABD */
 
 export default function AppHeader(props) {
-  const { handleSignout, appname, hasLanguageToggle, baseurl } = props;
+  const { handleSignout, handleServiceNameClick, appname, hasLanguageToggle } = props;
   const { t } = useTranslation();
   const { hmrcURL } = useHMRCExternalLinks();
-  const location = useLocation();
+  // const location = useLocation();
   const pathname = window.location.href;
-  const pageUrl = baseurl || `${location.pathname.replace('/', '')}`;
+  // const pageUrl = baseurl || `${location.pathname.replace('/', '')}`;
+
+  function handleServiceName(e?) {
+    e?.preventDefault();
+    handleServiceNameClick();
+  }
 
   return (
     <>
       <a href='#main-content' className='govuk-skip-link' data-module='govuk-skip-link'>
         {t('SKIP_TO_MAIN')}
       </a>
-      <CookieBanner pageUrl={`${pageUrl}`} />
+      {/*   <CookieBanner pageUrl={`${pageUrl}`} /> */}
       <header role='banner'>
         <div
           className='govuk-header hmrc-header  hmrc-header--with-additional-navigation'
@@ -46,7 +53,13 @@ export default function AppHeader(props) {
               </a>
             </div>
             <div className='govuk-header__content'>
-              <span className='govuk-header__service-name'>{appname}</span>
+              <a
+                href='#'
+                className='govuk-header__link govuk-header__service-name'
+                onClick={handleServiceName}
+              >
+                {appname}
+              </a>
               {handleSignout && (
                 <nav className='hmrc-sign-out-nav'>
                   <a

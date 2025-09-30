@@ -5,13 +5,8 @@ exports[`should render component Accessibility for registration. should render A
   <h1
     class="govuk-heading-xl"
   >
-    Accessibility statement for Claim Child Benefit service
+    Accessibility statement for Register for Self Assessment service
   </h1>
-  <p
-    class="govuk-body-l"
-  >
-    This accessibility statement explains how accessible this service is, what to do if you have difficulty using it, and how to report accessibility problems with the service.
-  </p>
   <p
     class="govuk-body"
   >
@@ -29,17 +24,15 @@ exports[`should render component Accessibility for registration. should render A
   <p
     class="govuk-body"
   >
-    This page only contains information about the Claim Child Benefit service, available at  https://www.tax.service.gov.uk/fill-online/claim-child-benefit.
-  </p>
-  <h2
-    class="govuk-heading-l"
-  >
-    Using this service
-  </h2>
-  <p
-    class="govuk-body"
-  >
-    Use this form to claim Child Benefit if you or your partner are responsible for a child who is under 16, or under 20 if they are in approved education or training.
+    This accessibility statement only contains information about the Register for Self Assessment service, available at 
+    <a
+      class="govuk-link"
+      href="https://account.hmrc.gov.uk/self-assessment/registration"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      https://www.tax.service.gov.uk/fill-online/registration (opens in new tab)
+    </a>
   </p>
   <p
     class="govuk-body"
@@ -248,13 +241,8 @@ exports[`should render component Accessibility for registration. should render A
   <h1
     class="govuk-heading-xl"
   >
-     Datganiad hygyrchedd ar gyfer y gwasanaeth Hawlio Budd-dal Plant
+    Datganiad hygyrchedd ar gyfer y gwasanaeth Cofrestru ar gyfer Hunanasesiad
   </h1>
-  <p
-    class="govuk-body-l"
-  >
-    Mae’r datganiad hygyrchedd hwn yn esbonio pa mor hygyrch yw’r gwasanaeth, beth i’w wneud os cewch anhawster wrth ei ddefnyddio, a sut i roi gwybod am broblemau hygyrchedd gyda’r gwasanaeth.
-  </p>
   <p
     class="govuk-body"
   >
@@ -272,17 +260,15 @@ exports[`should render component Accessibility for registration. should render A
   <p
     class="govuk-body"
   >
-    Mae’r dudalen hon yn cynnwys gwybodaeth am y gwasanaeth Hawlio Budd-dal Plant, sydd ar gael yn  https://www.tax.service.gov.uk/fill-online/claim-child-benefit.
-  </p>
-  <h2
-    class="govuk-heading-l"
-  >
-    Defnyddio’r gwasanaeth hwn
-  </h2>
-  <p
-    class="govuk-body"
-  >
-    Defnyddiwch y ffurflen hon i hawlio Budd-dal Plant os ydych chi neu’ch partner yn gyfrifol am blentyn sydd o dan 16 oed, neu o dan 20 os yw’n parhau â’i addysg neu hyfforddiant cymeradwy.
+    Mae’r datganiad hygyrchedd hwn dim ond yn cynnwys gwybodaeth am y gwasanaeth Cofrestru ar gyfer Hunanasesiad, sydd ar gael yn 
+    <a
+      class="govuk-link"
+      href="https://account.hmrc.gov.uk/self-assessment/registration"
+      rel="noreferrer noopener"
+      target="_blank"
+    >
+      https://www.tax.service.gov.uk/fill-online/registration (yn agor tab newydd)
+    </a>
   </p>
   <p
     class="govuk-body"

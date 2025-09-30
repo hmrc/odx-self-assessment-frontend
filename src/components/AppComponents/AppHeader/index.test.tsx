@@ -7,6 +7,7 @@ import { I18nextProvider, useTranslation } from 'react-i18next';
 import useHMRCExternalLinks from '../../helpers/hooks/HMRCExternalLinks';
 import { act } from 'react-dom/test-utils';
 import { mockGetSdkConfigWithBasepath } from '../../../../tests/mocks/getSdkConfigMock';
+import { BrowserRouter } from 'react-router-dom';
 
 jest.mock('@pega/auth/lib/sdk-auth-manager', () => ({
   getSdkConfig: jest.fn()
@@ -33,12 +34,19 @@ describe('should render', () => {
     await act(async () => {
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <AppHeader
-            handleSignout={() => {}}
-            appname='Appeal a Self Assessment penalty'
-            hasLanguageToggle={false}
-            languageToggleCallback={() => {}}
-          />
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
+            <AppHeader
+              handleSignout={() => {}}
+              appname='Appeal a Self Assessment penalty'
+              hasLanguageToggle={false}
+              languageToggleCallback={() => {}}
+            />
+          </BrowserRouter>
         </I18nextProvider>
       );
     });
@@ -51,7 +59,7 @@ describe('should render', () => {
     // @ts-ignore
     expect(screen.getByText('Beta')).toBeInTheDocument();
     // @ts-ignore
-    expect(screen.getByText('feedback')).toBeInTheDocument();
+    expect(screen.getByText('feedback (opens in new tab)')).toBeInTheDocument();
     // @ts-ignore
     expect(screen.getByText('Sign out')).toBeInTheDocument();
     // @ts-ignore
@@ -64,12 +72,19 @@ describe('should render', () => {
 
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <AppHeader
-            handleSignout={() => {}}
-            appname='Appeal a Self Assessment penalty'
-            hasLanguageToggle={false}
-            languageToggleCallback={() => {}}
-          />
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
+            <AppHeader
+              handleSignout={() => {}}
+              appname='Appeal a Self Assessment penalty'
+              hasLanguageToggle={false}
+              languageToggleCallback={() => {}}
+            />
+          </BrowserRouter>
         </I18nextProvider>
       );
     });
@@ -82,7 +97,7 @@ describe('should render', () => {
     // @ts-ignore
     expect(screen.getByText('Beta')).toBeInTheDocument();
     // @ts-ignore
-    expect(screen.getByText('adborth')).toBeInTheDocument();
+    expect(screen.getByText('adborth (yn agor tab newydd)')).toBeInTheDocument();
     // @ts-ignore
     expect(screen.getByText('Allgofnodi')).toBeInTheDocument();
     // @ts-ignore
@@ -95,12 +110,19 @@ describe('should render', () => {
 
       render(
         <I18nextProvider i18n={t.result.current.i18n}>
-          <AppHeader
-            handleSignout={() => {}}
-            appname='Appeal a Self Assessment penalty'
-            hasLanguageToggle={false}
-            languageToggleCallback={() => {}}
-          />
+          <BrowserRouter
+            future={{
+              v7_startTransition: true,
+              v7_relativeSplatPath: true
+            }}
+          >
+            <AppHeader
+              handleSignout={() => {}}
+              appname='Appeal a Self Assessment penalty'
+              hasLanguageToggle={false}
+              languageToggleCallback={() => {}}
+            />
+          </BrowserRouter>
         </I18nextProvider>
       );
     });

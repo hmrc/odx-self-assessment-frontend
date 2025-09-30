@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState, useEffect, useContext, useRef } from 'react';
+import { FunctionComponent, useState, useEffect, useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import setPageTitle, { registerServiceName } from '../../components/helpers/setPageTitleHelpers';
 import { getSdkConfig } from '@pega/auth/lib/sdk-auth-manager';
@@ -6,7 +6,6 @@ import AppFooter from '../../components/AppComponents/AppFooter';
 import { resumeOnRefresh, triggerLogout } from '../../components/helpers/utils';
 import useHMRCExternalLinks from '../../components/helpers/hooks/HMRCExternalLinks';
 import TimeoutPopup from '../../components/AppComponents/TimeoutPopup';
-import ShutterServicePage from '../../components/AppComponents/ShutterServicePage';
 import SummaryPage from '../../components/AppComponents/SummaryPage';
 import {
   initTimeout,
@@ -22,6 +21,7 @@ import AppContext from '../../reuseables/AppContext';
 import { setJourneyName } from '../../components/helpers/journeyRegistry';
 import { TIMEOUT_115_SECONDS } from '../../components/helpers/constants';
 import { BundleLanguage, loadBundles } from '../../components/helpers/languageToggleHelper';
+import ServiceFallbackPageWrapper from '../../components/AppComponents/ServiceFallbackPageWrapper';
 
 const Cessation: FunctionComponent<any> = ({ journeyName }) => {
   const { t } = useTranslation();
@@ -40,12 +40,7 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
   const { showLanguageToggle } = useContext(AppContext);
   const [showLanguageToggleState, setShowLanguageToggleState] = useState(showLanguageToggle);
   const [currentDisplay, setCurrentDisplay] = useState<
-    | 'pegapage'
-    | 'resolutionpage'
-    | 'servicenotavailable'
-    | 'shutterpage'
-    | 'loading'
-    | 'landingpage'
+    'pegapage' | 'resolutionpage' | 'servicenotavailable' | 'loading' | 'landingpage'
   >('pegapage');
   const [summaryPageContent, setSummaryPageContent] = useState<any>({
     content: null,
@@ -56,11 +51,9 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
   const [showPortalBanner, setShowPortalBanner] = useState(false);
   const [pConnect, setPconnect] = useState(null);
   const [isLogout, setIsLogout] = useState(false);
-  const [shutterServicePage, setShutterServicePage] = useState(false);
   const [millisecondsTillSignout, setmillisecondsTillSignout] = useState(TIMEOUT_115_SECONDS);
 
   const { hmrcURL } = useHMRCExternalLinks();
-  const checkDefaultShutteringEnabled = false;
 
   registerServiceName(t('LEAVE_SELF_ASSESSMENT'));
   setJourneyName(journeyName);
@@ -73,7 +66,11 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
     showPega,
     setShowPega,
     showResolutionPage,
+    setShowResolutionPage,
     caseId,
+    isLoading,
+    serviceStatus,
+    setServiceStatus,
     serviceNotAvailable,
     assignmentPConnect,
     assignmentCancelled,
@@ -81,15 +78,12 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
     containerClosed,
     renderRootComponent,
     rootProps
-  } = useStartMashup(
-    {
-      appBacklinkProps: {},
-      serviceParam,
-      serviceName: serviceNameAndHeader,
-      appNameHeader: serviceNameAndHeader
-    },
-    checkDefaultShutteringEnabled
-  );
+  } = useStartMashup({
+    appBacklinkProps: {},
+    serviceParam,
+    serviceName: serviceNameAndHeader,
+    appNameHeader: serviceNameAndHeader
+  });
 
   // Function to force re-render the pega Root component
   const forceRefreshRootComponent = () => {
@@ -138,6 +132,7 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
     closeContainer();
     setShowPega(false);
     setShowLandingPage(true);
+    setShowResolutionPage(false);
     setShowPortalBanner(showBanner);
     setAssignmentCancelled(false);
     setSummaryPageContent({
@@ -145,6 +140,10 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
       title: null,
       banner: null
     });
+  }
+
+  function handleServiceNameClick() {
+    returnedToPortal();
   }
 
   useEffect(() => {
@@ -177,9 +176,12 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
   }, [summaryPageContent]);
 
   useEffect(() => {
-    if (shutterServicePage) {
-      setCurrentDisplay('shutterpage');
-    } else if (showLandingPage && pCoreReady && !showResolutionPage && !shutterServicePage) {
+    if (isLoading) {
+      setCurrentDisplay('loading');
+      return;
+    }
+
+    if (showLandingPage && pCoreReady && !showResolutionPage && serviceStatus.isServiceHealthy) {
       setCurrentDisplay('landingpage');
     } else if (showPega) {
       setCurrentDisplay('pegapage');
@@ -194,7 +196,7 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
       getSdkConfig().then(config => {
         PCore.getRestClient()
           .invokeCustomRestApi(
-            `${config.serverConfig.infinityRestServerUrl}/api/application/v2/cases/${caseId}?pageName=SubmissionSummary`,
+            `${config.serverConfig.infinityRestServerUrl}/app/${config.serverConfig.appAlias}/api/application/v2/cases/${caseId}?pageName=SubmissionSummary`,
             {
               method: 'GET',
               body: '',
@@ -240,16 +242,17 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
   }, [
     showResolutionPage,
     showPega,
-    shutterServicePage,
     serviceNotAvailable,
     pCoreReady,
     showLandingPage,
-    containerClosed
+    containerClosed,
+    isLoading,
+    serviceStatus.isServiceHealthy
   ]);
 
   useEffect(() => {
-    resumeOnRefresh(pConnect, pCoreReady, setShowLandingPage);
-  }, [pCoreReady, showPega]);
+    resumeOnRefresh(pConnect, pCoreReady, setShowLandingPage, setServiceStatus);
+  }, [pCoreReady, pConnect]);
 
   useEffect(() => {
     document.addEventListener('SdkConstellationReady', () => {
@@ -373,6 +376,7 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
           appname={t('LEAVE_SELF_ASSESSMENT')}
           hasLanguageToggle={showLanguageToggleState}
           handleSignout={handleSignout}
+          handleServiceNameClick={handleServiceNameClick}
           betafeedbackurl={`${hmrcURL}contact/beta-feedback?service=claim-child-benefit-frontend&backUrl=/fill-online/claim-child-benefit/recently-claimed-child-benefit`}
         />
         <div className='govuk-width-container'>
@@ -421,6 +425,7 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
         {pConnect && (
           <AppHeader
             handleSignout={handleSignout}
+            handleServiceNameClick={handleServiceNameClick}
             appname={t('LEAVE_SELF_ASSESSMENT')}
             hasLanguageToggle={showLanguageToggleState}
             isPegaApp={showPega}
@@ -428,37 +433,37 @@ const Cessation: FunctionComponent<any> = ({ journeyName }) => {
           />
         )}
         <div className='govuk-width-container'>
-          {currentDisplay === 'shutterpage' ? (
-            <ShutterServicePage />
-          ) : (
-            <>
-              <div id='pega-part-of-page'>
-                <div id='pega-root' className={`${isLogout ? 'visibility-hidden' : ''}`}></div>
-              </div>
-              {currentDisplay === 'landingpage' && pConnect && (
-                <Landing
-                  showPortalBanner={showPortalBanner}
-                  isLogout={isLogout}
-                  pConn={pConnect}
-                  inProgressCaseCountEndPoint={inProgressCaseCountEndPoint}
-                  createCaseEndpoint={createCaseApi}
-                  buttonContent={t('CONTINUE_YOUR_REQUEST')}
-                  title={t('YOUR_REQUEST')}
-                  bannerContent={t('CES_PORTAL_NOTIFICATION_BANNER_CONTENT')}
-                  handleCaseStart={handleCaseStart}
-                  caseListApiParams={caseListApiParams}
-                  setShutterServicePage={setShutterServicePage}
-                ></Landing>
-              )}
-              {currentDisplay === 'resolutionpage' && (
-                <SummaryPage
-                  summaryContent={summaryPageContent?.Content}
-                  summaryTitle={summaryPageContent?.Title}
-                  summaryBanner={summaryPageContent?.Banner}
-                  ref={summaryPageRef}
-                />
-              )}
-            </>
+          {pCoreReady && (
+            <ServiceFallbackPageWrapper serviceStatus={serviceStatus}>
+              <>
+                <div id='pega-part-of-page'>
+                  <div id='pega-root' className={`${isLogout ? 'visibility-hidden' : ''}`}></div>
+                </div>
+                {currentDisplay === 'landingpage' && pConnect && (
+                  <Landing
+                    showPortalBanner={showPortalBanner}
+                    isLogout={isLogout}
+                    pConn={pConnect}
+                    inProgressCaseCountEndPoint={inProgressCaseCountEndPoint}
+                    createCaseEndpoint={createCaseApi}
+                    buttonContent={t('CONTINUE_YOUR_REQUEST')}
+                    title={t('YOUR_REQUEST')}
+                    bannerContent={t('CES_PORTAL_NOTIFICATION_BANNER_CONTENT')}
+                    handleCaseStart={handleCaseStart}
+                    caseListApiParams={caseListApiParams}
+                    setServiceStatus={setServiceStatus}
+                  />
+                )}
+                {currentDisplay === 'resolutionpage' && (
+                  <SummaryPage
+                    summaryContent={summaryPageContent?.Content}
+                    summaryTitle={summaryPageContent?.Title}
+                    summaryBanner={summaryPageContent?.Banner}
+                    ref={summaryPageRef}
+                  />
+                )}
+              </>
+            </ServiceFallbackPageWrapper>
           )}
         </div>
 

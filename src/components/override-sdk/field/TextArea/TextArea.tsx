@@ -41,6 +41,7 @@ export default function TextArea(props) {
   const thePConn = getPConnect();
 
   const propName = thePConn.getStateProps().value;
+  const fieldId = propName?.split('.')?.pop();
   const formattedPropertyName = name || propName?.split('.')?.pop();
 
   let label = props.label;
@@ -80,7 +81,7 @@ export default function TextArea(props) {
     return <ReadOnlyDisplay label={label} value={value} name={name} />;
   }
 
-  const extraProps = { testProps: { 'data-test-id': testId } };
+  const extraProps = { testProps: { 'data-test-id': testId }, rows: 5, useCharacterCount: true };
 
   const extraInputProps = { onChange, value };
 
@@ -105,7 +106,7 @@ export default function TextArea(props) {
       labelIsHeading={isOnlyField}
       name={formattedPropertyName}
       expectedLength={expectedLength}
-      id={formattedPropertyName}
+      fieldId={fieldId}
       {...extraProps}
       disabled={disabled || false}
     />

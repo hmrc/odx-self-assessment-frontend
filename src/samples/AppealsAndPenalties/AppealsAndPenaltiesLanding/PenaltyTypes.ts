@@ -18,13 +18,14 @@ export interface PenaltyDuration {
 export interface PenaltyDataProps {
   resultCount: number;
   Language: string;
-  penaltyData: PenaltyDuration[];
+  penaltyData: PenaltyDuration[] | null;
   InstructionText: string;
 }
 
 export interface Content {
   data: [
     {
+      pyHTTPResponseCode: number;
       LocalisedContent: PenaltyDataProps[];
     }
   ];

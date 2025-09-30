@@ -1,6 +1,7 @@
 import { getSdkConfig, logout } from '@pega/auth/lib/sdk-auth-manager';
 import apiConfig from './constants';
 import { getJourneyName } from './journeyRegistry';
+import { getServiceStatus } from './getServiceStatus';
 
 export const scrollToTop = () => {
   const position = document.getElementById('#main-content')?.offsetTop || 0;
@@ -23,50 +24,6 @@ export const checkErrorMsgs = (errorMsgs = [], fieldIdentity = '', fieldElement 
 export const shouldRemoveFormTagForReadOnly = (pageName: string) => {
   const arrContainerNamesFormNotRequired = ['Your date of birth'];
   return arrContainerNamesFormNotRequired.includes(pageName);
-};
-
-export const getServiceShutteredStatus = async (): Promise<boolean> => {
-  interface ResponseType {
-    data: { Shuttered: boolean };
-  }
-  try {
-    const sdkConfig = await getSdkConfig();
-    const urlConfig = new URL(
-      `${sdkConfig.serverConfig.infinityRestServerUrl}/app/${sdkConfig.serverConfig.appAlias}/api/application/v2/data_views/D_ShutterLookup`
-    ).href;
-
-    const featureID = apiConfig[getJourneyName()].shuttering.featureID;
-
-    const featureType = 'Service';
-
-    const parameters = new URLSearchParams(
-      `{FeatureID: ${featureID}, FeatureType: ${featureType}}`
-    );
-
-    const url = `${urlConfig}?dataViewParameters=${parameters}`;
-    const { invokeCustomRestApi } = PCore.getRestClient();
-    /* eslint-disable */
-    return invokeCustomRestApi(
-      url,
-      {
-        method: 'GET',
-        body: '',
-        headers: '',
-        withoutDefaultHeaders: false
-      },
-      ''
-    )
-      .then((response: ResponseType) => {
-        return response.data.Shuttered;
-      })
-      .catch((error: Error) => {
-        console.log(error);
-        return false;
-      });
-  } catch (error) {
-    console.log(error);
-    return false;
-  }
 };
 
 export const getAskHmrcSubLink = () => {
@@ -93,6 +50,7 @@ export const removeRedundantString = (redundantString: string, separator: string
   const list = redundantString.split(separator);
   const newList = [];
   let uniqueString = '';
+  // eslint-disable-next-line prefer-regex-literals
   const emailPattern = new RegExp(/\S+@\S+\.\S+/);
   const checkEmail = emailPattern.test(redundantString);
   if (list.length > 0) {
@@ -104,6 +62,7 @@ export const removeRedundantString = (redundantString: string, separator: string
     if (newList.length > 0) {
       newList.forEach(element => {
         uniqueString =
+          // eslint-disable-next-line no-nested-ternary
           uniqueString + (uniqueString.length <= 0 ? '' : checkEmail ? '.' : '. ') + element.trim();
       });
     }
@@ -120,10 +79,11 @@ export const checkStatus = () => {
 };
 
 export const clearSessionStorageExcept = (excludedKeys: string[]) => {
-  for (var item = 0; item < sessionStorage.length; item++) {
-    var key = sessionStorage.key(item);
+  // eslint-disable-next-line no-plusplus
+  for (let item = 0; item < sessionStorage.length; item++) {
+    const key = sessionStorage.key(item);
 
-    if (excludedKeys.indexOf(key) === -1) {
+    if (!excludedKeys.includes(key)) {
       sessionStorage.removeItem(key);
     }
   }
@@ -192,14 +152,24 @@ export const getCaseId = () => {
   return PCore.getStoreValue('.ID', 'caseInfo', context);
 };
 
-export const resumeOnRefresh = (pConnect, pCoreReady, setShowLandingPage) => {
-  const pyAssignmentID = sessionStorage.getItem('assignmentID');
-  if (pyAssignmentID && pCoreReady) {
+export const resumeOnRefresh = async (
+  pConnect,
+  pCoreReady,
+  setShowLandingPage,
+  setServiceStatus
+) => {
+  const pyAssignmentId = sessionStorage.getItem('assignmentID');
+  if (pyAssignmentId && pCoreReady && pConnect) {
+    const serviceStatusResponse = await getServiceStatus();
+    if (!serviceStatusResponse.isServiceHealthy) {
+      setServiceStatus(serviceStatusResponse);
+      return;
+    }
     const container = pConnect?.getContainerName();
     const target = `${PCore?.getConstants().APP.APP}/${container}`;
     const openAssignmentOptions = { pageName: '', channelName: '' };
-    const assignmentID = sessionStorage.getItem('assignmentID');
-    PCore.getMashupApi().openAssignment(assignmentID, target, openAssignmentOptions);
+    PCore.getMashupApi().openAssignment(pyAssignmentId, target, openAssignmentOptions);
+    sessionStorage.removeItem('assignmentID');
     setShowLandingPage(false);
   }
 };
@@ -208,7 +178,7 @@ export const resumeOnRefresh = (pConnect, pCoreReady, setShowLandingPage) => {
 export const formatDecimal = (decimalAmount: string) => Number(decimalAmount) * 1;
 
 export const getCurrentLanguage = () =>
-  sessionStorage.getItem('rsdk_locale').slice(0, 2).toLowerCase() || 'en';
+  sessionStorage.getItem('rsdk_locale')?.slice(0, 2).toLowerCase() || 'en';
 
 export const getOrdinalSuffix = (num: number): string => {
   if (num <= 0) return `${num}`;

@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 import { configure } from '@testing-library/react';
 import 'jest-fetch-mock';
 import i18n from 'i18next';

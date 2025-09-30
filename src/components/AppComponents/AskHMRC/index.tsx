@@ -20,7 +20,7 @@ const AskHMRC = () => {
             target='_blank'
             className='govuk-link'
           >
-            {t('HRMC_ONLINE_ASSISTANT')}
+            {t('HRMC_ONLINE_ASSISTANT')} {t('OPENS_IN_NEW_TAB')}
           </a>{' '}
           {t('TO_GET_HELP_WITH_SELF_ASSESSMENT')}
         </p>

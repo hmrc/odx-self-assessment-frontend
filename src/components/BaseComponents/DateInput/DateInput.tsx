@@ -68,9 +68,11 @@ export default function DateInput(props) {
         <div className='govuk-date-input__item'>
           <FormGroup
             name={`${name}-day`}
+            fieldId={`${name}-day`}
             label={dayLabel}
             labelIsHeading={false}
             extraLabelClasses='govuk-date-input__label'
+            parentManagedError
           >
             <input
               className={[
@@ -91,9 +93,11 @@ export default function DateInput(props) {
         <div className='govuk-date-input__item'>
           <FormGroup
             name={`${name}-month`}
+            fieldId={`${name}-month`}
             label={monthLabel}
             labelIsHeading={false}
             extraLabelClasses='govuk-date-input__label'
+            parentManagedError
           >
             <input
               className={[
@@ -114,9 +118,11 @@ export default function DateInput(props) {
         <div className='govuk-date-input__item'>
           <FormGroup
             name={`${name}-year`}
+            fieldId={`${name}-year`}
             label={yearLabel}
             labelIsHeading={false}
             extraLabelClasses='govuk-date-input__label'
+            parentManagedError
           >
             <input
               className={[

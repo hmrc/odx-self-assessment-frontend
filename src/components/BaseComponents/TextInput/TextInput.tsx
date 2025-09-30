@@ -1,9 +1,17 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import FormGroup, { makeErrorId, makeHintId } from '../FormGroup/FormGroup';
+import React, { FocusEventHandler } from 'react';
+import FormGroup, { makeErrorId, makeHintId, FormGroupProps } from '../FormGroup/FormGroup';
 import HintTextComponent from '../../helpers/formatters/ParsedHtml';
 
-export default function TextInput(props) {
+interface TextInputProps extends FormGroupProps {
+  name: string;
+  maxLength: number;
+  inputProps;
+  fieldId: string;
+  disabled: boolean;
+  onBlur: FocusEventHandler<HTMLInputElement>;
+}
+
+export default function TextInput(props: TextInputProps) {
   const {
     name,
     errorText,
@@ -60,13 +68,3 @@ export default function TextInput(props) {
     </FormGroup>
   );
 }
-
-TextInput.propTypes = {
-  ...FormGroup.propTypes,
-  name: PropTypes.string,
-  maxLength: PropTypes.number,
-  inputProps: PropTypes.object,
-  fieldId: PropTypes.string,
-  disabled: PropTypes.bool,
-  onBlur: PropTypes.func
-};

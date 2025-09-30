@@ -31,7 +31,9 @@ const CookieBanner = props => {
     pushGAConsent(consent);
 
     setIsVisible(false);
-    setConfirmationMessage(consent ? 'COOKIE_BANNER.CONFIRMATION_ACCEPTED' : 'COOKIE_BANNER.CONFIRMATION_REJECTED');
+    setConfirmationMessage(
+      consent ? 'COOKIE_BANNER.CONFIRMATION_ACCEPTED' : 'COOKIE_BANNER.CONFIRMATION_REJECTED'
+    );
   };
 
   return (
@@ -39,11 +41,18 @@ const CookieBanner = props => {
       {!isLocationCookies && (
         <>
           {isVisible && (
-            <div className='govuk-cookie-banner' data-nosnippet role='region' aria-label='Cookies on HMRC Services'>
+            <div
+              className='govuk-cookie-banner'
+              data-nosnippet
+              role='region'
+              aria-label='Cookies on HMRC Services'
+            >
               <div className='govuk-cookie-banner__message govuk-width-container'>
                 <div className='govuk-grid-row'>
                   <div className='govuk-grid-column-two-thirds'>
-                    <h2 className='govuk-cookie-banner__heading govuk-heading-m'>{t('COOKIE_BANNER.TITLE')}</h2>
+                    <h2 className='govuk-cookie-banner__heading govuk-heading-m'>
+                      {t('COOKIE_BANNER.TITLE')}
+                    </h2>
                     <div className='govuk-cookie-banner__content'>
                       <p className='govuk-body'>{t('COOKIE_BANNER.P1')}</p>
                       <p className='govuk-body'>{t('COOKIE_BANNER.P2')}</p>
@@ -51,13 +60,28 @@ const CookieBanner = props => {
                   </div>
                 </div>
                 <div className='govuk-button-group'>
-                  <button type='button' className='govuk-button' data-module='govuk-button' onClick={() => setCookie(true)}>
+                  <button
+                    type='button'
+                    className='govuk-button'
+                    data-module='govuk-button'
+                    onClick={() => setCookie(true)}
+                  >
                     {t('COOKIE_BANNER.CTA_ACCEPT')}
                   </button>
-                  <button type='button' className='govuk-button' data-module='govuk-button' onClick={() => setCookie(false)}>
+                  <button
+                    type='button'
+                    className='govuk-button'
+                    data-module='govuk-button'
+                    onClick={() => setCookie(false)}
+                  >
                     {t('COOKIE_BANNER.CTA_REJECT')}
                   </button>
-                  <Link className='govuk-link' target='_blank' to={cookiesPagePath} rel='noreferrer noopener'>
+                  <Link
+                    className='govuk-link'
+                    target='_blank'
+                    to={cookiesPagePath}
+                    rel='noreferrer noopener'
+                  >
                     {t('COOKIE_BANNER.CTA_VIEW')} {t('OPENS_IN_NEW_TAB')}
                   </Link>
                 </div>
@@ -66,7 +90,12 @@ const CookieBanner = props => {
           )}
 
           {confirmationMessage && (
-            <div className='govuk-cookie-banner' data-nosnippet role='region' aria-label='Cookies on HMRC Services'>
+            <div
+              className='govuk-cookie-banner'
+              data-nosnippet
+              role='region'
+              aria-label='Cookies on HMRC Services'
+            >
               <div className='govuk-cookie-banner__message govuk-width-container'>
                 <div className='govuk-grid-row'>
                   <div className='govuk-grid-column-two-thirds'>
@@ -76,7 +105,14 @@ const CookieBanner = props => {
                         <Trans
                           i18nKey='COOKIE_BANNER.CONFIG_CHANGE_LINK'
                           components={{
-                            Link: <Link className='govuk-link' target='_blank' to={cookiesPagePath} rel='noreferrer noopener'></Link>
+                            Link: (
+                              <Link
+                                className='govuk-link'
+                                target='_blank'
+                                to={cookiesPagePath}
+                                rel='noreferrer noopener'
+                              ></Link>
+                            )
                           }}
                         />
                       </p>
@@ -84,7 +120,12 @@ const CookieBanner = props => {
                   </div>
                 </div>
                 <div className='govuk-button-group'>
-                  <button type='button' className='govuk-button' data-module='govuk-button' onClick={() => setConfirmationMessage(null)}>
+                  <button
+                    type='button'
+                    className='govuk-button'
+                    data-module='govuk-button'
+                    onClick={() => setConfirmationMessage(null)}
+                  >
                     {t('COOKIE_BANNER.CTA_HIDE')}
                   </button>
                 </div>

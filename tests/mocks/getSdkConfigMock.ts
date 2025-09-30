@@ -13,6 +13,9 @@ export const mockGetSdkConfigWithBasepath = () => {
       sdkContentServerUrl: 'https://localhost:3502/', // Todo: Can be moved to env specific config.
       sdkHmrcURL: 'https://www.staging.tax.service.gov.uk/',
       sdkHmrcUrlMigrated: 'https://test-www.tax.service.gov.uk/'
+    },
+    authConfig: {
+      authService: 'gg-sa-dev'
     }
   });
   return mockedGetSdkConfig;

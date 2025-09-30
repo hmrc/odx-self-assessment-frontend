@@ -8,7 +8,6 @@ import setPageTitle, { registerServiceName } from '../../helpers/setPageTitleHel
 
 export default function AppWrapper({ children, baseurl }) {
   const { t } = useTranslation();
-
   const [serviceName, setServiceName] = useState('');
 
   useEffect(() => {
@@ -23,12 +22,17 @@ export default function AppWrapper({ children, baseurl }) {
     setPageTitle();
   }, [serviceName]);
 
+  function handleServiceNameClick() {
+    window.location.href = `${baseurl}`;
+  }
+
   return (
     <>
       <AppHeader
         appname={t(serviceName)}
         baseurl={`${baseurl}`}
         hasLanguageToggle
+        handleServiceNameClick={handleServiceNameClick}
         isPegaApp={false}
       />
       <div className='govuk-width-container'>

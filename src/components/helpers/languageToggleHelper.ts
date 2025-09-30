@@ -33,10 +33,8 @@ export type BundleLanguage = 'en_GB' | 'cy_GB';
 
 export const loadBundles = async (lang: BundleLanguage) => {
   if (typeof PCore !== 'undefined') {
-    const { GENERIC_BUNDLE_KEY } = PCore.getLocaleUtils();
-
     const bundles = [
-      GENERIC_BUNDLE_KEY,
+      '@BASECLASS!DATAPAGE!D_SALISTREFERENCEDATABYTYPE',
       '@BASECLASS!DATAPAGE!D_SAREFERENCEDATALISTBYTYPE',
       '@BASECLASS!DATAPAGE!D_SCOPEDREFERENCEDATALISTBYTYPE',
       '@BASECLASS!DATAPAGE!D_LISTREFERENCEDATABYTYPE',

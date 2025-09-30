@@ -46,7 +46,7 @@ describe('should render component AskHMRC.', () => {
     // @ts-ignore
     expect(screen.getByText('Get help')).toBeInTheDocument();
     // @ts-ignore
-    expect(screen.getByText("HMRC's online assistant (opens in a new tab)")).toBeInTheDocument();
+    expect(screen.getByText("HMRC's online assistant (opens in new tab)")).toBeInTheDocument();
   });
 
   it('should render AskHMRC content in Welsh.', async () => {
@@ -74,7 +74,7 @@ describe('should render component AskHMRC.', () => {
     });
     // @ts-ignore
     expect(
-      screen.getByRole('link', { name: "HMRC's online assistant (opens in a new tab)" })
+      screen.getByRole('link', { name: "HMRC's online assistant (opens in new tab)" })
     ).toHaveAttribute(
       'href',
       'https://test-www.tax.service.gov.uk/ask-hmrc/chat/self-assessment-cessation'

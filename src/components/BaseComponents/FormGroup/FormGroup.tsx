@@ -1,11 +1,24 @@
 import React, { useContext, useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
 import ConditionalWrapper from '../../helpers/formatters/ConditionalWrapper';
 import HintTextComponent from '../../helpers/formatters/ParsedHtml';
 import { DefaultFormContext, ErrorMsgContext } from '../../helpers/HMRCAppContext';
 import { checkErrorMsgs, removeRedundantString } from '../../helpers/utils';
 import InstructionTextComponent from '../../override-sdk/template/DefaultForm/InstructionTextComponent';
 import { useTranslation } from 'react-i18next';
+
+export interface FormGroupProps {
+  labelIsHeading?: boolean;
+  label: string;
+  errorText?: string;
+  hintText?: string;
+  name: string;
+  fieldId: string;
+  extraLabelClasses?: string;
+  children?: JSX.Element;
+  testProps?: object;
+  parentManagedError?: boolean;
+  useCharacterCount?: boolean;
+}
 
 function makeHintId(identifier) {
   return `${identifier}-hint`;
@@ -17,27 +30,34 @@ function makeItemId(index, identifier) {
   return `${identifier}${index > 0 ? `-${index}` : ''}`;
 }
 
-export default function FormGroup({
-  labelIsHeading = false,
-  label,
-  errorText,
-  hintText,
-  name,
-  fieldId,
-  extraLabelClasses = '',
-  children,
-  testProps = {},
-  useCharacterCount = false // Add this prop
-}) {
+export default function FormGroup(props: FormGroupProps) {
+  const {
+    labelIsHeading = false,
+    label,
+    errorText,
+    hintText,
+    name,
+    fieldId,
+    extraLabelClasses = '',
+    children,
+    testProps = {},
+    useCharacterCount = false,
+    parentManagedError = false
+  } = props;
   const { t } = useTranslation();
   const { instructionText } = useContext(DefaultFormContext);
   const { errorMsgs } = useContext(ErrorMsgContext);
   const [errMessage, setErrorMessage] = useState(errorText);
   useEffect(() => {
+    if (parentManagedError) return;
+
     const found = checkErrorMsgs(errorMsgs, fieldId, name);
-    if (!found) {
-      setErrorMessage(errorText);
-    }
+
+    setErrorMessage(
+      found && errorMsgs.length <= 1 && found.message.fieldId === fieldId
+        ? found.message.message
+        : errorText
+    );
   }, [errorText, errorMsgs]);
 
   const formGroupDivClasses = `govuk-form-group ${errMessage ? 'govuk-form-group--error' : ''}  ${
@@ -78,16 +98,5 @@ export default function FormGroup({
     </div>
   );
 }
-
-FormGroup.propTypes = {
-  label: PropTypes.string,
-  labelIsHeading: PropTypes.bool,
-  hintText: PropTypes.string,
-  errorText: PropTypes.string,
-  children: PropTypes.node,
-  extraLabelClasses: PropTypes.string,
-  fieldId: PropTypes.string,
-  useCharacterCount: PropTypes.bool
-};
 
 export { makeErrorId, makeHintId, makeItemId };
